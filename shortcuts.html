@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blender Shortcuts · 3D Design Foundations</title>
+<meta name="description" content="Blender basics and subdivision-modeling shortcuts, with a screenshot of what each one does — 3D Design Foundations, Smart Interactive Media.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --shadow: rgba(20, 22, 27, 0.18);
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --shadow: rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --shadow: rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 5px 9px;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 40px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin: 26px 0 10px;
+  }
+  .max { color: var(--ink-3); }
+  .arrow { color: var(--ink-3); font-family: var(--body); font-weight: 400; }
+
+  /* ---------- tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 9px 14px;
+  }
+  td {
+    border-top: 1px solid var(--rule);
+    padding: 8px 14px;
+    font-size: 15px;
+    vertical-align: middle;
+  }
+  td:first-child { width: 34%; }
+  td.keys { width: 30%; }
+  td.note { color: var(--ink-2); font-size: 14px; text-wrap: pretty; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .plus, .sep { color: var(--ink-3); font-family: var(--mono); font-size: 12px; margin: 0 2px; }
+  .path { color: var(--ink-2); font-size: 14px; }
+
+  /* the shortcut is the trigger for its screenshot */
+  .peek {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    border-radius: 3px;
+    padding: 3px 4px;
+    margin: -3px -4px;
+    text-align: left;
+    cursor: zoom-in;
+    line-height: 1.9;
+  }
+  .peek::after {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 7px;
+    vertical-align: -1px;
+    background: var(--ink-3);
+    -webkit-mask: var(--pic) center / contain no-repeat;
+    mask: var(--pic) center / contain no-repeat;
+    --pic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='m21 16-5-5L5 20'/%3E%3C/svg%3E");
+  }
+  .peek:hover, .peek:focus-visible, .peek[aria-expanded="true"] { background: var(--ground); }
+  .peek:hover::after, .peek:focus-visible::after, .peek[aria-expanded="true"]::after { background: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  #peek {
+    position: fixed;
+    z-index: 20;
+    margin: 0;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    box-shadow: 0 10px 30px var(--shadow);
+    pointer-events: none;
+  }
+  #peek[hidden] { display: none; }
+  #peek img { display: block; border-radius: 2px; background: #3a3a3a; }
+  #peek figcaption {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--ink-2);
+    padding: 7px 2px 1px;
+    text-wrap: pretty;
+  }
+
+  /* ---------- modifier cards ---------- */
+  .mod {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 22px;
+    margin-top: 14px;
+  }
+  .mod h3 { margin: 0 0 6px; }
+  .mod p { margin: 0 0 8px; font-size: 15px; color: var(--ink-2); max-width: 64ch; text-wrap: pretty; }
+  .mod p.where { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-bottom: 16px; }
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .shots a { display: block; }
+  .shots img { display: block; width: 100%; height: auto; border-radius: 2px; background: #3a3a3a; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0 0 6px; }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    td { padding: 8px 10px; }
+    td:first-child, td.keys { width: auto; }
+    td.note { font-size: 13px; }
+    .shots { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    #peek, .jump, .back, .peek::after, #modifiers { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    header { padding-top: 0; }
+    table { border-color: #999; }
+    td, th { padding: 4px 8px; }
+    tr { break-inside: avoid; }
+    h3 { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Blender shortcuts</h1>
+    <p class="standfirst">
+      The basics and the subdivision-modeling toolkit, from Blender 5.2's default keymap. Hover over a
+      shortcut, or tap it, to see what it does. Where a heading has two names, the grey one is what
+      3ds Max calls it.
+    </p>
+    <p class="standfirst">
+      No numpad or middle mouse button on your laptop? Preferences &rarr; Input &rarr; Emulate Numpad,
+      and Emulate 3 Button Mouse.
+    </p>
+    <nav class="jump" aria-label="On this page">
+      <a href="#basics">Basics</a>
+      <a href="#modeling">Subdivision modeling</a>
+      <a href="#modifiers">Modifiers</a>
+    </nav>
+  </header>
+
+  <section id="basics">
+    <h2>Basics</h2>
+    <h3 id="basics-general">General</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Toggle Edit Mode</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/tab-edit.webp" data-w="480" data-h="320" data-cap="Edit Mode: the cube&#x27;s vertices, edges and faces become selectable." aria-label="Tab: show what it does"><kbd>Tab</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Vertex / Edge / Face mode</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/select-modes.webp" data-w="932" data-h="200" data-cap="A vertex, an edge and a face selected, in that order." aria-label="1 / 2 / 3: show what it does"><kbd>1</kbd> <span class="sep">/</span> <kbd>2</kbd> <span class="sep">/</span> <kbd>3</kbd></button></td><td class="note">In Edit Mode (top row keys)</td></tr>
+        <tr><td>Add object (e.g. Lattice)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/add-menu.webp" data-w="394" data-h="553" data-cap="The Add menu." aria-label="Shift+A: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">In Object Mode</td></tr>
+        <tr><td>Shade Smooth</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/shade-smooth.webp" data-w="736" data-h="240" data-cap="The same sphere, flat and then smooth." aria-label="Right-click → Shade Smooth: show what it does"><kbd>Right-click</kbd> <span class="path">→ Shade Smooth</span></button></td><td class="note">No default key</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-navigate">Navigate</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Orbit / pan / zoom</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/navigate.webp" data-w="177" data-h="430" data-cap="The navigation gizmo: drag the axes to orbit; zoom, pan, camera and orthographic below." aria-label="Middle mouse drag · Shift+Middle mouse drag · Scroll: show what it does"><kbd>Middle mouse</kbd> drag <span class="sep">·</span> <kbd>Shift</kbd><span class="plus">+</span><kbd>Middle mouse</kbd> drag <span class="sep">·</span> <kbd>Scroll</kbd></button></td><td class="note">Or drag the gizmo at the top right of the viewport</td></tr>
+        <tr><td>Frame selected</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/frame-selected.webp" data-w="736" data-h="247" data-cap="Before and after: the view jumps to the selection." aria-label="Numpad .: show what it does"><kbd>Numpad .</kbd></button></td><td class="note">Home frames everything</td></tr>
+        <tr><td>Front / right / top view</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/view-axis.webp" data-w="560" data-h="383" data-cap="Numpad 1: Front Orthographic." aria-label="Numpad 1 / Numpad 3 / Numpad 7: show what it does"><kbd>Numpad 1</kbd> <span class="sep">/</span> <kbd>Numpad 3</kbd> <span class="sep">/</span> <kbd>Numpad 7</kbd></button></td><td class="note">Add Ctrl for the opposite side; model from references here</td></tr>
+        <tr><td>Perspective / orthographic</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/persp-ortho.webp" data-w="736" data-h="247" data-cap="The same row of cubes in perspective, then orthographic." aria-label="Numpad 5: show what it does"><kbd>Numpad 5</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Local view</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/local-view.webp" data-w="736" data-h="247" data-cap="Four objects, then only the selected sphere." aria-label="Numpad /: show what it does"><kbd>Numpad /</kbd></button></td><td class="note">Shows only the selection; press again to go back</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-transform">Transform</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Move / rotate / scale</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/grs.webp" data-w="480" data-h="320" data-cap="G, then X: the cube slides along the red X axis." aria-label="G / R / S: show what it does"><kbd>G</kbd> <span class="sep">/</span> <kbd>R</kbd> <span class="sep">/</span> <kbd>S</kbd></button></td><td class="note">Then X, Y or Z to lock an axis; type a number, Enter</td></tr>
+        <tr><td>Clear move / rotation / scale</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/clear-transforms.webp" data-w="736" data-h="240" data-cap="Before and after Alt+G, Alt+R and Alt+S." aria-label="Alt+G / Alt+R / Alt+S: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>G</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>R</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>S</kbd></button></td><td class="note">Back to the origin, unrotated, scale 1</td></tr>
+        <tr><td>Apply transforms</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-menu.webp" data-w="449" data-h="287" data-cap="The Apply menu." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Object Mode; apply the scale before you model or export</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-objects-and-interface">Objects and interface</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Duplicate</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/duplicate.webp" data-w="816" data-h="232" data-cap="The Outliner after Shift+D: Cube and Cube.001." aria-label="Shift+D: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>D</kbd></button></td><td class="note">The copy is named .001; rename it</td></tr>
+        <tr><td>Rename</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/rename.webp" data-w="627" data-h="160" data-cap="F2: the active object&#x27;s name, ready to type over." aria-label="F2: show what it does"><kbd>F2</kbd></button></td><td class="note">Ctrl+F2 renames many at once</td></tr>
+        <tr><td>Search any command</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/search.webp" data-w="720" data-h="187" data-cap="F3, then “bevel”: Bevel Edges is Ctrl B, Bevel Vertices Shift Ctrl B." aria-label="F3: show what it does"><kbd>F3</kbd></button></td><td class="note">The results show each command&#x27;s shortcut</td></tr>
+        <tr><td>Sidebar</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/sidebar.webp" data-w="561" data-h="790" data-cap="The sidebar&#x27;s Item tab." aria-label="N: show what it does"><kbd>N</kbd></button></td><td class="note">Item tab: location, rotation, scale and dimensions</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-views">Views</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Shading pie (Wireframe/Solid)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/shading-pie.webp" data-w="720" data-h="465" data-cap="The shading pie." aria-label="Z: show what it does"><kbd>Z</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Toggle full wireframe</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/wireframe.webp" data-w="480" data-h="320" data-cap="Wireframe shading." aria-label="Shift+Z: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>Z</kbd></button></td><td class="note">Edged-faces overlay has no key; use Overlays menu</td></tr>
+        <tr><td>X-ray</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/xray.webp" data-w="480" data-h="320" data-cap="X-ray on: the vertices at the back show, and can be selected." aria-label="Alt+Z: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>Z</kbd></button></td><td class="note">See and select through the mesh</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="modeling">
+    <h2>Subdivision modeling</h2>
+    <h3 id="subd-bevel"><span class="max">Chamfer</span> <span class="arrow">→</span> Bevel</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Bevel edges</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/bevel-edges.webp" data-w="480" data-h="320" data-cap="One edge, beveled with three segments." aria-label="Ctrl+B: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>B</kbd></button></td><td class="note">Scroll = segments</td></tr>
+        <tr><td>Bevel vertices</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/bevel-verts.webp" data-w="480" data-h="320" data-cap="One corner vertex, beveled." aria-label="Ctrl+Shift+B: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Shift</kbd><span class="plus">+</span><kbd>B</kbd></button></td><td class="note"></td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-loop-cut"><span class="max">Swift Loop</span> <span class="arrow">→</span> Loop Cut</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Loop cut</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-cut.webp" data-w="480" data-h="320" data-cap="Ctrl+R, scrolled to three cuts: the yellow preview before the click." aria-label="Ctrl+R: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>R</kbd></button></td><td class="note">Scroll = cuts, click, drag to slide</td></tr>
+        <tr><td>Center loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-center.webp" data-w="480" data-h="320" data-cap="The new loop, left in the middle." aria-label="Right-click during slide: show what it does"><kbd>Right-click</kbd> during slide</button></td><td class="note"></td></tr>
+        <tr><td>Slide existing loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/edge-slide.webp" data-w="480" data-h="320" data-cap="A loop slid down; it stays on the surface." aria-label="G G: show what it does"><kbd>G</kbd> <kbd>G</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Knife</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/knife.webp" data-w="480" data-h="320" data-cap="Two knife cuts, across the top face and down the front." aria-label="K: show what it does"><kbd>K</kbd></button></td><td class="note">Enter to confirm</td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-extrude">Extrude</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Extrude</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/extrude.webp" data-w="480" data-h="320" data-cap="The top face, extruded upwards." aria-label="E: show what it does"><kbd>E</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Extrude options menu</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/extrude-menu.webp" data-w="434" data-h="355" data-cap="The Extrude menu." aria-label="Alt+E: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>E</kbd></button></td><td class="note">Along Normals, Individual Faces</td></tr>
+        <tr><td>Inset</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/inset.webp" data-w="480" data-h="320" data-cap="The top face, inset." aria-label="I: show what it does"><kbd>I</kbd></button></td><td class="note"></td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-subdivision"><span class="max">TurboSmooth</span> <span class="arrow">→</span> Subdivision</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Add Subdivision level 1/2/3</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/subd-levels.webp" data-w="616" data-h="280" data-cap="The same cube at levels 1, 2 and 3, wireframe overlay on." aria-label="Ctrl+1 / 2 / 3: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>1</kbd> <span class="sep">/</span> <kbd>2</kbd> <span class="sep">/</span> <kbd>3</kbd></button></td><td class="note">Object Mode</td></tr>
+        <tr><td>Edge crease</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/crease.webp" data-w="480" data-h="320" data-cap="The top edges creased to 1: sharp on top, round below." aria-label="Shift+E: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>E</kbd></button></td><td class="note">Edit Mode, drag or type 1</td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-select-and-clean-up">Select and clean up</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Select edge loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-select.webp" data-w="480" data-h="320" data-cap="One edge loop around the cylinder." aria-label="Alt+click: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>click</kbd></button></td><td class="note">On an edge</td></tr>
+        <tr><td>Select edge ring</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/ring-select.webp" data-w="480" data-h="320" data-cap="One edge ring: the parallel edges across a band." aria-label="Ctrl+Alt+click: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Alt</kbd><span class="plus">+</span><kbd>click</kbd></button></td><td class="note">On an edge</td></tr>
+        <tr><td>Fill / make face</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/fill.webp" data-w="736" data-h="240" data-cap="Four vertices around a hole, then F." aria-label="F: show what it does"><kbd>F</kbd></button></td><td class="note">Between selected vertices or edges</td></tr>
+        <tr><td>Triangles to quads</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/tris-to-quads.webp" data-w="736" data-h="240" data-cap="A triangulated grid, then Alt+J." aria-label="Alt+J: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>J</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Recalculate normals</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/recalc-normals.webp" data-w="736" data-h="240" data-cap="Two flipped faces in red, then Shift+N." aria-label="Shift+N: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>N</kbd></button></td><td class="note">The Face Orientation overlay shows flipped faces in red</td></tr>
+        <tr><td>Find n-gons and triangles</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/faces-by-sides.webp" data-w="480" data-h="320" data-cap="Every face that isn&#x27;t a quad, selected." aria-label="Select → Select All by Trait → Faces by Sides: show what it does"><span class="path">Select → Select All by Trait → Faces by Sides</span></button></td><td class="note">Number of Vertices 4, Type Not Equal To; no default key</td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-modifiers">Modifiers</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Apply modifier (collapse)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-modifier.webp" data-w="816" data-h="521" data-cap="Hover over the panel and press Ctrl+A: the modifier becomes real geometry." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Mouse over the modifier panel</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="modifiers">
+    <h2>Modifiers</h2>
+    <article class="mod" id="mod-solidify">
+      <h3><span class="max">Shell</span> <span class="arrow">→</span> Solidify</h3>
+      <p>Gives a surface a wall. Model a thin object — a bowl, a lampshade, a leaf — as a single layer, and Solidify adds the thickness. Offset decides which side the wall grows on.</p>
+      <p class="where">Properties → Modifiers → Add Modifier → Generate → Solidify</p>
+      <div class="shots">
+        <a href="img/modifiers/solidify-view.webp"><img src="img/modifiers/solidify-view.webp" width="360" height="240" loading="lazy" alt="Solidify in the viewport"></a>
+        <a href="img/modifiers/solidify-panel.webp"><img src="img/modifiers/solidify-panel.webp" width="408" height="476" loading="lazy" alt="The Solidify settings in the Properties editor"></a>
+      </div>
+    </article>
+    <article class="mod" id="mod-lattice">
+      <h3><span class="max">FFD</span> <span class="arrow">→</span> Lattice</h3>
+      <p>Bends a mesh with a coarse cage. Move the lattice&#x27;s points in Edit Mode and the mesh follows, however dense it is.</p>
+      <p class="where">Shift+A → Lattice, then Add Modifier → Deform → Lattice, Object: the lattice</p>
+      <div class="shots">
+        <a href="img/modifiers/lattice-view.webp"><img src="img/modifiers/lattice-view.webp" width="360" height="240" loading="lazy" alt="Lattice in the viewport"></a>
+        <a href="img/modifiers/lattice-panel.webp"><img src="img/modifiers/lattice-panel.webp" width="408" height="218" loading="lazy" alt="The Lattice settings in the Properties editor"></a>
+      </div>
+    </article>
+    <article class="mod" id="mod-screw">
+      <h3><span class="max">Lathe</span> <span class="arrow">→</span> Screw</h3>
+      <p>Spins a profile around an axis. Draw half the silhouette of a vase or a bottle as a line of vertices; Screw turns it into the surface. Steps sets how smooth the turn is.</p>
+      <p class="where">Properties → Modifiers → Add Modifier → Generate → Screw</p>
+      <div class="shots">
+        <a href="img/modifiers/screw-view.webp"><img src="img/modifiers/screw-view.webp" width="360" height="240" loading="lazy" alt="Screw in the viewport"></a>
+        <a href="img/modifiers/screw-panel.webp"><img src="img/modifiers/screw-panel.webp" width="408" height="445" loading="lazy" alt="The Screw settings in the Properties editor"></a>
+      </div>
+    </article>
+    <article class="mod" id="mod-curve-bevel">
+      <h3><span class="max">Loft</span> <span class="arrow">→</span> Curve Bevel</h3>
+      <p>Sweeps a profile along a path. Draw the path as one curve and the cross-section as a second; the path&#x27;s Bevel takes the second as its shape. In Blender this is a curve setting, not a modifier.</p>
+      <p class="where">Select the path curve → Properties → Object Data → Geometry → Bevel → Object</p>
+      <div class="shots">
+        <a href="img/modifiers/curve-bevel-view.webp"><img src="img/modifiers/curve-bevel-view.webp" width="360" height="240" loading="lazy" alt="Curve Bevel in the viewport"></a>
+        <a href="img/modifiers/curve-bevel-panel.webp"><img src="img/modifiers/curve-bevel-panel.webp" width="408" height="440" loading="lazy" alt="The Curve Bevel settings in the Properties editor"></a>
+      </div>
+    </article>
+    <article class="mod" id="mod-mirror">
+      <h3><span class="max">Symmetry</span> <span class="arrow">→</span> Mirror</h3>
+      <p>Model one half, see the whole. Delete the other half and add Mirror; Clipping keeps the middle vertices on the seam, and Merge welds them.</p>
+      <p class="where">Properties → Modifiers → Add Modifier → Generate → Mirror</p>
+      <div class="shots">
+        <a href="img/modifiers/mirror-view.webp"><img src="img/modifiers/mirror-view.webp" width="360" height="240" loading="lazy" alt="Mirror in the viewport"></a>
+        <a href="img/modifiers/mirror-panel.webp"><img src="img/modifiers/mirror-panel.webp" width="408" height="333" loading="lazy" alt="The Mirror settings in the Properties editor"></a>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    <p>Blender 5.2 LTS, default keymap. Every shortcut and screenshot checked in Blender 5.2 on 26 September 2026.</p>
+  </footer>
+
+</div>
+
+<figure id="peek" hidden><img alt=""><figcaption></figcaption></figure>
+
+<script>
+  const peek = document.getElementById("peek");
+  const pimg = peek.querySelector("img");
+  const pcap = peek.querySelector("figcaption");
+  let current = null;
+
+  function place(btn) {
+    const r = btn.getBoundingClientRect();
+    const pw = peek.offsetWidth, ph = peek.offsetHeight;
+    let y = r.bottom + 8;
+    if (y + ph > innerHeight - 8) y = r.top - ph - 8;
+    y = Math.max(8, y);
+    const x = Math.min(Math.max(8, r.left), innerWidth - pw - 8);
+    peek.style.left = x + "px";
+    peek.style.top = y + "px";
+  }
+
+  function show(btn) {
+    if (current && current !== btn) current.setAttribute("aria-expanded", "false");
+    current = btn;
+    btn.setAttribute("aria-expanded", "true");
+    // the screenshots are taken at 2x UI scale: show them at half their pixel size
+    const w = btn.dataset.w / 2, h = btn.dataset.h / 2;
+    const k = Math.min(1, (Math.min(440, innerWidth - 28)) / w, (innerHeight * 0.7) / h);
+    pimg.width = Math.round(w * k);
+    pimg.height = Math.round(h * k);
+    if (pimg.getAttribute("src") !== btn.dataset.img) pimg.src = btn.dataset.img;
+    pimg.alt = btn.dataset.cap;
+    pcap.textContent = btn.dataset.cap;
+    pcap.style.maxWidth = pimg.width + "px";
+    peek.hidden = false;
+    place(btn);
+  }
+
+  function hide() {
+    if (current) current.setAttribute("aria-expanded", "false");
+    current = null;
+    peek.hidden = true;
+  }
+
+  document.querySelectorAll(".peek").forEach((btn) => {
+    btn.setAttribute("aria-expanded", "false");
+    btn.addEventListener("mouseenter", () => show(btn));
+    btn.addEventListener("mouseleave", hide);
+    btn.addEventListener("focus", () => show(btn));
+    btn.addEventListener("blur", hide);
+    btn.addEventListener("click", () => show(btn));
+  });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".peek")) hide(); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") hide(); });
+  addEventListener("scroll", () => { if (current) place(current); }, { passive: true });
+  addEventListener("resize", () => { if (current) show(current); });
+</script>
+</body>
+</html>
