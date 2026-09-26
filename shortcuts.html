@@ -132,8 +132,6 @@
     letter-spacing: -0.02em;
     margin: 26px 0 10px;
   }
-  .max { color: var(--ink-3); }
-  .arrow { color: var(--ink-3); font-family: var(--body); font-weight: 400; }
 
   /* ---------- tables ---------- */
   table {
@@ -287,8 +285,7 @@
     <h1>Blender shortcuts</h1>
     <p class="standfirst">
       The basics and the subdivision-modeling toolkit, from Blender 5.2's default keymap. Hover over a
-      shortcut, or tap it, to see what it does. Where a heading has two names, the grey one is what
-      3ds Max calls it.
+      shortcut, or tap it, to see what it does.
     </p>
     <p class="standfirst">
       No numpad or middle mouse button on your laptop? Preferences &rarr; Input &rarr; Emulate Numpad,
@@ -356,7 +353,7 @@
 
   <section id="modeling">
     <h2>Subdivision modeling</h2>
-    <h3 id="subd-bevel"><span class="max">Chamfer</span> <span class="arrow">→</span> Bevel</h3>
+    <h3 id="subd-bevel">Bevel</h3>
     <table>
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
@@ -364,7 +361,7 @@
         <tr><td>Bevel vertices</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/bevel-verts.webp" data-w="480" data-h="320" data-cap="One corner vertex, beveled." aria-label="Ctrl+Shift+B: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Shift</kbd><span class="plus">+</span><kbd>B</kbd></button></td><td class="note"></td></tr>
       </tbody>
     </table>
-    <h3 id="subd-loop-cut"><span class="max">Swift Loop</span> <span class="arrow">→</span> Loop Cut</h3>
+    <h3 id="subd-loop-cut">Loop Cut</h3>
     <table>
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
@@ -383,7 +380,7 @@
         <tr><td>Inset</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/inset.webp" data-w="480" data-h="320" data-cap="The top face, inset." aria-label="I: show what it does"><kbd>I</kbd></button></td><td class="note"></td></tr>
       </tbody>
     </table>
-    <h3 id="subd-subdivision"><span class="max">TurboSmooth</span> <span class="arrow">→</span> Subdivision</h3>
+    <h3 id="subd-subdivision">Subdivision</h3>
     <table>
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
@@ -407,7 +404,7 @@
     <table>
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Apply modifier (collapse)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-modifier.webp" data-w="816" data-h="521" data-cap="Hover over the panel and press Ctrl+A: the modifier becomes real geometry." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Mouse over the modifier panel</td></tr>
+        <tr><td>Apply modifier</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-modifier.webp" data-w="816" data-h="521" data-cap="Hover over the panel and press Ctrl+A: the modifier becomes real geometry." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Mouse over the modifier panel</td></tr>
       </tbody>
     </table>
   </section>
@@ -415,7 +412,7 @@
   <section id="modifiers">
     <h2>Modifiers</h2>
     <article class="mod" id="mod-solidify">
-      <h3><span class="max">Shell</span> <span class="arrow">→</span> Solidify</h3>
+      <h3>Solidify</h3>
       <p>Gives a surface a wall. Model a thin object — a bowl, a lampshade, a leaf — as a single layer, and Solidify adds the thickness. Offset decides which side the wall grows on.</p>
       <p class="where">Properties → Modifiers → Add Modifier → Generate → Solidify</p>
       <div class="shots">
@@ -424,7 +421,7 @@
       </div>
     </article>
     <article class="mod" id="mod-lattice">
-      <h3><span class="max">FFD</span> <span class="arrow">→</span> Lattice</h3>
+      <h3>Lattice</h3>
       <p>Bends a mesh with a coarse cage. Move the lattice&#x27;s points in Edit Mode and the mesh follows, however dense it is.</p>
       <p class="where">Shift+A → Lattice, then Add Modifier → Deform → Lattice, Object: the lattice</p>
       <div class="shots">
@@ -433,7 +430,7 @@
       </div>
     </article>
     <article class="mod" id="mod-screw">
-      <h3><span class="max">Lathe</span> <span class="arrow">→</span> Screw</h3>
+      <h3>Screw</h3>
       <p>Spins a profile around an axis. Draw half the silhouette of a vase or a bottle as a line of vertices; Screw turns it into the surface. Steps sets how smooth the turn is.</p>
       <p class="where">Properties → Modifiers → Add Modifier → Generate → Screw</p>
       <div class="shots">
@@ -442,7 +439,7 @@
       </div>
     </article>
     <article class="mod" id="mod-curve-bevel">
-      <h3><span class="max">Loft</span> <span class="arrow">→</span> Curve Bevel</h3>
+      <h3>Curve Bevel</h3>
       <p>Sweeps a profile along a path. Draw the path as one curve and the cross-section as a second; the path&#x27;s Bevel takes the second as its shape. In Blender this is a curve setting, not a modifier.</p>
       <p class="where">Select the path curve → Properties → Object Data → Geometry → Bevel → Object</p>
       <div class="shots">
@@ -451,7 +448,7 @@
       </div>
     </article>
     <article class="mod" id="mod-mirror">
-      <h3><span class="max">Symmetry</span> <span class="arrow">→</span> Mirror</h3>
+      <h3>Mirror</h3>
       <p>Model one half, see the whole. Delete the other half and add Mirror; Clipping keeps the middle vertices on the seam, and Merge welds them.</p>
       <p class="where">Properties → Modifiers → Add Modifier → Generate → Mirror</p>
       <div class="shots">

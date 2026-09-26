@@ -9,8 +9,7 @@ Published site: https://cyberhirsch.github.io/3DDesignFoundations/
 - `index.html` — course hub: software and assets, schedule, and links to everything below
 - `checklists.html` — what to hand in each week, as tick lists (14 weeks, 86 deliverables)
 - `shortcuts.html` — Blender basics and subdivision-modeling shortcuts (37), each with a screenshot
-  of what it does on hover, and five modifiers with their 3ds Max names: Solidify (Shell), Lattice
-  (FFD), Screw (Lathe), Curve Bevel (Loft), Mirror (Symmetry)
+  of what it does on hover, and five modifiers: Solidify, Lattice, Screw, Curve Bevel and Mirror
 - `img/` — the screenshots, taken in Blender 5.2 with factory settings at 2× UI scale and shown at
   half size
 

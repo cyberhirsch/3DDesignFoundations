@@ -70,11 +70,11 @@ BASICS = [
     ]),
 ]
 MODELING = [
-    ("Bevel", "Chamfer", [
+    ("Bevel", None, [
         ("Bevel edges", "Ctrl+B", "Scroll = segments", "bevel-edges", "One edge, beveled with three segments."),
         ("Bevel vertices", "Ctrl+Shift+B", "", "bevel-verts", "One corner vertex, beveled."),
     ]),
-    ("Loop Cut", "Swift Loop", [
+    ("Loop Cut", None, [
         ("Loop cut", "Ctrl+R", "Scroll = cuts, click, drag to slide", "loop-cut", "Ctrl+R, scrolled to three cuts: the yellow preview before the click."),
         ("Center loop", "Right-click during slide", "", "loop-center", "The new loop, left in the middle."),
         ("Slide existing loop", "G G", "", "edge-slide", "A loop slid down; it stays on the surface."),
@@ -85,7 +85,7 @@ MODELING = [
         ("Extrude options menu", "Alt+E", "Along Normals, Individual Faces", "extrude-menu", "The Extrude menu."),
         ("Inset", "I", "", "inset", "The top face, inset."),
     ]),
-    ("Subdivision", "TurboSmooth", [
+    ("Subdivision", None, [
         ("Add Subdivision level 1/2/3", "Ctrl+1 / 2 / 3", "Object Mode", "subd-levels", "The same cube at levels 1, 2 and 3, wireframe overlay on."),
         ("Edge crease", "Shift+E", "Edit Mode, drag or type 1", "crease", "The top edges creased to 1: sharp on top, round below."),
     ]),
@@ -99,19 +99,19 @@ MODELING = [
          "Every face that isn't a quad, selected."),
     ]),
     ("Modifiers", None, [
-        ("Apply modifier (collapse)", "Ctrl+A", "Mouse over the modifier panel", "apply-modifier", "Hover over the panel and press Ctrl+A: the modifier becomes real geometry."),
+        ("Apply modifier", "Ctrl+A", "Mouse over the modifier panel", "apply-modifier", "Hover over the panel and press Ctrl+A: the modifier becomes real geometry."),
     ]),
 ]
 MODS = [
-    ("Shell", "Solidify", "solidify", "Properties → Modifiers → Add Modifier → Generate → Solidify",
+    ("Solidify", "solidify", "Properties → Modifiers → Add Modifier → Generate → Solidify",
      "Gives a surface a wall. Model a thin object — a bowl, a lampshade, a leaf — as a single layer, and Solidify adds the thickness. Offset decides which side the wall grows on."),
-    ("FFD", "Lattice", "lattice", "Shift+A → Lattice, then Add Modifier → Deform → Lattice, Object: the lattice",
+    ("Lattice", "lattice", "Shift+A → Lattice, then Add Modifier → Deform → Lattice, Object: the lattice",
      "Bends a mesh with a coarse cage. Move the lattice's points in Edit Mode and the mesh follows, however dense it is."),
-    ("Lathe", "Screw", "screw", "Properties → Modifiers → Add Modifier → Generate → Screw",
+    ("Screw", "screw", "Properties → Modifiers → Add Modifier → Generate → Screw",
      "Spins a profile around an axis. Draw half the silhouette of a vase or a bottle as a line of vertices; Screw turns it into the surface. Steps sets how smooth the turn is."),
-    ("Loft", "Curve Bevel", "curve-bevel", "Select the path curve → Properties → Object Data → Geometry → Bevel → Object",
+    ("Curve Bevel", "curve-bevel", "Select the path curve → Properties → Object Data → Geometry → Bevel → Object",
      "Sweeps a profile along a path. Draw the path as one curve and the cross-section as a second; the path's Bevel takes the second as its shape. In Blender this is a curve setting, not a modifier."),
-    ("Symmetry", "Mirror", "mirror", "Properties → Modifiers → Add Modifier → Generate → Mirror",
+    ("Mirror", "mirror", "Properties → Modifiers → Add Modifier → Generate → Mirror",
      "Model one half, see the whole. Delete the other half and add Mirror; Clipping keeps the middle vertices on the seam, and Merge welds them."),
 ]
 
@@ -122,9 +122,8 @@ def peek(img, cap, spec):
             f'data-cap="{E(cap, quote=True)}" aria-label="{E(spec, quote=True)}: show what it does">{keys(spec)}</button>')
 
 
-def table(title, max_name, rows, anchor):
-    head = (f'<h3 id="{anchor}"><span class="max">{E(max_name)}</span> <span class="arrow">→</span> {E(title)}</h3>'
-            if max_name else f'<h3 id="{anchor}">{E(title)}</h3>')
+def table(title, rows, anchor):
+    head = f'<h3 id="{anchor}">{E(title)}</h3>'
     body = "\n".join(
         f'        <tr><td>{E(a)}</td><td class="keys">{peek(img, cap, k)}</td><td class="note">{E(n)}</td></tr>'
         for a, k, n, img, cap in rows)
@@ -142,11 +141,11 @@ def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
 
-def mod_card(mx, name, key, where, text):
+def mod_card(name, key, where, text):
     vw, vh = SIZES["modifiers/%s-view.webp" % key]
     pw, ph = SIZES["modifiers/%s-panel.webp" % key]
     return f"""    <article class="mod" id="mod-{key}">
-      <h3><span class="max">{E(mx)}</span> <span class="arrow">→</span> {E(name)}</h3>
+      <h3>{E(name)}</h3>
       <p>{E(text)}</p>
       <p class="where">{E(where)}</p>
       <div class="shots">
@@ -157,8 +156,8 @@ def mod_card(mx, name, key, where, text):
 """
 
 
-basics = "".join(table(t, m, rows, "basics-" + slug(t)) for t, m, rows in BASICS)
-modeling = "".join(table(t, m, rows, "subd-" + slug(t)) for t, m, rows in MODELING)
+basics = "".join(table(t, rows, "basics-" + slug(t)) for t, _, rows in BASICS)
+modeling = "".join(table(t, rows, "subd-" + slug(t)) for t, _, rows in MODELING)
 mods = "".join(mod_card(*m) for m in MODS)
 count = sum(len(r) for _, _, r in BASICS + MODELING)
 
