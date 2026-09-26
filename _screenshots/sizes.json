@@ -186,5 +186,165 @@
  "modifiers/mirror-panel.webp": [
   816,
   667
+ ],
+ "shortcuts/box-select.webp": [
+  480,
+  320
+ ],
+ "shortcuts/cursor.webp": [
+  480,
+  320
+ ],
+ "shortcuts/proportional.webp": [
+  480,
+  320
+ ],
+ "shortcuts/offset-loops.webp": [
+  480,
+  320
+ ],
+ "shortcuts/select-linked.webp": [
+  480,
+  320
+ ],
+ "shortcuts/shortest-path.webp": [
+  480,
+  320
+ ],
+ "shortcuts/mark-seam.webp": [
+  480,
+  320
+ ],
+ "shortcuts/brush-size.webp": [
+  480,
+  320
+ ],
+ "shortcuts/sculpt-invert.webp": [
+  480,
+  320
+ ],
+ "shortcuts/hide.webp": [
+  736,
+  240
+ ],
+ "shortcuts/set-origin.webp": [
+  736,
+  240
+ ],
+ "shortcuts/grow.webp": [
+  736,
+  240
+ ],
+ "shortcuts/dissolve.webp": [
+  736,
+  240
+ ],
+ "shortcuts/sculpt-level.webp": [
+  736,
+  240
+ ],
+ "shortcuts/select-all.webp": [
+  932,
+  200
+ ],
+ "shortcuts/camera-view.webp": [
+  560,
+  383
+ ],
+ "shortcuts/lock-camera.webp": [
+  560,
+  383
+ ],
+ "shortcuts/node-home.webp": [
+  480,
+  320
+ ],
+ "shortcuts/statistics.webp": [
+  700,
+  420
+ ],
+ "shortcuts/maximize.webp": [
+  736,
+  194
+ ],
+ "shortcuts/undo.webp": [
+  402,
+  611
+ ],
+ "shortcuts/save.webp": [
+  410,
+  943
+ ],
+ "shortcuts/render.webp": [
+  401,
+  381
+ ],
+ "shortcuts/delete.webp": [
+  392,
+  599
+ ],
+ "shortcuts/separate.webp": [
+  391,
+  230
+ ],
+ "shortcuts/collection.webp": [
+  392,
+  290
+ ],
+ "shortcuts/toolbar.webp": [
+  390,
+  509
+ ],
+ "shortcuts/field-menu.webp": [
+  518,
+  755
+ ],
+ "shortcuts/units.webp": [
+  471,
+  430
+ ],
+ "shortcuts/pack.webp": [
+  438,
+  501
+ ],
+ "shortcuts/select-similar.webp": [
+  392,
+  503
+ ],
+ "shortcuts/merge.webp": [
+  392,
+  284
+ ],
+ "shortcuts/unwrap-menu.webp": [
+  415,
+  729
+ ],
+ "shortcuts/node-add.webp": [
+  377,
+  526
+ ],
+ "shortcuts/snapping.webp": [
+  474,
+  543
+ ],
+ "shortcuts/edge-menu.webp": [
+  428,
+  800
+ ],
+ "shortcuts/snap-pie.webp": [
+  720,
+  344
+ ],
+ "shortcuts/mode-pie.webp": [
+  720,
+  427
+ ],
+ "shortcuts/import-export.webp": [
+  1008,
+  539
+ ],
+ "shortcuts/parent.webp": [
+  816,
+  232
  ]
 }

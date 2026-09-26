@@ -284,8 +284,9 @@
     <a class="back" href="index.html">&larr; 3D Design Foundations</a>
     <h1>Blender shortcuts</h1>
     <p class="standfirst">
-      The basics and the subdivision-modeling toolkit, from Blender 5.2's default keymap. Hover over a
-      shortcut, or tap it, to see what it does.
+      The basics, subdivision modeling, sculpting, UVs and the Shader Editor, from Blender 5.2's
+      default keymap. Hover over a shortcut, or tap it, to see what it does. Where there is no default
+      key, the menu path is given instead.
     </p>
     <p class="standfirst">
       No numpad or middle mouse button on your laptop? Preferences &rarr; Input &rarr; Emulate Numpad,
@@ -294,6 +295,9 @@
     <nav class="jump" aria-label="On this page">
       <a href="#basics">Basics</a>
       <a href="#modeling">Subdivision modeling</a>
+      <a href="#sculpting">Sculpting</a>
+      <a href="#uvs">UVs</a>
+      <a href="#nodes">Shader Editor</a>
       <a href="#modifiers">Modifiers</a>
     </nav>
   </header>
@@ -307,7 +311,19 @@
         <tr><td>Toggle Edit Mode</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/tab-edit.webp" data-w="480" data-h="320" data-cap="Edit Mode: the cube&#x27;s vertices, edges and faces become selectable." aria-label="Tab: show what it does"><kbd>Tab</kbd></button></td><td class="note"></td></tr>
         <tr><td>Vertex / Edge / Face mode</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/select-modes.webp" data-w="932" data-h="200" data-cap="A vertex, an edge and a face selected, in that order." aria-label="1 / 2 / 3: show what it does"><kbd>1</kbd> <span class="sep">/</span> <kbd>2</kbd> <span class="sep">/</span> <kbd>3</kbd></button></td><td class="note">In Edit Mode (top row keys)</td></tr>
         <tr><td>Add object (e.g. Lattice)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/add-menu.webp" data-w="394" data-h="553" data-cap="The Add menu." aria-label="Shift+A: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">In Object Mode</td></tr>
+        <tr><td>Undo / redo</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/undo.webp" data-w="402" data-h="611" data-cap="The Edit menu: Undo and Redo, with their keys." aria-label="Ctrl+Z / Ctrl+Shift+Z: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Z</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>Shift</kbd><span class="plus">+</span><kbd>Z</kbd></button></td><td class="note">Edit → Undo History lists every step</td></tr>
+        <tr><td>Save</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/save.webp" data-w="410" data-h="943" data-cap="The File menu: Save, Save As and Save Incremental." aria-label="Ctrl+S: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>S</kbd></button></td><td class="note">Ctrl+Shift+S saves as; Ctrl+Alt+S saves the next numbered version</td></tr>
+        <tr><td>Delete</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/delete.webp" data-w="392" data-h="599" data-cap="The Delete menu in Edit Mode." aria-label="X: show what it does"><kbd>X</kbd></button></td><td class="note">In Edit Mode it asks what: vertices, edges, faces, or dissolve</td></tr>
+        <tr><td>Hide / unhide / hide others</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/hide.webp" data-w="736" data-h="240" data-cap="Three objects, then H with the sphere selected." aria-label="H / Alt+H / Shift+H: show what it does"><kbd>H</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>H</kbd> <span class="sep">/</span> <kbd>Shift</kbd><span class="plus">+</span><kbd>H</kbd></button></td><td class="note"></td></tr>
         <tr><td>Shade Smooth</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/shade-smooth.webp" data-w="736" data-h="240" data-cap="The same sphere, flat and then smooth." aria-label="Right-click → Shade Smooth: show what it does"><kbd>Right-click</kbd> <span class="path">→ Shade Smooth</span></button></td><td class="note">No default key</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-select">Select</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Select all / none / invert</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/select-all.webp" data-w="932" data-h="200" data-cap="A, then Alt+A, then Ctrl+I with the middle cube selected." aria-label="A / Alt+A / Ctrl+I: show what it does"><kbd>A</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>A</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>I</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Box / circle select</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/box-select.webp" data-w="480" data-h="320" data-cap="B, then drag: the vertices in the box get selected." aria-label="B / C: show what it does"><kbd>B</kbd> <span class="sep">/</span> <kbd>C</kbd></button></td><td class="note">Or drag with the Select Box tool</td></tr>
       </tbody>
     </table>
     <h3 id="basics-navigate">Navigate</h3>
@@ -319,6 +335,8 @@
         <tr><td>Front / right / top view</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/view-axis.webp" data-w="560" data-h="383" data-cap="Numpad 1: Front Orthographic." aria-label="Numpad 1 / Numpad 3 / Numpad 7: show what it does"><kbd>Numpad 1</kbd> <span class="sep">/</span> <kbd>Numpad 3</kbd> <span class="sep">/</span> <kbd>Numpad 7</kbd></button></td><td class="note">Add Ctrl for the opposite side; model from references here</td></tr>
         <tr><td>Perspective / orthographic</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/persp-ortho.webp" data-w="736" data-h="247" data-cap="The same row of cubes in perspective, then orthographic." aria-label="Numpad 5: show what it does"><kbd>Numpad 5</kbd></button></td><td class="note"></td></tr>
         <tr><td>Local view</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/local-view.webp" data-w="736" data-h="247" data-cap="Four objects, then only the selected sphere." aria-label="Numpad /: show what it does"><kbd>Numpad /</kbd></button></td><td class="note">Shows only the selection; press again to go back</td></tr>
+        <tr><td>Camera view / camera to view</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/camera-view.webp" data-w="560" data-h="383" data-cap="Numpad 0: Camera Perspective, the frame your render shows." aria-label="Numpad 0 / Ctrl+Alt+Numpad 0: show what it does"><kbd>Numpad 0</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>Alt</kbd><span class="plus">+</span><kbd>Numpad 0</kbd></button></td><td class="note">Look through the camera; put the camera where you are looking from</td></tr>
+        <tr><td>Frame the camera by navigating</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/lock-camera.webp" data-w="560" data-h="383" data-cap="Camera to View on: the frame gets a dashed red border and follows your navigation." aria-label="Sidebar → View → View Lock → Camera to View: show what it does"><span class="path">Sidebar → View → View Lock → Camera to View</span></button></td><td class="note">Then orbit and zoom to frame your render; no default key</td></tr>
       </tbody>
     </table>
     <h3 id="basics-transform">Transform</h3>
@@ -326,8 +344,13 @@
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Move / rotate / scale</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/grs.webp" data-w="480" data-h="320" data-cap="G, then X: the cube slides along the red X axis." aria-label="G / R / S: show what it does"><kbd>G</kbd> <span class="sep">/</span> <kbd>R</kbd> <span class="sep">/</span> <kbd>S</kbd></button></td><td class="note">Then X, Y or Z to lock an axis; type a number, Enter</td></tr>
+        <tr><td>Snap / fine control while moving</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/snapping.webp" data-w="474" data-h="543" data-cap="The snapping options: what to snap to." aria-label="Ctrl · Shift: show what it does"><kbd>Ctrl</kbd> <span class="sep">·</span> <kbd>Shift</kbd></button></td><td class="note">Hold while moving: Ctrl snaps, Shift slows down. Shift+Tab turns snapping on</td></tr>
+        <tr><td>Proportional editing</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/proportional.webp" data-w="480" data-h="320" data-cap="O on, then G, Z: the neighbours follow inside the radius." aria-label="O: show what it does"><kbd>O</kbd></button></td><td class="note">Edit Mode: the neighbours follow; scroll to change the radius</td></tr>
         <tr><td>Clear move / rotation / scale</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/clear-transforms.webp" data-w="736" data-h="240" data-cap="Before and after Alt+G, Alt+R and Alt+S." aria-label="Alt+G / Alt+R / Alt+S: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>G</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>R</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>S</kbd></button></td><td class="note">Back to the origin, unrotated, scale 1</td></tr>
         <tr><td>Apply transforms</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-menu.webp" data-w="449" data-h="287" data-cap="The Apply menu." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Object Mode; apply the scale before you model or export</td></tr>
+        <tr><td>Place the 3D cursor</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/cursor.webp" data-w="480" data-h="320" data-cap="The 3D cursor, placed on the top face." aria-label="Shift+right-click: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>right-click</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Snap pie</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/snap-pie.webp" data-w="720" data-h="344" data-cap="The Snap pie." aria-label="Shift+S: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>S</kbd></button></td><td class="note">Cursor to Selected, Selection to Cursor</td></tr>
+        <tr><td>Set the origin (pivot)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/set-origin.webp" data-w="736" data-h="240" data-cap="The origin at a corner, then Origin to Geometry." aria-label="Right-click → Set Origin: show what it does"><kbd>Right-click</kbd> <span class="path">→ Set Origin</span></button></td><td class="note">Origin to Geometry, or to 3D Cursor; no default key</td></tr>
       </tbody>
     </table>
     <h3 id="basics-objects-and-interface">Objects and interface</h3>
@@ -335,9 +358,16 @@
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Duplicate</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/duplicate.webp" data-w="816" data-h="232" data-cap="The Outliner after Shift+D: Cube and Cube.001." aria-label="Shift+D: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>D</kbd></button></td><td class="note">The copy is named .001; rename it</td></tr>
+        <tr><td>Join / separate</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/separate.webp" data-w="391" data-h="230" data-cap="The Separate menu in Edit Mode." aria-label="Ctrl+J / P: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>J</kbd> <span class="sep">/</span> <kbd>P</kbd></button></td><td class="note">P in Edit Mode: Selection, By Material, By Loose Parts</td></tr>
+        <tr><td>Parent / clear parent</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/parent.webp" data-w="816" data-h="232" data-cap="The Outliner after Ctrl+P: Lid now sits under Vase." aria-label="Ctrl+P / Alt+P: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>P</kbd> <span class="sep">/</span> <kbd>Alt</kbd><span class="plus">+</span><kbd>P</kbd></button></td><td class="note">The child follows its parent</td></tr>
+        <tr><td>Move to collection</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/collection.webp" data-w="392" data-h="290" data-cap="The Move to Collection menu." aria-label="M: show what it does"><kbd>M</kbd></button></td><td class="note"></td></tr>
         <tr><td>Rename</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/rename.webp" data-w="627" data-h="160" data-cap="F2: the active object&#x27;s name, ready to type over." aria-label="F2: show what it does"><kbd>F2</kbd></button></td><td class="note">Ctrl+F2 renames many at once</td></tr>
         <tr><td>Search any command</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/search.webp" data-w="720" data-h="187" data-cap="F3, then “bevel”: Bevel Edges is Ctrl B, Bevel Vertices Shift Ctrl B." aria-label="F3: show what it does"><kbd>F3</kbd></button></td><td class="note">The results show each command&#x27;s shortcut</td></tr>
         <tr><td>Sidebar</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/sidebar.webp" data-w="561" data-h="790" data-cap="The sidebar&#x27;s Item tab." aria-label="N: show what it does"><kbd>N</kbd></button></td><td class="note">Item tab: location, rotation, scale and dimensions</td></tr>
+        <tr><td>Mode pie</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/mode-pie.webp" data-w="720" data-h="427" data-cap="The mode pie." aria-label="Ctrl+Tab: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Tab</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Toolbar at the mouse</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/toolbar.webp" data-w="390" data-h="509" data-cap="The toolbar, opened at the mouse, with a key for each tool." aria-label="Shift+Space: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>Space</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Maximize an area</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/maximize.webp" data-w="736" data-h="194" data-cap="The layout, then Ctrl+Space over the viewport." aria-label="Ctrl+Space: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Space</kbd></button></td><td class="note">Press again to go back</td></tr>
+        <tr><td>Copy, paste or reset a value</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/field-menu.webp" data-w="518" data-h="755" data-cap="Right-click on a field: Reset to Default is Backspace." aria-label="Ctrl+C / Ctrl+V · Backspace: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>C</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>V</kbd> <span class="sep">·</span> <kbd>Backspace</kbd></button></td><td class="note">Hover over the field; hold Alt while editing to change all selected objects</td></tr>
       </tbody>
     </table>
     <h3 id="basics-views">Views</h3>
@@ -347,6 +377,17 @@
         <tr><td>Shading pie (Wireframe/Solid)</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/shading-pie.webp" data-w="720" data-h="465" data-cap="The shading pie." aria-label="Z: show what it does"><kbd>Z</kbd></button></td><td class="note"></td></tr>
         <tr><td>Toggle full wireframe</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/wireframe.webp" data-w="480" data-h="320" data-cap="Wireframe shading." aria-label="Shift+Z: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>Z</kbd></button></td><td class="note">Edged-faces overlay has no key; use Overlays menu</td></tr>
         <tr><td>X-ray</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/xray.webp" data-w="480" data-h="320" data-cap="X-ray on: the vertices at the back show, and can be selected." aria-label="Alt+Z: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>Z</kbd></button></td><td class="note">See and select through the mesh</td></tr>
+        <tr><td>Face and vertex counts</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/statistics.webp" data-w="700" data-h="420" data-cap="Statistics on: vertices, edges, faces and triangles." aria-label="Overlays → Statistics: show what it does"><span class="path">Overlays → Statistics</span></button></td><td class="note">Top left of the viewport; no default key</td></tr>
+      </tbody>
+    </table>
+    <h3 id="basics-files-and-render">Files and render</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Import USD / export glTF</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/import-export.webp" data-w="1008" data-h="539" data-cap="The Import and Export menus." aria-label="File → Import · File → Export: show what it does"><span class="path">File → Import</span> <span class="sep">·</span> <span class="path">File → Export</span></button></td><td class="note">Universal Scene Description in, glTF 2.0 out</td></tr>
+        <tr><td>Scene units</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/units.webp" data-w="471" data-h="430" data-cap="The Units panel." aria-label="Scene Properties → Units: show what it does"><span class="path">Scene Properties → Units</span></button></td><td class="note">Unit Scale and Length: what one unit means</td></tr>
+        <tr><td>Pack textures into the .blend</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/pack.webp" data-w="438" data-h="501" data-cap="The External Data menu." aria-label="File → External Data → Pack Resources: show what it does"><span class="path">File → External Data → Pack Resources</span></button></td><td class="note">Before you hand in the .blend</td></tr>
+        <tr><td>Render / show the last render</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/render.webp" data-w="401" data-h="381" data-cap="The Render menu: Render Image F12, View Render F11." aria-label="F12 / F11: show what it does"><kbd>F12</kbd> <span class="sep">/</span> <kbd>F11</kbd></button></td><td class="note"></td></tr>
       </tbody>
     </table>
   </section>
@@ -368,6 +409,7 @@
         <tr><td>Loop cut</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-cut.webp" data-w="480" data-h="320" data-cap="Ctrl+R, scrolled to three cuts: the yellow preview before the click." aria-label="Ctrl+R: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>R</kbd></button></td><td class="note">Scroll = cuts, click, drag to slide</td></tr>
         <tr><td>Center loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-center.webp" data-w="480" data-h="320" data-cap="The new loop, left in the middle." aria-label="Right-click during slide: show what it does"><kbd>Right-click</kbd> during slide</button></td><td class="note"></td></tr>
         <tr><td>Slide existing loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/edge-slide.webp" data-w="480" data-h="320" data-cap="A loop slid down; it stays on the surface." aria-label="G G: show what it does"><kbd>G</kbd> <kbd>G</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Offset edge loops</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/offset-loops.webp" data-w="480" data-h="320" data-cap="A loop, then Ctrl+Shift+R: a new loop on each side." aria-label="Ctrl+Shift+R: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Shift</kbd><span class="plus">+</span><kbd>R</kbd></button></td><td class="note">Support loops on both sides of an edge</td></tr>
         <tr><td>Knife</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/knife.webp" data-w="480" data-h="320" data-cap="Two knife cuts, across the top face and down the front." aria-label="K: show what it does"><kbd>K</kbd></button></td><td class="note">Enter to confirm</td></tr>
       </tbody>
     </table>
@@ -388,16 +430,35 @@
         <tr><td>Edge crease</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/crease.webp" data-w="480" data-h="320" data-cap="The top edges creased to 1: sharp on top, round below." aria-label="Shift+E: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>E</kbd></button></td><td class="note">Edit Mode, drag or type 1</td></tr>
       </tbody>
     </table>
-    <h3 id="subd-select-and-clean-up">Select and clean up</h3>
+    <h3 id="subd-select">Select</h3>
     <table>
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Select edge loop</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/loop-select.webp" data-w="480" data-h="320" data-cap="One edge loop around the cylinder." aria-label="Alt+click: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>click</kbd></button></td><td class="note">On an edge</td></tr>
         <tr><td>Select edge ring</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/ring-select.webp" data-w="480" data-h="320" data-cap="One edge ring: the parallel edges across a band." aria-label="Ctrl+Alt+click: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Alt</kbd><span class="plus">+</span><kbd>click</kbd></button></td><td class="note">On an edge</td></tr>
+        <tr><td>Select linked</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/select-linked.webp" data-w="480" data-h="320" data-cap="One loose part, selected with L." aria-label="L / Ctrl+L: show what it does"><kbd>L</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>L</kbd></button></td><td class="note">L picks the part under the mouse; Ctrl+L grows the selection to whole parts</td></tr>
+        <tr><td>Grow / shrink selection</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/grow.webp" data-w="736" data-h="240" data-cap="One face, then Ctrl+Numpad Plus." aria-label="Ctrl+Numpad Plus / Ctrl+Numpad Minus: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Numpad Plus</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>Numpad Minus</kbd></button></td><td class="note"></td></tr>
+        <tr><td>Select shortest path</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/shortest-path.webp" data-w="480" data-h="320" data-cap="Two corners: everything on the shortest path between them." aria-label="Ctrl+click: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>click</kbd></button></td><td class="note">From the active element to the clicked one</td></tr>
+        <tr><td>Select similar</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/select-similar.webp" data-w="392" data-h="503" data-cap="The Select Similar menu." aria-label="Shift+G: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>G</kbd></button></td><td class="note">Same material, area, number of sides …</td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-clean-up">Clean up</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
         <tr><td>Fill / make face</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/fill.webp" data-w="736" data-h="240" data-cap="Four vertices around a hole, then F." aria-label="F: show what it does"><kbd>F</kbd></button></td><td class="note">Between selected vertices or edges</td></tr>
+        <tr><td>Dissolve</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/dissolve.webp" data-w="736" data-h="240" data-cap="A loop, then Ctrl+X: gone, and the faces stay closed." aria-label="Ctrl+X: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>X</kbd></button></td><td class="note">Removes a loop without leaving a hole; X → Edges would</td></tr>
+        <tr><td>Merge</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/merge.webp" data-w="392" data-h="284" data-cap="The Merge menu." aria-label="M: show what it does"><kbd>M</kbd></button></td><td class="note">By Distance welds duplicate vertices</td></tr>
         <tr><td>Triangles to quads</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/tris-to-quads.webp" data-w="736" data-h="240" data-cap="A triangulated grid, then Alt+J." aria-label="Alt+J: show what it does"><kbd>Alt</kbd><span class="plus">+</span><kbd>J</kbd></button></td><td class="note"></td></tr>
         <tr><td>Recalculate normals</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/recalc-normals.webp" data-w="736" data-h="240" data-cap="Two flipped faces in red, then Shift+N." aria-label="Shift+N: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>N</kbd></button></td><td class="note">The Face Orientation overlay shows flipped faces in red</td></tr>
         <tr><td>Find n-gons and triangles</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/faces-by-sides.webp" data-w="480" data-h="320" data-cap="Every face that isn&#x27;t a quad, selected." aria-label="Select → Select All by Trait → Faces by Sides: show what it does"><span class="path">Select → Select All by Trait → Faces by Sides</span></button></td><td class="note">Number of Vertices 4, Type Not Equal To; no default key</td></tr>
+      </tbody>
+    </table>
+    <h3 id="subd-menus">Menus</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Edge and face menus</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/edge-menu.webp" data-w="428" data-h="800" data-cap="The Edge menu (Ctrl+E)." aria-label="Ctrl+E / Ctrl+F: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>E</kbd> <span class="sep">/</span> <kbd>Ctrl</kbd><span class="plus">+</span><kbd>F</kbd></button></td><td class="note">Bridge Edge Loops, Mark Seam; Poke Faces, Grid Fill</td></tr>
       </tbody>
     </table>
     <h3 id="subd-modifiers">Modifiers</h3>
@@ -405,6 +466,43 @@
       <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Apply modifier</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/apply-modifier.webp" data-w="816" data-h="521" data-cap="Hover over the panel and press Ctrl+A: the modifier becomes real geometry." aria-label="Ctrl+A: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">Mouse over the modifier panel</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sculpting">
+    <h2>Sculpting &middot; Week 3</h2>
+    <h3 id="sculpt-sculpt-mode">Sculpt Mode</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Brush size / strength</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/brush-size.webp" data-w="480" data-h="320" data-cap="F: the brush radius, set with the mouse." aria-label="F / Shift+F: show what it does"><kbd>F</kbd> <span class="sep">/</span> <kbd>Shift</kbd><span class="plus">+</span><kbd>F</kbd></button></td><td class="note">Move the mouse, click to set</td></tr>
+        <tr><td>Invert / smooth a stroke</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/sculpt-invert.webp" data-w="480" data-h="320" data-cap="Two Draw strokes: the upper one plain, the lower one with Ctrl held." aria-label="Ctrl+drag / Shift+drag: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>drag</kbd> <span class="sep">/</span> <kbd>Shift</kbd><span class="plus">+</span><kbd>drag</kbd></button></td><td class="note">Ctrl carves in instead of building up; Shift smooths</td></tr>
+        <tr><td>Sculpt level</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/sculpt-level.webp" data-w="736" data-h="240" data-cap="Level 1, then Ctrl+3." aria-label="Ctrl+1 / 2 / 3 / 4 / 5: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>1</kbd> <span class="sep">/</span> <kbd>2</kbd> <span class="sep">/</span> <kbd>3</kbd> <span class="sep">/</span> <kbd>4</kbd> <span class="sep">/</span> <kbd>5</kbd></button></td><td class="note">Sets the Multires level you sculpt on, and adds levels if needed</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="uvs">
+    <h2>UVs &middot; Week 5</h2>
+    <h3 id="uv-uv-editing">UV editing</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Unwrap menu</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/unwrap-menu.webp" data-w="415" data-h="729" data-cap="The UV Mapping menu." aria-label="U: show what it does"><kbd>U</kbd></button></td><td class="note">Edit Mode: Unwrap (three methods), Smart UV Project</td></tr>
+        <tr><td>Mark a seam</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/mark-seam.webp" data-w="480" data-h="320" data-cap="Seams marked on the top edges and one corner." aria-label="Ctrl+E → Mark Seam: show what it does"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>E</kbd> <span class="path">→ Mark Seam</span></button></td><td class="note">Seams show red; unwrapping cuts along them</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="nodes">
+    <h2>Shader Editor &middot; materials</h2>
+    <h3 id="nodes-shader-editor">Shader Editor</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Add a node</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/node-add.webp" data-w="377" data-h="526" data-cap="The Add menu in the Shader Editor." aria-label="Shift+A: show what it does"><kbd>Shift</kbd><span class="plus">+</span><kbd>A</kbd></button></td><td class="note">In the Shader Editor</td></tr>
+        <tr><td>Frame all nodes</td><td class="keys"><button type="button" class="peek" data-img="img/shortcuts/node-home.webp" data-w="480" data-h="320" data-cap="Home: every node in view." aria-label="Home: show what it does"><kbd>Home</kbd></button></td><td class="note"></td></tr>
       </tbody>
     </table>
   </section>
@@ -459,7 +557,7 @@
   </section>
 
   <footer>
-    <p>Blender 5.2 LTS, default keymap. Every shortcut and screenshot checked in Blender 5.2 on 26 September 2026.</p>
+    <p>Blender 5.2 LTS, default keymap. Every shortcut and screenshot checked in Blender 5.2 on 26 and 27 September 2026.</p>
   </footer>
 
 </div>

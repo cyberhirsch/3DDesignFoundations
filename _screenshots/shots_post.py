@@ -65,10 +65,13 @@ def panel(name, bottom=None):
     return trim(im, x0=reg[0] - area[0])
 
 
-def diff_crop(name, pad=10, cap=720, largest=True):
+def diff_crop(name, pad=10, cap=720, largest=True, within=False):
     """Crop the popup that a key opened: the largest changed region between before and after."""
     a, b = load(name + "_before"), load(name)
     d = np.array(ImageChops.difference(a, b).convert("L")) > 12
+    if within:  # only changes inside the area the shot was taken over (no status bar, no headers elsewhere)
+        x, y, w, h = M[name]["area"]; H = b.height
+        keep = np.zeros_like(d); keep[H - (y + h):H - y, x:x + w] = True; d &= keep
     if largest:
         lab, n = ndimage.label(ndimage.binary_dilation(d, iterations=4))
         sizes = ndimage.sum(d, lab, range(1, n + 1))
@@ -139,6 +142,33 @@ save(panel("apply_modifier_panel"), S + "apply-modifier.webp")
 for n in ["solidify", "lattice", "screw", "curve_bevel", "mirror"]:
     save(crop("mod_%s_view" % n, 1.5, (720, 480)), "modifiers/%s-view.webp" % n.replace("_", "-"))
     save(panel("mod_%s_panel" % n, 880 if n == "curve_bevel" else None), "modifiers/%s-panel.webp" % n.replace("_", "-"))
+
+# ---- round 2 (27 September 2026)
+for n in ["box_select", "cursor", "proportional", "offset_loops", "select_linked", "shortest_path", "mark_seam",
+          "brush_size", "sculpt_invert"]:
+    save(crop(n, 1.5, (480, 320)), S + n.replace("_", "-") + ".webp")
+for n, (a, b) in {"hide": ("hide_before", "hide_after"), "set-origin": ("origin_before", "origin_after"),
+                  "grow": ("grow_before", "grow_after"), "dissolve": ("dissolve_before", "dissolve_after"),
+                  "sculpt-level": ("sculptlevel_before", "sculptlevel_after")}.items():
+    save(row([crop(a, 1.5, (360, 240)), crop(b, 1.5, (360, 240))]), S + n + ".webp")
+save(row([crop("selectall_" + k, 1.5, (300, 200)) for k in ("all", "none", "invert")]), S + "select-all.webp")
+save(crop("camera_view", size=560), S + "camera-view.webp")
+save(crop("lock_camera", size=560), S + "lock-camera.webp")
+save(crop("node_home", 1.5, (480, 320)), S + "node-home.webp")
+st = crop("statistics"); save(st.crop((0, 0, min(st.width, 700), min(st.height, 420))), S + "statistics.webp")
+save(row([load(n).resize((360, round(360 * load(n).height / load(n).width)), Image.LANCZOS)
+          for n in ("maximize_before", "maximize_after")]), S + "maximize.webp")
+for n in ["undo", "save", "render", "delete", "separate", "collection", "toolbar", "field_menu", "units",
+          "pack", "select_similar", "merge", "unwrap_menu"]:
+    save(diff_crop(n, cap=1600), S + n.replace("_", "-") + ".webp")
+save(diff_crop("node_add", cap=1600, largest=False, within=True), S + "node-add.webp")
+save(top(diff_crop("snapping", cap=1600), 0.48), S + "snapping.webp")      # Snap Base and Snap Target
+save(top(diff_crop("edge_menu", cap=1600), 0.725), S + "edge-menu.webp")     # down to Mark Seam / Clear Seam
+for n in ["snap_pie", "mode_pie"]:
+    save(diff_crop(n, largest=False), S + n.replace("_", "-") + ".webp")
+save(row([diff_crop("import", cap=1600), diff_crop("export", cap=1600)]), S + "import-export.webp")
+po = load("parent_outliner")
+save(trim(po.crop((0, 0, po.width, min(po.height, 420)))), S + "parent.webp")
 
 json.dump(OUT, open(os.path.join(HERE, "sizes.json"), "w"), indent=1)
 # contact sheet for review

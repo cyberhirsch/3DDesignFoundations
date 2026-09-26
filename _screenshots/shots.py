@@ -72,7 +72,13 @@ def clean(text=False):
     sp.overlay.show_text = text
     sp.show_region_ui = False
     sp.show_region_hud = False
-    bpy.context.scene.tool_settings.mesh_select_mode = (True, False, False)
+    sp.overlay.show_stats = False
+    sp.lock_camera = False
+    ts = bpy.context.scene.tool_settings
+    ts.mesh_select_mode = (True, False, False)
+    ts.use_proportional_edit = False
+    ts.use_snap = False
+    bpy.context.scene.cursor.location = (0, 0, 0)
 
 
 def add(kind, **kw):
@@ -205,12 +211,14 @@ def to_window(p):
     return R.x + c.x, R.y + c.y
 
 
-def menu_shot(name, press, at=None, typed=""):
+def menu_shot(name, press, at=None, typed="", nudge=0):
     """Open a menu with a simulated key over the viewport; window grabs before/after for a diff crop."""
     cx, cy = at or view_center()
     mouse_to(cx, cy); yield 0.25
     grab(name + "_before", kind="window"); yield 0.1
     press(); yield 0.5
+    if nudge:
+        mouse_to(MOUSE[0], MOUSE[1] + nudge); yield 0.4
     for ch in typed:
         ev(ch.upper(), "PRESS", unicode=ch); ev(ch.upper(), "RELEASE"); yield 0.05
     yield 0.5
@@ -747,6 +755,473 @@ def mod_mirror():
     look(dist=6.5, rot=(82, 0, 28)); yield settle()
     grab("mod_mirror_view", box=box_of([o]))
     grab("mod_mirror_panel", area=PROP, box=region_box(PROP), extra={"trim": True})
+
+
+# ---------------------------------------------------------------- round 2 (27 September 2026)
+def bind(idname, **props):
+    """A spare key (F20) bound for the run only, so menus and panels without a key open at the mouse."""
+    km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name="Window", space_type="EMPTY", region_type="WINDOW")
+    kmi = km.keymap_items.new(idname, "F20", "PRESS")
+    for k, v in props.items():
+        setattr(kmi.properties, k, v)
+    return km, kmi
+
+
+def popup_shot(shot_name, idname, at=None, nudge=0, **props):
+    km, kmi = bind(idname, **props)
+    try:
+        yield from menu_shot(shot_name, lambda: key("F20"), at=at, nudge=nudge)
+    finally:
+        km.keymap_items.remove(kmi)
+
+
+def upper_left():
+    cx, cy = view_center()
+    return cx - 350, cy + 330
+
+
+def objects_row():
+    return [add("cube", size=1.6, location=(-2.6, 0, 0)), add("uv_sphere", radius=0.95, location=(0, 0, 0)),
+            add("monkey", size=1.7, location=(2.6, 0, 0))]
+
+
+@shot
+def undo():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("undo", "wm.call_menu", at=upper_left(), name="TOPBAR_MT_edit")
+
+
+@shot
+def save():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("save", "wm.call_menu", at=upper_left(), nudge=46, name="TOPBAR_MT_file")
+
+
+@shot
+def render_menu():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("render", "wm.call_menu", at=upper_left(), name="TOPBAR_MT_render")
+
+
+@shot
+def delete_menu():
+    o = cube_edit("FACE"); bm_select(o, "F", lambda f: f.normal.z > .9); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("delete", lambda: key("X"), at=(cx - 150, cy + 250))
+
+
+@shot
+def hide():
+    clean(); objs = objects_row(); only(objs[1]); look(dist=11, rot=(66, 0, 12)); yield settle()
+    box = box_of(objs, pad=60)
+    grab("hide_before", box=box)
+    op(bpy.ops.object.hide_view_set, unselected=False); yield settle()
+    grab("hide_after", box=box)
+
+
+@shot
+def select_all():
+    clean(); objs = [add("cube", size=1.6, location=(x, 0, 0)) for x in (-2.4, 0, 2.4)]
+    look(dist=11, rot=(66, 0, 12))
+    steps = [("all", lambda: op(bpy.ops.object.select_all, action="SELECT")),
+             ("none", lambda: op(bpy.ops.object.select_all, action="DESELECT")),
+             ("invert", lambda: (only(objs[1]), op(bpy.ops.object.select_all, action="INVERT")))]
+    for tag, fn in steps:
+        fn(); yield settle()
+        grab("selectall_" + tag, box=box_of(objs, pad=50))
+
+
+@shot
+def box_select():
+    clean(); o = add("grid", x_subdivisions=7, y_subdivisions=7, size=3); only(o); mode("EDIT", "VERT")
+    op(bpy.ops.mesh.select_all, action="DESELECT")
+    look(dist=7, rot=(40, 0, 20)); yield settle()
+    x1, y1 = to_window((-1.3, 0.9, 0)); x2, y2 = to_window((0.4, -0.5, 0))
+    mouse_to(x1, y1); yield 0.2
+    key("B"); yield 0.3
+    ev("LEFTMOUSE", "PRESS"); yield 0.1
+    mouse_to((x1 + x2) / 2, (y1 + y2) / 2); yield 0.1
+    mouse_to(x2, y2); yield 0.4
+    grab("box_select", box=box_of([o], pad=40))
+    ev("LEFTMOUSE", "RELEASE"); yield 0.2
+    key("ESC"); yield 0.2
+
+
+def camera_scene():
+    clean(text=True); o = add("monkey", size=2); only(o)
+    cam_data = bpy.data.cameras.new("Camera"); cam = bpy.data.objects.new("Camera", cam_data)
+    bpy.context.collection.objects.link(cam)
+    cam.location = (4.2, -5.4, 2.6)
+    cam.rotation_euler = Euler((math.radians(72), 0, math.radians(38)), "XYZ")
+    bpy.context.scene.camera = cam
+    look(dist=12)
+    return o, cam
+
+
+@shot
+def camera_view():
+    o, cam = camera_scene(); op(bpy.ops.view3d.view_camera); yield settle()
+    grab("camera_view", box=region_box())
+
+
+@shot
+def lock_camera():
+    o, cam = camera_scene(); op(bpy.ops.view3d.view_camera)
+    space().lock_camera = True; yield settle()
+    grab("lock_camera", box=region_box())
+
+
+@shot
+def snapping():
+    clean(); o = add("cube", size=2); only(o); look(dist=11)
+    bpy.context.scene.tool_settings.use_snap = True; yield settle()
+    yield from popup_shot("snapping", "wm.call_panel", at=upper_left(), name="VIEW3D_PT_snapping", keep_open=True)
+
+
+@shot
+def proportional():
+    clean(); o = add("grid", x_subdivisions=24, y_subdivisions=24, size=4); only(o); mode("EDIT", "VERT")
+    bm_select(o, "V", lambda v: v.co.length < 0.09)
+    ts = bpy.context.scene.tool_settings
+    ts.use_proportional_edit = True; ts.proportional_size = 1.3
+    look(dist=9, rot=(58, 0, 25)); yield settle()
+    wx, wy = to_window((0, 0, 0)); mouse_to(wx, wy); yield 0.3
+    key("G"); yield 0.2
+    key("Z"); yield 0.2
+    mouse_to(wx, wy + 90); yield 0.1
+    mouse_to(wx, wy + 170); yield 0.5
+    grab("proportional", box=box_of([o], pts=[(0, 0, 1.4)], pad=30)); yield 0.1
+    key("ESC"); yield 0.3
+
+
+@shot
+def cursor():
+    clean(); o = add("cube", size=2); only(o)
+    bpy.context.scene.cursor.location = (0.35, -0.3, 1.0)
+    space().overlay.show_cursor = True
+    op(bpy.ops.object.select_all, action="DESELECT")
+    look(); yield settle()
+    grab("cursor", box=box_of([o]))
+
+
+@shot
+def snap_pie():
+    clean(); o = add("cube", size=2); only(o); look(dist=9); yield settle()
+    yield from menu_shot("snap_pie", lambda: key("S", shift=True))
+
+
+@shot
+def set_origin():
+    clean(); o = add("cube", size=2); only(o); mode("EDIT", "VERT")
+    op(bpy.ops.mesh.select_all, action="SELECT")
+    op(bpy.ops.transform.translate, value=(1, 1, 1)); mode("OBJECT")
+    look(target=(1, 1, 0.8), dist=9); yield settle()
+    box = box_of([o], pts=[(0, 0, 0)], pad=60)
+    grab("origin_before", box=box)
+    op(bpy.ops.object.origin_set, type="ORIGIN_GEOMETRY"); yield settle()
+    grab("origin_after", box=box)
+
+
+def two_islands():
+    clean(); a = add("cube", size=1.6, location=(-1.4, 0, 0)); b = add("uv_sphere", radius=0.9, location=(1.4, 0, 0))
+    for x in (a, b):
+        x.select_set(True)
+    bpy.context.view_layer.objects.active = a
+    op(bpy.ops.object.join)
+    o = bpy.context.view_layer.objects.active
+    mode("EDIT", "VERT")
+    return o
+
+
+@shot
+def separate():
+    o = two_islands(); bm_select(o, "V", lambda v: v.co.x > 0.3); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("separate", lambda: key("P"), at=(cx - 150, cy + 200))
+
+
+@shot
+def select_linked():
+    o = two_islands(); bm_select(o, "V", lambda v: v.co.x > 0.3)
+    look(dist=9, rot=(64, 0, 12)); yield settle()
+    grab("select_linked", box=box_of([o]))
+
+
+@shot
+def parent():
+    clean(); vase = add("cylinder", radius=0.8, depth=2); vase.name = "Vase"
+    lid = add("cylinder", radius=0.85, depth=0.2, location=(0, 0, 1.15)); lid.name = "Lid"
+    for x in (vase, lid):
+        x.select_set(True)
+    bpy.context.view_layer.objects.active = vase
+    op(bpy.ops.object.parent_set, type="OBJECT")
+    OUT.spaces.active.use_filter_object_content = False; yield settle()
+    for _ in range(2):
+        with ov(OUT):
+            bpy.ops.outliner.show_one_level(open=True)
+        yield settle()
+    grab("parent_outliner", area=OUT)
+
+
+@shot
+def collection_menu():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("collection", lambda: key("M"), at=(cx - 150, cy + 200))
+
+
+@shot
+def mode_pie():
+    clean(); o = add("cube", size=2); only(o); look(dist=9); yield settle()
+    yield from menu_shot("mode_pie", lambda: key("TAB", ctrl=True))
+
+
+@shot
+def toolbar_popup():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("toolbar", lambda: key("SPACE", shift=True), at=(cx - 250, cy + 150))
+
+
+@shot
+def maximize():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    grab("maximize_before", kind="window")
+    with ov():
+        bpy.ops.screen.screen_full_area()
+    areas(); yield 0.6
+    grab("maximize_after", kind="window")
+    with ov():
+        bpy.ops.screen.back_to_previous()
+    areas(); yield 0.6
+
+
+@shot
+def field_menu():
+    clean(); o = add("cube", size=2); only(o); o.location = (0.5, 0, 0)
+    space().show_region_ui = True; look(dist=11); yield settle()
+    ui = next(r for r in A.regions if r.type == "UI")
+    mouse_to(ui.x + 300, ui.y + ui.height - 130); yield 0.3
+    grab("field_menu_before", kind="window"); yield 0.1
+    key("RIGHTMOUSE"); yield 0.7
+    grab("field_menu", kind="window", extra={"diff": "field_menu_before"}); yield 0.1
+    key("ESC"); yield 0.3
+
+
+@shot
+def statistics():
+    clean(text=True); o = add("monkey", size=2); only(o)
+    space().overlay.show_stats = True; look(dist=8); yield settle()
+    grab("statistics", box=region_box())
+
+
+@shot
+def import_export():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("import", "wm.call_menu", at=upper_left(), name="TOPBAR_MT_file_import")
+    yield from popup_shot("export", "wm.call_menu", at=upper_left(), name="TOPBAR_MT_file_export")
+
+
+@shot
+def units():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("units", "wm.call_panel", at=upper_left(), name="SCENE_PT_unit", keep_open=True)
+
+
+@shot
+def pack():
+    clean(); o = add("cube", size=2); only(o); look(dist=11); yield settle()
+    yield from popup_shot("pack", "wm.call_menu", at=upper_left(), name="TOPBAR_MT_file_external_data")
+
+
+@shot
+def offset_loops():
+    o = cube_edit("EDGE"); loopcut(o, 1)
+    op(bpy.ops.mesh.offset_edge_loops_slide, MESH_OT_offset_edge_loops={"use_cap_endpoint": False},
+       TRANSFORM_OT_edge_slide={"value": 0.45})
+    look(); yield settle()
+    grab("offset_loops", box=box_of([o]))
+
+
+@shot
+def grow():
+    clean(); o = add("grid", x_subdivisions=6, y_subdivisions=6, size=3.6); only(o); mode("EDIT", "FACE")
+    bm_select(o, "F", lambda f: f.calc_center_median().length < 0.35)
+    look(dist=7.5, rot=(45, 0, 25)); yield settle()
+    box = box_of([o], pad=30)
+    grab("grow_before", box=box)
+    op(bpy.ops.mesh.select_more); yield settle()
+    grab("grow_after", box=box)
+
+
+@shot
+def shortest_path():
+    clean(); o = add("grid", x_subdivisions=6, y_subdivisions=6, size=3.6); only(o); mode("EDIT", "VERT")
+    bm = bmesh.from_edit_mesh(o.data); deselect_all(bm)
+    vs = sorted(bm.verts, key=lambda v: (v.co.x + v.co.y))
+    a, b = vs[0], vs[-1]
+    a.select = True; b.select = True
+    bm.select_history.clear(); bm.select_history.add(a); bm.select_history.add(b)
+    bmesh.update_edit_mesh(o.data)
+    op(bpy.ops.mesh.shortest_path_select)
+    look(dist=7.5, rot=(45, 0, 25)); yield settle()
+    grab("shortest_path", box=box_of([o], pad=30))
+
+
+@shot
+def select_similar():
+    o = cube_edit("FACE"); bm_select(o, "F", lambda f: f.normal.z > .9); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("select_similar", lambda: key("G", shift=True), at=(cx - 150, cy + 250))
+
+
+@shot
+def dissolve():
+    o = ring_cylinder()
+    zs = sorted({round(v.co.z, 3) for v in bmesh.from_edit_mesh(o.data).verts})
+    z0 = zs[1]
+    bm_select(o, "E", lambda e: all(abs(c.z - z0) < 1e-3 for c in ez(e)))
+    look(dist=8, rot=(65, 0, 30)); yield settle()
+    box = box_of([o])
+    grab("dissolve_before", box=box)
+    op(bpy.ops.mesh.dissolve_mode); yield settle()
+    grab("dissolve_after", box=box)
+
+
+@shot
+def merge_menu():
+    o = cube_edit("VERT"); bm_select(o, "V", lambda v: v.co.z > .9); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("merge", lambda: key("M"), at=(cx - 150, cy + 250))
+
+
+@shot
+def edge_menu():
+    o = cube_edit("EDGE"); bm_select(o, "E", lambda e: all(c.z > .9 and c.y < -.9 for c in ez(e)))
+    look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("edge_menu", lambda: key("E", ctrl=True), at=(cx - 250, cy + 330))
+
+
+def sculpt_sphere(level=2, segments=32, rings=16):
+    clean(); o = add("uv_sphere", segments=segments, ring_count=rings, radius=1.4); only(o)
+    op(bpy.ops.object.shade_smooth)
+    m = o.modifiers.new("Multires", "MULTIRES")
+    for _ in range(3):
+        op(bpy.ops.object.multires_subdivide, modifier="Multires", mode="CATMULL_CLARK")
+    m.sculpt_levels = level
+    mode("SCULPT")
+    return o, m
+
+
+def hide_shelf():
+    for r in A.regions:
+        log("region", r.type, r.height)
+    if any(r.type == "ASSET_SHELF" and r.height > 1 for r in A.regions):
+        with ov():
+            bpy.ops.screen.region_toggle(region_type="ASSET_SHELF")
+
+
+@shot
+def brush_size():
+    o, m = sculpt_sphere(); look(target=(0, 0, -0.6), dist=8.5); yield settle(); hide_shelf(); yield settle()
+    wx, wy = to_window((0, 0, 0)); mouse_to(wx, wy); yield 0.3
+    key("F"); yield 0.3
+    mouse_to(wx + 60, wy + 20); yield 0.5
+    grab("brush_size", box=box_of([o], pad=90)); yield 0.1
+    key("ESC"); yield 0.3
+
+
+@shot
+def sculpt_invert():
+    o, m = sculpt_sphere(3); look(target=(0, 0, -0.2), dist=7, rot=(80, 0, 0)); yield settle(); hide_shelf(); yield settle()
+    for ctrl, z in ((False, 0.45), (False, 0.45), (True, -0.45), (True, -0.45)):
+        x1, y1 = to_window((-0.9, -1.2, z)); x2, y2 = to_window((0.9, -1.2, z))
+        mouse_to(x1, y1); yield 0.2
+        ev("LEFTMOUSE", "PRESS", ctrl=ctrl); yield 0.05
+        for i in range(1, 25):
+            t = i / 24
+            mouse_to(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t); yield 0.02
+        ev("LEFTMOUSE", "RELEASE", ctrl=ctrl); yield 0.3
+    grab("sculpt_invert", box=box_of([o]))
+
+
+@shot
+def sculpt_level():
+    o, m = sculpt_sphere(1, segments=8, rings=4); space().overlay.show_wireframes = True
+    look(target=(0, 0, -0.6), dist=7); yield settle(); hide_shelf(); yield settle()
+    box = box_of([o])
+    grab("sculptlevel_before", box=box)
+    op(bpy.ops.object.subdivision_set, level=3, relative=False); yield settle()
+    grab("sculptlevel_after", box=box)
+
+
+@shot
+def unwrap_menu():
+    o = cube_edit("FACE"); op(bpy.ops.mesh.select_all, action="SELECT"); look(dist=11); yield settle()
+    cx, cy = view_center()
+    yield from menu_shot("unwrap_menu", lambda: key("U"), at=(cx - 150, cy + 250))
+
+
+@shot
+def mark_seam():
+    o = cube_edit("EDGE")
+    bm_select(o, "E", lambda e: all(c.z > .9 for c in ez(e)) or all(c.x > .9 and c.y < -.9 for c in ez(e)))
+    op(bpy.ops.mesh.mark_seam, clear=False); select_none(o)
+    look(); yield settle()
+    grab("mark_seam", box=box_of([o]))
+
+
+def to_nodes():
+    """Turn the 3D view into a Shader Editor showing a small material."""
+    clean(); o = add("uv_sphere", radius=1); only(o)
+    mat = bpy.data.materials.new("Ceramic"); mat.use_nodes = True
+    nt = mat.node_tree; bsdf = nt.nodes.get("Principled BSDF")
+    tex = nt.nodes.new("ShaderNodeTexImage"); tex.location = (-420, 260)
+    nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    o.data.materials.append(mat)
+    A.type = "NODE_EDITOR"; A.ui_type = "ShaderNodeTree"
+    A.spaces.active.show_region_ui = False
+    return o
+
+
+def back_to_3d():
+    A.type = "VIEW_3D"
+    areas()
+
+
+@shot
+def node_home():
+    to_nodes(); yield 0.4
+    reg = next(r for r in A.regions if r.type == "WINDOW")
+    with bpy.context.temp_override(window=W, screen=W.screen, area=A, region=reg):
+        bpy.ops.node.view_all()
+    yield 0.6
+    ox, oy = reg.x - A.x, reg.y - A.y
+    nodes = A.spaces.active.edit_tree.nodes
+    k = bpy.context.preferences.view.ui_scale  # node locations are drawn scaled by the UI scale
+    xs, ys = [], []
+    for n in nodes:
+        x0, y0 = n.location.x * k, n.location.y * k
+        for vx, vy in ((x0, y0), (x0 + n.dimensions.x, y0 - n.dimensions.y)):
+            rx, ry = reg.view2d.view_to_region(vx, vy, clip=False)
+            xs.append(rx); ys.append(ry)
+    pad = 60
+    grab("node_home", area=A, box=[ox + min(xs) - pad, A.height - (oy + max(ys)) - pad,
+                                   ox + max(xs) + pad, A.height - (oy + min(ys)) + pad])
+    back_to_3d(); yield 0.3
+
+
+@shot
+def node_add():
+    to_nodes(); yield 0.6
+    reg = next(r for r in A.regions if r.type == "WINDOW")
+    mouse_to(reg.x + 240, reg.y + reg.height // 2 + 330); yield 0.3
+    grab("node_add_before", kind="window"); yield 0.1
+    key("A", shift=True); yield 0.7
+    grab("node_add", kind="window", extra={"diff": "node_add_before"}); yield 0.1
+    key("ESC"); yield 0.3
+    back_to_3d(); yield 0.3
 
 
 # ---------------------------------------------------------------- runner
