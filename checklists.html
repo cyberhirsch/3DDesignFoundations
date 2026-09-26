@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Submission Checklists · 3D Design Foundations</title>
+<meta name="description" content="What to hand in each week — 3D Design Foundations, Smart Interactive Media.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --done: #1B7A4B;
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --done: #4ECB8A;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --done: #4ECB8A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---------- sticky nav ---------- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+    margin-bottom: 34px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .jump { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 4px 7px;
+    min-width: 28px;
+    text-align: center;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+  .jump a.complete { color: var(--done); border-color: var(--done); }
+
+  .overall {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .overall b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- week blocks ---------- */
+  .week {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 22px;
+    margin-bottom: 14px;
+    scroll-margin-top: 74px;
+  }
+
+  .week-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .week-no {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .week-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+  }
+  .count.complete { color: var(--done); }
+
+  .week h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+  }
+
+  .brief {
+    font-size: 14px;
+    color: var(--ink-2);
+    margin: 0 0 16px;
+    text-wrap: pretty;
+  }
+
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 3px 7px;
+  }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+
+  .tool-link {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 6px 10px;
+    margin-bottom: 16px;
+  }
+  .tool-link:hover { background: var(--accent); color: var(--accent-ink); }
+
+  /* ---------- checklist items ---------- */
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+
+  li label {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 8px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 15px;
+    text-wrap: pretty;
+  }
+  li label:hover { background: var(--ground); }
+
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: 17px;
+    height: 17px;
+    margin: 3px 0 0;
+    border: 1.5px solid var(--ink-3);
+    border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+  }
+  input[type="checkbox"]:checked {
+    background: var(--done);
+    border-color: var(--done);
+  }
+  input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4.5px;
+    top: 1px;
+    width: 4px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  input[type="checkbox"]:checked + span { color: var(--ink-3); text-decoration: line-through; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 34px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Submission checklists</h1>
+    <p class="standfirst">
+      Exactly what to hand in each week. Tick items off as you finish them — your ticks are
+      saved in this browser, on this device only, so nothing is submitted from this page and
+      nobody else sees it. Use it as a last check before you upload.
+    </p>
+  </header>
+
+  <div class="nav">
+    <div class="jump" id="jump"></div>
+    <div class="overall"><b id="doneCount">0</b> / <span id="totalCount">0</span> done</div>
+  </div>
+
+  <div id="weeks"></div>
+
+  <footer>
+    <button id="reset">Clear all ticks</button>
+    <span>Saved on this device only.</span>
+  </footer>
+
+</div>
+
+<script>
+  // Items follow the course's homework document. When one changes, change the other.
+  const WEEKS = [
+    {
+      n: 1, topic: "Coordinate Systems & The USD Pipeline",
+      theory: "Importing Assets, Shading, and Rendering",
+      brief: "Bring one asset in, find what arrived wrong, repair it — and prove the export still works.",
+      items: [
+        "Three objects for your semester scene, each with a front and a side view you could model from",
+        "One USD asset downloaded, or the fallback boombox from class — creator, source URL and licence recorded",
+        "Imported into your project folders (/Assets, /Scans, /Scene, /Renders), with the first import saved as v001",
+        "The four audit passes run: hierarchy and names, scale and transforms, geometry and normals, materials and textures",
+        "Everything broken repaired, each repair saved as a new version, warnings screenshotted before you dismissed them",
+        "A clear still, PNG or JPG, of a simple inspection scene: a ground plane and a neutral camera — Blender's default light is enough",
+        "A .glb delivery copy, checked with the Khronos glTF Validator and opened in a second viewer (Babylon.js Sandbox or glTF Viewer)",
+        "The audit note: source and licence, what arrived wrong, what you repaired, and what the GLB lost",
+        "The scene file with its textures packed (Blender: File → External Data → Pack Resources), or the whole project folder zipped with relative texture paths"
+      ]
+    },
+    {
+      n: 2, topic: "Subdivision Surface Modeling",
+      theory: "Mastering Edge Flow and Topology",
+      brief: "One of your three objects in clean quads — and the curves have to hold at level 2.",
+      items: [
+        "A real-world designer object — one of your three from Week 1 — with a clean orthographic front or side profile, found or drawn",
+        "The profile imported as a reference image",
+        "A low-poly block-out in clean, quad-only topology, with your support loops and bevels planned",
+        "A Subdivision Surface modifier at level 2, to test how the curves hold",
+        "The model checked against the 15 SubD modeling maxims from class",
+        "Your .blend, or your program's scene file, showing both the low-poly wireframe and the subdivided result"
+      ]
+    },
+    {
+      n: 3, topic: "Digital Sculpting & Organic Detail",
+      theory: "Transitioning from Geometry to Digital Clay",
+      brief: "Give your SubD model a history: chips, dents and cracks in digital clay.",
+      items: [
+        "Your Week 2 SubD model duplicated, with the base Subdivision modifier applied for a mid-poly base",
+        "A Multiresolution modifier, with realistic physical detail sculpted in: edge chipping, surface dents, cracks or hand-carved texture",
+        "A high-resolution viewport render that shows the detail clearly",
+        "Your .blend, or your program's scene file, with the multires sculpt",
+        "The sculpt kept safe: it is one of your two high-poly sources in Week 5"
+      ]
+    },
+    {
+      n: 4, topic: "Photogrammetry (Object Scanning)",
+      theory: "Digitizing the Real World",
+      brief: "Photograph a real object from every side and bring it back as a clean, textured mesh.",
+      items: [
+        "A physical object with real surface texture: a rock, an old tree stump, a vintage boot, a stone ornament",
+        "50 to 100 high-resolution photos, with full 360° coverage from several heights",
+        "Processed into a textured 3D mesh",
+        "The mesh cleaned and exported with its texture",
+        "One zip: the low-res processed mesh as .fbx, its texture map, and three photos from your capture session"
+      ]
+    },
+    {
+      n: 5, topic: "PBR, Baking & Automatic Retopology",
+      theory: "Optimizing Assets for Real-Time Engines",
+      brief: "Your sculpt and your scan get the same automatic treatment. Which one survives it better, and why?",
+      items: [
+        "A low-poly version of each high-poly source — the Week 3 sculpt and the Week 4 scan — by automatic retopology",
+        "The target polygon count for each, chosen deliberately and noted",
+        "Both unwrapped automatically and checked for stretching and overlapping islands — re-run with other settings if the first attempt is poor",
+        "Screenshots of both UV maps",
+        "One paragraph: which source gave the better automatic result, and why",
+        "One base-color texture and one data map imported, their color-space settings verified, with a screenshot of the correct interpretation",
+        "A short color-space audit naming the color texture, the data map and their import settings",
+        "High- and low-poly versions of both assets exported, as .obj or .fbx",
+        "Both low-poly .fbx files, with their UV layouts, in your hand-in"
+      ]
+    },
+    {
+      n: 6, topic: "Substance Painter Workflow",
+      theory: "Layer-Based Texturing & Material Expression",
+      brief: "Bake the detail down, then let edge wear and dust go where they would really collect.",
+      items: [
+        "Your low-poly mesh with the high-poly detail baked onto it",
+        "The bake checked for artifacts",
+        "A custom material stack built from fill layers and black masks",
+        "A base material, with a generator such as Curvature or Dirt driving a subtle edge-wear layer",
+        "A dust-accumulation layer that follows your model's baked geometry",
+        "A screenshot of your model showing the baked normal detail and your custom mask layers"
+      ]
+    },
+    {
+      n: 7, topic: "AI-Driven Texturing & PBR Maps",
+      theory: "Integrating Generative AI into Material Pipelines",
+      brief: "A texture no library has, made tileable, with the maps to behave like a real material.",
+      items: [
+        "A unique custom texture generated with Gen AI — a specific fabric, an ancient tile pattern or a rusted metal sheet, for example",
+        "Tileable: no visible seam where it repeats",
+        "Matching normal, roughness and height maps generated from it",
+        "The maps imported into your texturing project and applied to a section of your asset",
+        "The original AI-generated texture and the generated normal map",
+        "A render of the texture applied to your asset"
+      ]
+    },
+    {
+      n: 8, topic: "Gaussian Splatting (Scene Backgrounds)",
+      theory: "Volumetric Space Capture",
+      brief: "Capture a place instead of modeling one.",
+      items: [
+        "An environment chosen: a garden corner, a street alley, an old room",
+        "A continuous, stable smartphone video of one to two minutes, walking slow concentric circles with the camera pointed inward",
+        "Processed into a Gaussian splat scene",
+        "The splat exported, typically as .ply or .splat — or shared as a link to your online viewer",
+        "A screenshot of the captured scene"
+      ]
+    },
+    {
+      n: 9, topic: "Virtual Cinematography",
+      theory: "Framing, Lighting, and Lenses in 3D Space",
+      brief: "Take three great shots apart, then rebuild one of them in 3D.",
+      items: [
+        "Three cinematic movie shots or high-end architectural renders, found online",
+        "Each analyzed: composition lines drawn over it, the focal point and the light sources marked",
+        "For each, your estimate of the focal length and the depth of field",
+        "One of them rebuilt as a primitive blockout with a virtual camera, matching its camera angle and lighting",
+        "Your analysis sketches or images, and a render of the rebuilt layout"
+      ]
+    },
+    {
+      n: 10, topic: "USD Stage & Scene Assembly",
+      theory: "Non-Destructive Assembly in Unreal Engine 5",
+      brief: "Everything you have made so far, in one Unreal scene and at one scale.",
+      items: [
+        "A new Unreal Engine 5 project: Blank template, no starter content, ray tracing enabled",
+        "The USD Importer plugin enabled",
+        "Imported: your custom-modeled hero asset (Weeks 2–3 and 5–7), your photogrammetry asset (Week 4) and your Gaussian splat background (Week 8)",
+        "Assembled into one cohesive scene, at matching, correct scales",
+        "A screenshot of the Outliner showing the file structure",
+        "A viewport capture of the assembled scene"
+      ]
+    },
+    {
+      n: 11, topic: "Real-Time Shading & Lumen",
+      theory: "Mastering Unreal Engine's Light & Materials",
+      brief: "Your textures in the engine, a sun and a sky, and Lumen doing the bounce.",
+      items: [
+        "Your exported texture maps imported into Unreal Engine",
+        "Parent materials and material instances for your main asset, with Albedo, Normal, Roughness and Metallic assigned correctly",
+        "Lighting set up: a Directional Light (sun), a Sky Light (ambient) and a Sky Atmosphere",
+        "Lumen set to high or epic quality in a Post-Process Volume",
+        "A screenshot in Lit mode: the textured asset in its environment",
+        "A screenshot in Detail Lighting mode: geometry and light bounce only"
+      ]
+    },
+    {
+      n: 12, topic: "Atmospheric Storytelling",
+      theory: "Volumetrics, Post-Processing, and Mood",
+      brief: "Fog, light shafts and a grade that give your scene one clear mood.",
+      items: [
+        "Exponential Height Fog added to your assembled scene, with Volumetric Fog enabled",
+        "The sun or spotlights adjusted to cast light shafts through the fog",
+        "A Post-Process Volume set to Infinite Extent",
+        "Exposure set to manual or a strict range, and the bloom tuned",
+        "A color grade — contrast, color temperature — that creates one specific mood: a mysterious morning, a dusty noon, a neon night",
+        "One comparison image: your scene before and after the fog and post-processing"
+      ]
+    },
+    {
+      n: 13, topic: "Final Project: Layout & Scene Setup",
+      theory: "Framing the Hero Asset",
+      brief: "A camera, a Level Sequence, and five to ten slow seconds that lead the eye.",
+      items: [
+        "Your final scene layout refined, with every component in it: the hero asset (Weeks 6–7), the scan (Week 4) and the background environment (Week 8)",
+        "A Cine Camera Actor in your scene",
+        "A Level Sequence with a slow cinematic camera move — a pan or a tracking shot — over 5–10 seconds",
+        "The camera's manual focus distance keyframed to track the hero asset",
+        "A low-resolution viewport preview video of the sequence"
+      ]
+    },
+    {
+      n: 14, topic: "Final Project: Rendering & Post-Production", final: true,
+      theory: "High-End Output and Presentation",
+      brief: "The final critique: every render on the big screen. Nothing is handed in afterwards.",
+      items: [
+        "The Movie Render Queue configured, with anti-aliasing overrides against real-time noise — for example 1 spatial and 8 temporal samples",
+        "Your 5–10 second sequence rendered out as an image sequence",
+        "Edited in a video editor, with a title card and simple sound design",
+        "Exported as a high-quality .mp4: 1080p or 4K, H.264 or H.265",
+        "Two high-quality still renders",
+        "A wireframe overlay",
+        "A breakdown of the assets"
+      ]
+    }
+  ];
+
+  const KEY = "3ddf-checklists-v1";
+  const $ = (id) => document.getElementById(id);
+  let state = {};
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      state = (parsed && typeof parsed === "object") ? parsed : {};
+    } catch (e) { state = {}; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* private mode */ }
+  }
+
+  const idFor = (w, i) => "w" + w.n + "i" + i;
+
+  function build() {
+    const weeksBox = $("weeks");
+    const jump = $("jump");
+
+    WEEKS.forEach((w) => {
+      const sec = document.createElement("section");
+      sec.className = "week";
+      sec.id = "week-" + w.n;
+
+      const head = document.createElement("div");
+      head.className = "week-head";
+
+      const no = document.createElement("span");
+      no.className = "week-no";
+      no.textContent = "Week " + String(w.n).padStart(2, "0");
+      head.appendChild(no);
+
+      if (w.date) {
+        const date = document.createElement("span");
+        date.className = "week-date";
+        date.textContent = w.date;
+        head.appendChild(date);
+      }
+
+      const count = document.createElement("span");
+      count.className = "count";
+      count.id = "count-" + w.n;
+      head.appendChild(count);
+
+      const h2 = document.createElement("h2");
+      h2.textContent = w.topic;
+
+      const brief = document.createElement("p");
+      brief.className = "brief";
+      brief.textContent = w.brief;
+
+      const tags = document.createElement("div");
+      tags.className = "tags";
+      const t1 = document.createElement("span");
+      t1.className = "tag";
+      t1.textContent = w.theory;
+      tags.appendChild(t1);
+      if (w.final) {
+        const t2 = document.createElement("span");
+        t2.className = "tag accent";
+        t2.textContent = "Final critique";
+        tags.appendChild(t2);
+      }
+
+      const ul = document.createElement("ul");
+      w.items.forEach((text, i) => {
+        const li = document.createElement("li");
+        const label = document.createElement("label");
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.dataset.week = w.n;
+        box.id = idFor(w, i);
+        box.checked = !!state[box.id];
+        box.addEventListener("change", () => {
+          if (box.checked) state[box.id] = 1; else delete state[box.id];
+          save();
+          refresh();
+        });
+        const span = document.createElement("span");
+        span.textContent = text;
+        label.append(box, span);
+        li.appendChild(label);
+        ul.appendChild(li);
+      });
+
+      sec.append(head, h2, brief, tags);
+
+      if (w.tool) {
+        const toolLink = document.createElement("a");
+        toolLink.className = "tool-link";
+        toolLink.href = w.tool.href;
+        toolLink.textContent = "Open the " + w.tool.label;
+        sec.appendChild(toolLink);
+      }
+
+      sec.appendChild(ul);
+      weeksBox.appendChild(sec);
+
+      const link = document.createElement("a");
+      link.href = "#week-" + w.n;
+      link.id = "jump-" + w.n;
+      link.textContent = String(w.n).padStart(2, "0");
+      link.title = "Week " + w.n + " — " + w.topic;
+      jump.appendChild(link);
+    });
+  }
+
+  function refresh() {
+    let done = 0, total = 0;
+    WEEKS.forEach((w) => {
+      const d = w.items.filter((_, i) => state[idFor(w, i)]).length;
+      done += d;
+      total += w.items.length;
+      const c = $("count-" + w.n);
+      c.textContent = d + " / " + w.items.length;
+      c.classList.toggle("complete", d === w.items.length);
+      $("jump-" + w.n).classList.toggle("complete", d === w.items.length);
+    });
+    $("doneCount").textContent = done;
+    $("totalCount").textContent = total;
+  }
+
+  $("reset").addEventListener("click", () => {
+    state = {};
+    save();
+    document.querySelectorAll('input[type="checkbox"]').forEach((b) => { b.checked = false; });
+    refresh();
+  });
+
+  load();
+  build();
+  refresh();
+</script>
+</body>
+</html>
