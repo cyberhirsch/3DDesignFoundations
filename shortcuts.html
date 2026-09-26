@@ -255,9 +255,15 @@
   a { color: var(--accent); }
 
   @media (max-width: 640px) {
-    td { padding: 8px 10px; }
-    td:first-child, td.keys { width: auto; }
+    /* one row becomes a small stack: action, keys, note */
+    thead { display: none; }
+    table, tbody, tr, td { display: block; }
+    tr { border-top: 1px solid var(--rule); padding: 9px 12px; }
+    tbody tr:first-child { border-top: 0; }
+    td, td:first-child, td.keys { width: auto; border: 0; padding: 2px 0; }
+    td:first-child { font-weight: 500; }
     td.note { font-size: 13px; }
+    td.note:empty { display: none; }
     .shots { grid-template-columns: 1fr; }
   }
 

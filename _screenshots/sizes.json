@@ -1,0 +1,190 @@
+{
+ "shortcuts/tab-edit.webp": [
+  480,
+  320
+ ],
+ "shortcuts/bevel-edges.webp": [
+  480,
+  320
+ ],
+ "shortcuts/bevel-verts.webp": [
+  480,
+  320
+ ],
+ "shortcuts/loop-cut.webp": [
+  480,
+  320
+ ],
+ "shortcuts/loop-center.webp": [
+  480,
+  320
+ ],
+ "shortcuts/edge-slide.webp": [
+  480,
+  320
+ ],
+ "shortcuts/knife.webp": [
+  480,
+  320
+ ],
+ "shortcuts/extrude.webp": [
+  480,
+  320
+ ],
+ "shortcuts/inset.webp": [
+  480,
+  320
+ ],
+ "shortcuts/crease.webp": [
+  480,
+  320
+ ],
+ "shortcuts/wireframe.webp": [
+  480,
+  320
+ ],
+ "shortcuts/xray.webp": [
+  480,
+  320
+ ],
+ "shortcuts/loop-select.webp": [
+  480,
+  320
+ ],
+ "shortcuts/ring-select.webp": [
+  480,
+  320
+ ],
+ "shortcuts/faces-by-sides.webp": [
+  480,
+  320
+ ],
+ "shortcuts/grs.webp": [
+  480,
+  320
+ ],
+ "shortcuts/subd-levels.webp": [
+  616,
+  280
+ ],
+ "shortcuts/shade-smooth.webp": [
+  736,
+  240
+ ],
+ "shortcuts/fill.webp": [
+  736,
+  240
+ ],
+ "shortcuts/tris-to-quads.webp": [
+  736,
+  240
+ ],
+ "shortcuts/recalc-normals.webp": [
+  736,
+  240
+ ],
+ "shortcuts/clear-transforms.webp": [
+  736,
+  240
+ ],
+ "shortcuts/select-modes.webp": [
+  932,
+  200
+ ],
+ "shortcuts/frame-selected.webp": [
+  736,
+  247
+ ],
+ "shortcuts/persp-ortho.webp": [
+  736,
+  247
+ ],
+ "shortcuts/local-view.webp": [
+  736,
+  247
+ ],
+ "shortcuts/view-axis.webp": [
+  560,
+  383
+ ],
+ "shortcuts/navigate.webp": [
+  177,
+  430
+ ],
+ "shortcuts/add-menu.webp": [
+  394,
+  553
+ ],
+ "shortcuts/apply-menu.webp": [
+  449,
+  287
+ ],
+ "shortcuts/rename.webp": [
+  627,
+  160
+ ],
+ "shortcuts/search.webp": [
+  720,
+  187
+ ],
+ "shortcuts/extrude-menu.webp": [
+  434,
+  355
+ ],
+ "shortcuts/shading-pie.webp": [
+  720,
+  465
+ ],
+ "shortcuts/duplicate.webp": [
+  816,
+  232
+ ],
+ "shortcuts/sidebar.webp": [
+  561,
+  790
+ ],
+ "shortcuts/apply-modifier.webp": [
+  816,
+  521
+ ],
+ "modifiers/solidify-view.webp": [
+  720,
+  480
+ ],
+ "modifiers/solidify-panel.webp": [
+  816,
+  953
+ ],
+ "modifiers/lattice-view.webp": [
+  720,
+  480
+ ],
+ "modifiers/lattice-panel.webp": [
+  816,
+  437
+ ],
+ "modifiers/screw-view.webp": [
+  720,
+  480
+ ],
+ "modifiers/screw-panel.webp": [
+  816,
+  891
+ ],
+ "modifiers/curve-bevel-view.webp": [
+  720,
+  480
+ ],
+ "modifiers/curve-bevel-panel.webp": [
+  816,
+  880
+ ],
+ "modifiers/mirror-view.webp": [
+  720,
+  480
+ ],
+ "modifiers/mirror-panel.webp": [
+  816,
+  667
+ ]
+}
