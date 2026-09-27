@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Submission Checklists · 3D Design Foundations</title>
-<meta name="description" content="What to hand in each week — 3D Design Foundations, Smart Interactive Media.">
+<title>Homework Checklist · 3D Design Foundations</title>
+<meta name="description" content="Every step of each week's homework, and what to hand in — 3D Design Foundations, Smart Interactive Media.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -207,6 +207,19 @@
     padding: 3px 7px;
   }
   .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .hand {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 1px 5px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
 
   .tool-link {
     display: inline-block;
@@ -303,11 +316,12 @@
 
   <header>
     <a class="back" href="index.html">&larr; 3D Design Foundations</a>
-    <h1>Submission checklists</h1>
+    <h1>Homework checklist</h1>
     <p class="standfirst">
-      Exactly what to hand in each week. Tick items off as you finish them — your ticks are
-      saved in this browser, on this device only, so nothing is submitted from this page and
-      nobody else sees it. Use it as a last check before you upload.
+      Every step of each week's homework. Items marked Hand in are uploaded; the rest you only
+      need to have done. Tick items off as you finish them — your ticks are saved in this browser, on
+      this device only, so nothing is submitted from this page and nobody else sees it. Check
+      it once more before you upload.
     </p>
   </header>
 
@@ -334,15 +348,14 @@
       tool: { href: "shortcuts.html", label: "Blender shortcuts" },
       brief: "Plan the one scene you build all semester. Then bring its first asset in, find what arrived wrong, repair it — and prove the export still works.",
       items: [
-        "Your scene brief, one page as a PDF: a title and one sentence, 6–10 references, the asset list (every object, how you get it, which week), and front and side views of your Week 2 designer object",
-        "One USD asset that belongs in your scene, added to your asset list — the boombox from class counts only if it fits — with creator, source URL and licence recorded",
+        { hand: true, text: "Your scene brief, one page as a PDF: a title and one sentence, 6–10 references, the asset list (every object, how you get it, which week), and your Week 2 reference" },
+        "The Week 2 reference: front and side views of your designer object, straight on and whole, with where each image comes from",
+        "One USD asset that belongs in your scene, on your asset list with its creator, source URL and licence — the boombox from class counts only if it fits",
         "Imported into your project folders (/Assets, /Scans, /Scene, /Renders), with the first import saved as v001",
-        "The four audit passes run: hierarchy and names, scale and transforms, geometry and normals, materials and textures",
-        "Everything broken repaired, each repair saved as a new version, warnings screenshotted before you dismissed them",
-        "A clear still, PNG or JPG, of a simple inspection scene: a ground plane and a neutral camera — Blender's default light is enough",
-        "A .glb delivery copy, checked with the Khronos glTF Validator and opened in a second viewer (Babylon.js Sandbox or glTF Viewer)",
-        "The audit note: source and licence, what arrived wrong, what you repaired, and what the GLB lost",
-        "The scene file with its textures packed (Blender: File → External Data → Pack Resources), or the whole project folder zipped with relative texture paths"
+        "Checked: the four audit passes — hierarchy and names, scale and transforms, geometry and normals, materials and textures",
+        "Fixed: everything broken repaired, each repair saved as a new version",
+        "Exported twice: as .glb, checked with the Khronos glTF Validator and in a second viewer (Babylon.js Sandbox or glTF Viewer), and as .usd",
+        { hand: true, text: "A clear render of your asset, PNG or JPG: a ground plane and a neutral camera — Blender's default light is enough" }
       ]
     },
     {
@@ -351,7 +364,7 @@
       tool: { href: "shortcuts.html", label: "Blender shortcuts" },
       brief: "The designer object from your scene brief in clean quads — and the curves have to hold at level 2.",
       items: [
-        "A real-world designer object — the one on your scene brief — with a clean orthographic front or side profile, found or drawn",
+        "A real-world designer object — the one on your scene brief, with your Week 1 reference — with a clean orthographic front or side profile, found or drawn",
         "The profile imported as a reference image",
         "A low-poly block-out in clean, quad-only topology, with your support loops and bevels planned",
         "A Subdivision Surface modifier at level 2, to test how the curves hold",
@@ -363,24 +376,26 @@
       n: 3, topic: "Digital Sculpting & Organic Detail",
       theory: "Transitioning from Geometry to Digital Clay",
       tool: { href: "shortcuts.html#sculpting", label: "Blender shortcuts" },
-      brief: "Give your SubD model a history: chips, dents and cracks in digital clay.",
+      brief: "Give one object from your scene a history: chips, dents and cracks in digital clay.",
       items: [
-        "Your Week 2 SubD model duplicated, with the base Subdivision modifier applied for a mid-poly base",
-        "A Multiresolution modifier, with realistic physical detail sculpted in: edge chipping, surface dents, cracks or hand-carved texture",
-        "A high-resolution viewport render that shows the detail clearly",
-        "Your .blend, or your program's scene file, with the multires sculpt",
+        "One object from your scene brief — your Week 2 SubD model or an organic one — with three events in its life written down",
+        "A base: your Week 2 model duplicated with its Subdivision applied and a Multiresolution modifier added, or a new blockout, voxel remeshed",
+        "Realistic physical detail in three sizes — primary, secondary, tertiary — each mark where one of your events would put it",
+        "A high-resolution viewport or clay render, with a raking light, that shows the detail clearly",
+        "Your .blend, or your program's scene file, with the sculpt (Multires kept)",
         "The sculpt kept safe: it is one of your two high-poly sources in Week 5"
       ]
     },
     {
       n: 4, topic: "Photogrammetry (Object Scanning)",
       theory: "Digitizing the Real World",
-      brief: "Photograph a real object from every side and bring it back as a clean, textured mesh.",
+      brief: "Photograph the real object from your scene brief from every side and bring it back as a clean, textured mesh at real size.",
       items: [
-        "A physical object with real surface texture: a rock, an old tree stump, a vintage boot, a stone ornament",
-        "50 to 100 high-resolution photos, with full 360° coverage from several heights",
-        "Processed into a textured 3D mesh",
-        "The mesh cleaned and exported with its texture",
+        "The real object from your scene brief — matte, with real surface texture, not shiny or transparent — with a ruler or another known length beside it",
+        "50 to 100 high-resolution photos, with full 360° coverage from several heights and about 70 % overlap",
+        "Processed into a textured 3D mesh (RealityScan desktop or mobile, Meshroom or another program)",
+        "Cleaned in Blender: floor, floaters and holes fixed, real size set from the known length, pivot at the base",
+        "Exported as .obj or .fbx with its texture",
         "One zip: the low-res processed mesh as .fbx, its texture map, and three photos from your capture session"
       ]
     },
@@ -411,20 +426,21 @@
         "A custom material stack built from fill layers and black masks",
         "A base material, with a generator such as Curvature or Dirt driving a subtle edge-wear layer",
         "A dust-accumulation layer that follows your model's baked geometry",
+        "The texture set exported with the Unreal Engine (Packed) template, kept for Week 10",
         "A screenshot of your model showing the baked normal detail and your custom mask layers"
       ]
     },
     {
-      n: 7, topic: "AI-Driven Texturing & PBR Maps",
-      theory: "Integrating Generative AI into Material Pipelines",
-      brief: "A texture no library has, made tileable, with the maps to behave like a real material.",
+      n: 7, topic: "AI-Driven Asset Generation (Generating PBR Models)",
+      theory: "Generate, Audit, Repair",
+      brief: "Let a machine make one prop in seconds, then find out what it takes to make it usable.",
       items: [
-        "A unique custom texture generated with Gen AI — a specific fabric, an ancient tile pattern or a rusted metal sheet, for example",
-        "Tileable: no visible seam where it repeats",
-        "Matching normal, roughness and height maps generated from it",
-        "The maps imported into your texturing project and applied to a section of your asset",
-        "The original AI-generated texture and the generated normal map",
-        "A render of the texture applied to your asset"
+        "Two generated versions of one prop for your scene, downloaded as GLB and left untouched",
+        "Wireframe and UV-layout screenshots of the better one, with its triangle count, UV islands and size on arrival",
+        "The relight test: two screenshots with the light from different directions, any painted light noted",
+        "The repair: merged, remeshed, unwrapped, colour and normal baked from the original; real size, pivot at the base, clear names",
+        "The repaired .blend with textures packed, or the project folder zipped",
+        "A before-and-after image (wireframe and render) and the audit note: tool, model version, plan, date, prompt or picture, licence and credit line, counts before and after, and what still stops professional use"
       ]
     },
     {
@@ -432,10 +448,10 @@
       theory: "Volumetric Space Capture",
       brief: "Capture a place instead of modeling one.",
       items: [
-        "An environment chosen: a garden corner, a street alley, an old room",
-        "A continuous, stable smartphone video of one to two minutes, walking slow concentric circles with the camera pointed inward",
-        "Processed into a Gaussian splat scene",
-        "The splat exported, typically as .ply or .splat — or shared as a link to your online viewer",
+        "The real place from your scene brief, chosen as your backdrop",
+        "Captured with your phone: two or three rings at different heights, overlapping, moving the camera instead of panning",
+        "Processed into a Gaussian splat",
+        "The splat exported as .ply — or shared as a link to an online viewer",
         "A screenshot of the captured scene"
       ]
     },
@@ -585,7 +601,7 @@
       }
 
       const ul = document.createElement("ul");
-      w.items.forEach((text, i) => {
+      w.items.forEach((it, i) => {
         const li = document.createElement("li");
         const label = document.createElement("label");
         const box = document.createElement("input");
@@ -599,7 +615,13 @@
           refresh();
         });
         const span = document.createElement("span");
-        span.textContent = text;
+        if (it.hand) {
+          const tag = document.createElement("b");
+          tag.className = "hand";
+          tag.textContent = "Hand in";
+          span.appendChild(tag);
+        }
+        span.appendChild(document.createTextNode(typeof it === "string" ? it : it.text));
         label.append(box, span);
         li.appendChild(label);
         ul.appendChild(li);

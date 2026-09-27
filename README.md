@@ -7,7 +7,7 @@ Published site: https://cyberhirsch.github.io/3DDesignFoundations/
 ## Contents
 
 - `index.html` — course hub: software and assets, schedule, and links to everything below
-- `checklists.html` — what to hand in each week, as tick lists (14 weeks, 86 deliverables)
+- `checklists.html` — the homework checklist: each week's steps and what to hand in, as tick lists (14 weeks, 88 items; the ones marked Hand in are uploaded)
 - `shortcuts.html` — 77 Blender shortcuts and menu paths (basics, subdivision modeling, sculpting,
   UVs, Shader Editor), each with a screenshot of what it does on hover, and five modifiers:
   Solidify, Lattice, Screw, Curve Bevel and Mirror
