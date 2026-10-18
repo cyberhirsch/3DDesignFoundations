@@ -620,7 +620,7 @@ def page():
     <p class="standfirst">Keys are Blender 5.2's. The full list is on the <a href="shortcuts.html">shortcuts page</a>.</p>
     <p class="poster-dl"><a href="#library">Pattern library</a>: {n_lib} solved problems on one page. Download the poster: <a href="{IMG}/topology_poster.png" download>PNG</a> &middot; <a href="{IMG}/topology_poster.pdf" download>PDF</a></p>
     <nav class="jump" aria-label="On this page">
-      <a href="#rules">Rules</a>
+      <a href="#rules">Maxims</a>
       <a href="#words">Words</a>
       <a href="#support">Support loops</a>
       <a href="#levels">Levels</a>
@@ -637,19 +637,24 @@ def page():
   </header>
 
   <section id="rules">
-    <h2>The rules</h2>
+    <h2>The 15 SubD modelling maxims</h2>
+    <p class="lede">From Week 2. Prompts for judgement, not laws: run through them before you hand in.</p>
     <ol class="rules">
-      <li><b>Block out first.</b> Get the proportions right with as few faces as possible, then add loops only where the shape needs them. A bad cage gives a bad result at every level.</li>
-      <li><b>Quads only.</b> Every face that goes into the subdivision has four sides. N-gons and triangles become poles with dents around them.</li>
-      <li><b>Keep faces even.</b> Neighbouring faces about the same size and roughly square. Long thin faces only where they are support loops.</li>
-      <li><b>Support loops hold edges.</b> The closer a loop sits to an edge, the sharper that edge. Bevel ({k("Ctrl", "B")}) with Shape 1 and 2 segments puts one loop on each side.</li>
-      <li><b>Poles go on flat areas.</b> A vertex with 3 or 5 edges is normal; put it where the surface is flat or hidden, never on a curve or a highlight. Avoid 6 or more.</li>
-      <li><b>Loops follow the form.</b> Run them along the curvature and around holes and bosses, not across them.</li>
-      <li><b>Match segments.</b> Parts that meet have the same number of edges where they meet. Cylinders in multiples of 4 (8, 12, 16, 24) so they fit a grid.</li>
-      <li><b>Circles come from grids.</b> 8 sides from a 2&times;2 block of faces, 16 from 4&times;4. Never cut a 32-sided hole into a single face.</li>
-      <li><b>Apply the scale first.</b> {k("Ctrl", "A")} &rarr; Scale before you bevel, or the bevels come out in different widths.</li>
-      <li><b>Judge the result, not the cage.</b> Model with the subdivision on and check it in a reflection matcap.</li>
-      <li><b>Keep the modifier live.</b> Hand in with the Subdivision Surface modifier still on the stack, not applied.</li>
+      <li><b>Start simple.</b> Begin with basic shapes and add detail progressively. One Subdivision Surface modifier on a low cage; a new loop ({k("Ctrl", "R")}) only when the silhouette asks for it.</li>
+      <li><b>Maintain quad dominance.</b> Use quads as the primary geometry. <a href="#ngons">N-gons and triangles</a> become poles with dents around them.</li>
+      <li><b>Use supporting edges for sharpness.</b> Avoid creasing. Bevel ({k("Ctrl", "B")}) with Shape 1 and 2 segments puts a loop on each side of the edge; apply the scale first ({k("Ctrl", "A")} &rarr; Scale). See <a href="#support">support loops</a>.</li>
+      <li><b>Avoid long, thin polygons.</b> They subdivide into stretched, uneven curvature, and slivers are expensive to render. Support loops are the one exception.</li>
+      <li><b>Check for non-manifold geometry.</b> Two solids that share only a vertex or an edge are non-manifold. Select &rarr; Select All by Trait &rarr; Non Manifold finds them.</li>
+      <li><b>Keep polygon density consistent.</b> Avoid areas of dense or sparse detail. Change density with a <a href="#reduce">loop reduction</a>, not a triangle.</li>
+      <li><b>Manage edge flow.</b> Ensure the edge flow complements the form: loops run along the curvature and around <a href="#holes">holes</a> and bosses. Parts that meet have the same number of edges where they meet; cylinders in multiples of 4 fit a grid.</li>
+      <li><b>Avoid complex topology pitfalls.</b> Like triangles, n-gons and excessive <a href="#poles">poles</a>. A 3- or 5-edge pole is fine on a flat area; avoid 6 or more.</li>
+      <li><b>Optimize for end use.</b> Tailor the level of detail to where the model goes. Viewport Overlays &rarr; Statistics counts the faces; see <a href="#levels">levels</a>.</li>
+      <li><b>Work symmetrically.</b> Symmetry can halve your workload; don't forget radial symmetry. Mirror modifier with Clipping and Merge on; Array with an Object Offset for radial repeats.</li>
+      <li><b>Check the subdivided state regularly.</b> It catches issues early. Flip levels with {k("Ctrl", "0")} and {k("Ctrl", "2")}, and turn the model under a <a href="#check">reflection matcap</a>.</li>
+      <li><b>Stay organized and flexible.</b> Keep the workflow non-destructive: modifiers unapplied, objects named. Hand in with the Subdivision Surface modifier still on the stack.</li>
+      <li><b>Isolate complex areas.</b> Model complex detail as a separate part, so the main body keeps its calm, even grid.</li>
+      <li><b>Avoid boolean, unless you're prepared to retopo.</b> A boolean cut leaves n-gons and long triangles; rebuild the hole from a <a href="#holes">grid circle</a>.</li>
+      <li><b>Use reference images.</b> Collect them in one place, for example in PureRef. Add &rarr; Image &rarr; Reference puts a photo into the viewport.</li>
     </ol>
   </section>
 
