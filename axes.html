@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axes and Units · 3D Design Foundations</title>
+<meta name="description" content="Which way is up, which hand, which unit: the axes of Blender, Maya, Houdini, 3ds Max, Unreal, Unity, glTF, USD and FBX side by side, a converter that shows what happens to a chair between them and the settings that fix it, and a quiz — 3D Design Foundations, Weeks 1 and 10.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --shadow: rgba(20, 22, 27, 0.18);
+    --pass: #1B7A4B;
+    --fail: #B3261E;
+    /* axis colours: X red, Y green, Z blue, as in every 3D program */
+    --ax-x: #D9213B;
+    --ax-y: #3C9A12;
+    --ax-z: #1F6FE0;
+    --model: #C9CDD6;
+    --model-2: #E08A1E;
+    --grid: #D3D7E0;
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --shadow: rgba(0, 0, 0, 0.55);
+      --pass: #4ECB8A;
+      --fail: #FF6B6B;
+      --ax-x: #FF4D63;
+      --ax-y: #8BDC2C;
+      --ax-z: #4A9BFF;
+      --model: #8C93A3;
+      --model-2: #F2A93B;
+      --grid: #2A303C;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --shadow: rgba(0, 0, 0, 0.55);
+    --pass: #4ECB8A;
+    --fail: #FF6B6B;
+    --ax-x: #FF4D63;
+    --ax-y: #8BDC2C;
+    --ax-z: #4A9BFF;
+    --model: #8C93A3;
+    --model-2: #F2A93B;
+    --grid: #2A303C;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 5px 9px;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 40px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin: 26px 0 10px;
+  }
+
+  p.lede { font-size: 15.5px; max-width: 64ch; margin: 14px 0; text-wrap: pretty; }
+  p.note { font-size: 14.5px; color: var(--ink-2); max-width: 66ch; margin: 14px 0; text-wrap: pretty; }
+  p.statement {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(20px, 3.4vw, 26px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 22px 0;
+    max-width: 30ch;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 18px;
+  }
+
+  .label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 8px;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  select, input[type="number"] {
+    font-family: var(--mono);
+    font-size: 14px;
+    min-height: 44px;
+    padding: 8px 10px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    max-width: 100%;
+  }
+  select { width: 100%; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 5px;
+    white-space: nowrap;
+  }
+  code { font-family: var(--mono); font-size: 0.9em; }
+
+  .x { color: var(--ax-x); } .y { color: var(--ax-y); } .z { color: var(--ax-z); }
+  .x, .y, .z { font-family: var(--mono); font-weight: 500; }
+
+  .turn { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 16px 0 14px; }
+  .turn label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .turn input[type="range"] { flex: 1 1 200px; min-width: 0; accent-color: var(--accent); height: 44px; margin: 0; }
+  .turn output { font-family: var(--mono); font-size: 13px; color: var(--ink-2); min-width: 4ch; }
+
+  /* ---------- gallery ---------- */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin: 0 0 4px; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-right: 6px; vertical-align: middle; background: currentColor; }
+  .legend .lx { color: var(--ax-x); } .legend .ly { color: var(--ax-y); } .legend .lz { color: var(--ax-z); }
+  .legend .lf { color: var(--ink-3); }
+  .legend .lf::before { height: 0; border-top: 2px dashed currentColor; }
+  .legend em { font-style: normal; color: var(--ink-2); }
+
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; padding: 12px 14px 14px; min-width: 0; }
+  .card canvas { display: block; width: 100%; aspect-ratio: 1 / 0.82; }
+  .card h3 { margin: 6px 0 8px; font-size: 18px; }
+  .card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 13px; }
+  .card dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+  .card dd { margin: 0; }
+  .card dd b { font-weight: 600; }
+  .card .left { color: var(--fail); font-weight: 600; }
+  .card p { font-size: 12.5px; color: var(--ink-2); margin: 10px 0 0; text-wrap: pretty; border-top: 1px solid var(--rule); padding-top: 8px; }
+  .card .usd-up { display: flex; gap: 6px; margin-top: 8px; }
+  .card .usd-up button { flex: 1; font-family: var(--mono); font-size: 12px; padding: 6px 8px; }
+
+  .hands { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .hands .panel p { margin: 6px 0 0; font-size: 14px; color: var(--ink-2); text-wrap: pretty; }
+  .hands .panel b { color: var(--ink); }
+
+  /* ---------- converter ---------- */
+  .pick { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+  .pick .swap { font-family: var(--mono); font-size: 16px; min-width: 44px; padding: 8px 12px; }
+  .views { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .view { background: var(--ground); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  .view canvas { display: block; width: 100%; aspect-ratio: 1 / 0.8; }
+  .view .cap { padding: 9px 12px 11px; border-top: 1px solid var(--rule); font-size: 13px; }
+  .view .cap b { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+  .view .cap span { color: var(--ink); }
+  .view.bad .cap span { color: var(--fail); font-weight: 600; }
+  .view.good .cap span { color: var(--pass); font-weight: 600; }
+
+  .diag { margin: 16px 0 0; padding: 0; list-style: none; }
+  .diag li { font-size: 14.5px; padding: 7px 0 7px 26px; position: relative; border-top: 1px solid var(--rule); text-wrap: pretty; }
+  .diag li:first-child { border-top: 0; }
+  .diag li::before { content: "✗"; position: absolute; left: 4px; color: var(--fail); font-weight: 600; }
+  .diag li.ok::before { content: "✓"; color: var(--pass); }
+  .diag li b { font-weight: 600; }
+
+  .fix h4 { font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 18px 0 6px; }
+  .fix ol { margin: 0; padding-left: 1.4em; }
+  .fix li { font-size: 14.5px; margin-bottom: 6px; text-wrap: pretty; }
+  .fix li b { font-weight: 600; }
+  .fix .route { font-size: 14.5px; margin: 14px 0 0; color: var(--ink-2); }
+  .fix .route b { color: var(--ink); }
+
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .xyz { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .xyz label { display: block; font-family: var(--mono); font-size: 11px; margin-bottom: 3px; }
+  .xyz input { width: 100%; }
+  .xyz output { display: flex; align-items: center; min-height: 44px; padding: 8px 10px; font-family: var(--mono); font-size: 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .unit-note { font-size: 12.5px; color: var(--ink-3); margin: 6px 0 0; }
+  .matrix-wrap { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  table.matrix { border-collapse: collapse; font-family: var(--mono); font-size: 13px; border-left: 2px solid var(--ink-3); border-right: 2px solid var(--ink-3); }
+  table.matrix td { padding: 3px 10px; text-align: right; min-width: 3.5em; }
+  table.matrix td.zero { color: var(--ink-3); }
+  .formula { font-family: var(--mono); font-size: 13px; line-height: 1.7; }
+  .rot { font-size: 14.5px; margin: 12px 0 0; text-wrap: pretty; }
+
+  /* ---------- pivot card ---------- */
+  .pivot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .pivot-grid canvas { display: block; width: 100%; aspect-ratio: 1 / 0.8; background: var(--ground); border: 1px solid var(--rule); border-radius: 2px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+  .seg button { flex: 1 1 auto; }
+  ul.tips { margin: 12px 0 0; padding-left: 1.2em; max-width: 68ch; }
+  ul.tips li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 7px; text-wrap: pretty; }
+  ul.tips li b { color: var(--ink); font-weight: 600; }
+  table.sizes { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+  table.sizes td { padding: 6px 0; border-top: 1px solid var(--rule); }
+  table.sizes td.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+
+  /* ---------- quiz ---------- */
+  .q-head { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+  .q-head b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+  .progress { height: 3px; background: var(--ground); margin: 10px 0 14px; }
+  .progress span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .q-text { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -0.015em; line-height: 1.25; margin: 0 0 14px; text-wrap: pretty; }
+  .choices { display: grid; gap: 8px; }
+  .choices button { text-align: left; font-size: 14.5px; color: var(--ink); padding: 10px 14px; display: flex; gap: 10px; align-items: baseline; }
+  .choices button kbd { flex: none; }
+  .choices button.right { border-color: var(--pass); color: var(--pass); }
+  .choices button.wrong { border-color: var(--fail); color: var(--fail); }
+  .choices button:disabled { cursor: default; }
+  .choices button:disabled:not(.right):not(.wrong) { opacity: 0.6; }
+  .feedback { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--rule); background: var(--ground); }
+  .feedback.right { border-left-color: var(--pass); }
+  .feedback.wrong { border-left-color: var(--fail); }
+  .feedback p { margin: 0 0 8px; font-size: 14.5px; text-wrap: pretty; }
+  .feedback .verdict { font-weight: 600; }
+  .result .score-big { font-family: var(--display); font-weight: 800; font-size: 44px; letter-spacing: -0.03em; margin: 0; }
+  .result ul { padding-left: 1.2em; }
+  .result li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 6px; }
+  .result li b { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0 0 6px; text-wrap: pretty; }
+
+  a { color: var(--accent); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 700px) {
+    .gallery { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { padding: 10px 10px 12px; }
+    .card dl { grid-template-columns: 1fr; gap: 0; }
+    .card dt { padding-top: 5px; }
+    .hands, .calc, .pivot-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 16px 70px; }
+    .pick { grid-template-columns: 1fr; }
+    .pick .swap { justify-self: start; }
+    .views { grid-template-columns: 1fr; }
+    .card h3 { font-size: 16px; }
+    .card dd { font-size: 12.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .progress span { transition: none; } }
+  @media print {
+    body { background: #fff; color: #000; }
+    .jump, .back, #quiz { display: none; }
+    .wrap { max-width: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Axes and units</h1>
+    <p class="standfirst">
+      Every program agrees that a chair has a top, a front and a size. They disagree about which axis points up,
+      which hand the axes follow and what one unit means. See the conventions side by side, send a chair from one
+      program to another, and find the setting that brings it in upright, unmirrored and at its real size.
+    </p>
+    <nav class="jump" aria-label="On this page">
+      <a href="#gallery">Which way is up?</a>
+      <a href="#converter">Converter</a>
+      <a href="#pivot">Pivot and transforms</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+  </header>
+
+  <!-- ================= gallery ================= -->
+  <section id="gallery">
+    <h2>Which way is up? &middot; Weeks 1 and 10</h2>
+    <p class="lede">
+      Nine conventions, all drawn from the same point of view, so the same physical direction points the same way
+      in every picture. Up is always up on screen: what changes is which letter it gets.
+    </p>
+    <div class="legend" aria-hidden="true">
+      <span class="lx">X</span><span class="ly">Y</span><span class="lz">Z</span><span class="lf">front or forward</span>
+      <em>Faint: the negative half of an axis</em>
+    </div>
+    <div class="turn">
+      <label for="yawA">Turn the views</label>
+      <input type="range" id="yawA" min="-180" max="180" step="5" value="-40">
+      <output id="yawAOut" for="yawA">−40°</output>
+      <button type="button" id="yawReset">Reset</button>
+    </div>
+    <div class="gallery" id="cards"></div>
+
+    <div class="hands">
+      <div class="panel">
+        <span class="label">Right-handed</span>
+        <p>Curl the fingers of your <b>right</b> hand from X to Y: your thumb points along Z.
+        Blender, Maya, Houdini, 3ds Max, glTF, USD and FBX.</p>
+      </div>
+      <div class="panel">
+        <span class="label">Left-handed</span>
+        <p>The same with your <b>left</b> hand. Unreal and Unity. Going between the two mirrors one axis:
+        Unreal&rsquo;s importer flips Y, so Blender&rsquo;s +Y becomes Unreal&rsquo;s &minus;Y.</p>
+      </div>
+    </div>
+    <p class="note">
+      Front means the side a model shows in that program&rsquo;s front view. Blender&rsquo;s front view looks along +Y,
+      so a model faces &minus;Y; its exporters call this &ldquo;Y Forward, Z Up&rdquo;. Unreal and Unity name a forward
+      axis instead, the way an actor or a camera moves. USD stores only the up axis and the unit, no front.
+    </p>
+  </section>
+
+  <!-- ================= converter ================= -->
+  <section id="converter">
+    <h2>Converter &middot; from one program to another</h2>
+    <p class="lede">
+      Pick where the chair comes from and where it goes. Left: what arrives if the numbers are copied across as they
+      are, with nobody converting. Right: what arrives with the right settings.
+    </p>
+
+    <div class="panel">
+      <div class="pick">
+        <div>
+          <label class="label" for="src">From</label>
+          <select id="src"></select>
+        </div>
+        <button type="button" class="swap" id="swap" aria-label="Swap from and to">&#8644;</button>
+        <div>
+          <label class="label" for="tgt">To</label>
+          <select id="tgt"></select>
+        </div>
+      </div>
+
+      <div class="turn">
+        <label for="yawB">Turn the views</label>
+        <input type="range" id="yawB" min="-180" max="180" step="5" value="-40">
+        <output id="yawBOut" for="yawB">−40°</output>
+      </div>
+
+      <div class="views">
+        <figure class="view bad" style="margin:0">
+          <canvas id="cvRaw" role="img" aria-label=""></canvas>
+          <figcaption class="cap"><b>Numbers copied as they are</b><span id="rawSum"></span></figcaption>
+        </figure>
+        <figure class="view good" style="margin:0">
+          <canvas id="cvFix" role="img" aria-label=""></canvas>
+          <figcaption class="cap"><b>With the right settings</b><span>Upright, unmirrored, real size: 95 cm</span></figcaption>
+        </figure>
+      </div>
+      <ul class="diag" id="diag" aria-live="polite"></ul>
+    </div>
+
+    <div class="fix" id="fix"></div>
+
+    <h3>Coordinates and scale</h3>
+    <p class="note">
+      Type a position in the first program. The second column is the same point in the second program: what a
+      correct importer writes. The matrix does it in one step.
+    </p>
+    <div class="panel">
+      <div class="calc">
+        <div>
+          <span class="label" id="inLabel">In Blender &middot; metres</span>
+          <div class="xyz" role="group" aria-labelledby="inLabel">
+            <div><label for="ix" class="x">x</label><input type="number" id="ix" value="1" step="any" inputmode="decimal"></div>
+            <div><label for="iy" class="y">y</label><input type="number" id="iy" value="2" step="any" inputmode="decimal"></div>
+            <div><label for="iz" class="z">z</label><input type="number" id="iz" value="3" step="any" inputmode="decimal"></div>
+          </div>
+        </div>
+        <div>
+          <span class="label" id="outLabel">In Unreal Engine &middot; centimetres</span>
+          <div class="xyz" role="group" aria-labelledby="outLabel" aria-live="polite">
+            <div><span class="x" style="display:block;font-size:11px;margin-bottom:3px">x</span><output id="ox"></output></div>
+            <div><span class="y" style="display:block;font-size:11px;margin-bottom:3px">y</span><output id="oy"></output></div>
+            <div><span class="z" style="display:block;font-size:11px;margin-bottom:3px">z</span><output id="oz"></output></div>
+          </div>
+        </div>
+      </div>
+      <div class="matrix-wrap">
+        <table class="matrix" id="matrix" aria-label="Conversion matrix"></table>
+        <div class="formula" id="formula"></div>
+      </div>
+      <p class="rot" id="rot"></p>
+    </div>
+  </section>
+
+  <!-- ================= pivot ================= -->
+  <section id="pivot">
+    <h2>Pivot and transforms &middot; before you export</h2>
+    <p class="lede">
+      The pivot is the point an object moves, turns and scales around. Maya, Houdini, Unreal and USD call it the pivot;
+      Blender calls it the origin. Put it where the object touches the floor: then the chair lands at height zero and
+      turns on the spot instead of swinging around.
+    </p>
+
+    <div class="panel pivot-grid">
+      <div>
+        <canvas id="cvPivot" role="img" aria-label=""></canvas>
+      </div>
+      <div>
+        <span class="label" id="pivLabel">Where is the pivot?</span>
+        <div class="seg" role="group" aria-labelledby="pivLabel">
+          <button type="button" data-piv="base" aria-pressed="true">At the base</button>
+          <button type="button" data-piv="centre" aria-pressed="false">In the middle</button>
+          <button type="button" data-piv="beside" aria-pressed="false">Beside it</button>
+        </div>
+        <button type="button" id="turnBtn">Turn it 90°</button>
+        <p class="note" id="pivNote" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <h3>Apply rotation and scale</h3>
+    <p class="note">
+      In Blender: select the object, <kbd>Ctrl</kbd> <kbd>A</kbd> &rsaquo; Rotation &amp; Scale. Rotation becomes 0 and
+      scale 1, and the mesh keeps its shape and size. Do it with a reason, after saving a version.
+    </p>
+    <ul class="tips">
+      <li><b>Why before export:</b> exporters, engines, physics and modifiers read object scale differently. A scale of 0.01 or 100 travels as a number someone can drop; a mesh that really is 95 cm can&rsquo;t lose its size.</li>
+      <li><b>Negative scale mirrors:</b> it turns the faces inside out, and a game engine hides them. Apply it, then check Face Orientation: blue outside.</li>
+      <li><b>Leave location alone:</b> applying location moves the pivot to the world origin. A prop keeps its pivot at its own base.</li>
+      <li><b>FBX adds its own:</b> with its defaults, Blender&rsquo;s FBX export writes every object with Rotation X &minus;90 and Scale 100, to fit Y up and centimetres (checked in Blender 5.2). Unreal&rsquo;s importer undoes it. For a clean file elsewhere: Apply Scalings &rsaquo; FBX Units Scale, and Apply Transform.</li>
+    </ul>
+
+    <h3>Real size, in metres</h3>
+    <p class="note">Blender counts in metres, Unreal in centimetres. Measure one object you know after every import. Ours, from the course kitchen:</p>
+    <table class="sizes">
+      <tbody>
+        <tr><td>Chair, overall height</td><td class="n">0.95 m &middot; 95 cm</td></tr>
+        <tr><td>Chair, seat height</td><td class="n">0.45 m &middot; 45 cm</td></tr>
+        <tr><td>Table height</td><td class="n">0.76 m &middot; 76 cm</td></tr>
+        <tr><td>Boombox, width (Week 1)</td><td class="n">0.72 m &middot; 72 cm</td></tr>
+        <tr><td>Kitchen, wall to wall</td><td class="n">4.2 m &middot; 420 cm</td></tr>
+        <tr><td>A person, for scale</td><td class="n">1.80 m &middot; 180 cm</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Wrong by a few centimetres: the model. Wrong by 100 times: a unit. Fix it at the source, in Blender, and export again. Scaling it in Unreal hides the mistake until the next import.</p>
+  </section>
+
+  <!-- ================= quiz ================= -->
+  <section id="quiz">
+    <h2>Quiz &middot; what went wrong?</h2>
+    <p class="lede">Seven imports gone wrong. Pick the cause or the setting. Keys <kbd>1</kbd> to <kbd>4</kbd> work too.</p>
+    <div class="panel">
+      <div id="play">
+        <div class="q-head">
+          <span>Question <b id="qPos">1</b> of <b id="qTotal">7</b></span>
+          <span>Score <b id="qScore">0</b> &middot; Best <b id="qBest">&ndash;</b></span>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="qProg"></span></div>
+        <p class="q-text" id="qText"></p>
+        <div class="choices" id="qChoices" role="group" aria-label="Answers"></div>
+        <div class="feedback" id="qFb" hidden>
+          <p class="verdict" id="qVerdict"></p>
+          <p id="qWhy"></p>
+          <button type="button" id="qNext">Next question &rarr;</button>
+        </div>
+        <p class="sr-only" id="qLive" aria-live="polite"></p>
+      </div>
+      <div class="result" id="qResult" hidden>
+        <span class="label">Your result</span>
+        <p class="score-big" id="qFinal"></p>
+        <p id="qFinalNote"></p>
+        <ul id="qMisses"></ul>
+        <button type="button" id="qAgain">Play again</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>3D Design Foundations &middot; Smart Interactive Media, TH Rosenheim &middot; Prof. Seb Hirsch</p>
+    <p>Conventions checked against the Blender 5.2 manual and Blender 5.2 itself (its FBX, glTF and USD exporters, tested), the Unreal Engine 5.8 documentation and source code (the USD and FBX importers), Autodesk&rsquo;s Maya, 3ds Max and FBX SDK documentation, SideFX&rsquo;s Houdini documentation, the Unity manual, the Khronos glTF 2.0 specification and the OpenUSD documentation, October 2026. Unity&rsquo;s importer flipping X is documented by LightWave, not by Unity. The chair and all pictures are drawn by this page.</p>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ================= settings, per viewer ================= */
+  const KEY = "3ddf-axes-v1";
+  function load() { try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) || {} : {}; } catch (e) { return {}; } }
+  function save(patch) { try { const o = Object.assign(load(), patch); localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* private mode */ } }
+  const saved = load();
+
+  /* ================= conventions =================
+     Every system is described by R, the rotation (or mirror) that takes a point in the physical
+     reference frame into the system's own coordinates, and by its unit. The reference frame is
+     Blender's: Z up, right-handed, a model's front facing -Y, metres. */
+  const ZUP = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];      // Blender, 3ds Max, USD with upAxis Z
+  const YUP = [[1, 0, 0], [0, 0, 1], [0, -1, 0]];     // (x, y, z) -> (x, z, -y): Maya, Houdini, glTF, FBX, USD with upAxis Y
+  const UE = [[1, 0, 0], [0, -1, 0], [0, 0, 1]];      // Unreal's importers: Y flipped
+  const UNITY = [[-1, 0, 0], [0, 0, 1], [0, -1, 0]];  // Y up, left-handed: X flipped
+  const UNITS = {
+    m: { per: 1, name: "metres", short: "m" },
+    cm: { per: 100, name: "centimetres", short: "cm" },
+    in: { per: 1 / 0.0254, name: "inches", short: "in" }
+  };
+
+  const CARDS = [
+    { k: "blender", name: "Blender", R: ZUP, up: "Z", hand: "right", front: [0, -1, 0], frontWord: "front",
+      frontText: "−Y (front view looks along +Y)", unit: "1 m", unitWhere: "Scene › Units",
+      note: "Exporters call it “Y Forward, Z Up”. Keep Unit Scale at 1.0." },
+    { k: "maya", name: "Maya", R: YUP, up: "Y", hand: "right", front: [0, 0, 1], frontWord: "front",
+      frontText: "+Z", unit: "1 cm", note: "Default for new scenes; Z up can be set in Preferences › Settings." },
+    { k: "houdini", name: "Houdini", R: YUP, up: "Y", hand: "right", front: [0, 0, 1], frontWord: "front",
+      frontText: "+Z", unit: "1 m", note: "Unit Length lives in Preferences › Hip File Options." },
+    { k: "max", name: "3ds Max", R: ZUP, up: "Z", hand: "right", front: [0, -1, 0], frontWord: "front",
+      frontText: "−Y, like Blender", unit: "1 inch", note: "The system unit is an inch until you change it; the display may say Generic." },
+    { k: "unreal", name: "Unreal Engine", R: UE, up: "Z", hand: "left", front: [1, 0, 0], frontWord: "forward",
+      frontText: "+X forward, +Y right", unit: "1 cm", note: "A Blender model arrives facing +Y. FBX: Force Front XAxis turns it to +X." },
+    { k: "unity", name: "Unity", R: UNITY, up: "Y", hand: "left", front: [0, 0, 1], frontWord: "forward",
+      frontText: "+Z forward, +X right", unit: "1 m", note: "Its physics expects 1 unit = 1 m." },
+    { k: "gltf", name: "glTF / GLB", R: YUP, up: "Y", hand: "right", front: [0, 0, 1], frontWord: "front",
+      frontText: "+Z (the asset faces +Z)", unit: "1 m, fixed", note: "Nothing to set: the specification fixes Y up and metres." },
+    { k: "usd", name: "USD", R: ZUP, up: "upAxis: Y or Z", hand: "right", front: null, frontWord: "front",
+      frontText: "no rule", unit: "metersPerUnit", note: "Unset, a stage reads as Y up and 0.01: centimetres. Blender writes Z and 1.", usd: true },
+    { k: "fbx", name: "FBX", R: YUP, up: "Y by default", hand: "right", front: [0, 0, 1], frontWord: "front",
+      frontText: "+Z, stored in the file", unit: "1 cm by default", note: "Up axis, front axis and unit are written into each file." }
+  ];
+
+  /* the converter's systems */
+  const SYS = {
+    blender: { name: "Blender", R: ZUP, unit: "m", up: "Z", hand: "right" },
+    maya: { name: "Maya", R: YUP, unit: "cm", up: "Y", hand: "right" },
+    houdini: { name: "Houdini", R: YUP, unit: "m", up: "Y", hand: "right" },
+    max: { name: "3ds Max", R: ZUP, unit: "in", up: "Z", hand: "right" },
+    unreal: { name: "Unreal Engine", R: UE, unit: "cm", up: "Z", hand: "left" },
+    unity: { name: "Unity", R: UNITY, unit: "m", up: "Y", hand: "left" },
+    gltf: { name: "glTF / GLB", R: YUP, unit: "m", up: "Y", hand: "right", fmt: "gltf" },
+    usdz: { name: "USD · upAxis Z, 1 m", R: ZUP, unit: "m", up: "Z", hand: "right", fmt: "usd" },
+    usdy: { name: "USD · upAxis Y, 1 cm", R: YUP, unit: "cm", up: "Y", hand: "right", fmt: "usd" },
+    usdym: { name: "USD · upAxis Y, 1 m", R: YUP, unit: "m", up: "Y", hand: "right", fmt: "usd" },
+    fbx: { name: "FBX · Y up, centimetres", R: YUP, unit: "cm", up: "Y", hand: "right", fmt: "fbx" }
+  };
+
+  /* ================= small linear algebra ================= */
+  const mul = (A, B) => A.map((r) => [0, 1, 2].map((j) => r[0] * B[0][j] + r[1] * B[1][j] + r[2] * B[2][j]));
+  const T = (A) => [0, 1, 2].map((i) => [A[0][i], A[1][i], A[2][i]]);
+  const sc = (A, s) => A.map((r) => r.map((v) => v * s));
+  const mv = (A, v) => A.map((r) => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]);
+  const det = (A) => A[0][0] * (A[1][1] * A[2][2] - A[1][2] * A[2][1]) - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0]) + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
+  const near = (a, b) => Math.abs(a[0] - b[0]) < 1e-6 && Math.abs(a[1] - b[1]) < 1e-6 && Math.abs(a[2] - b[2]) < 1e-6;
+  const fmt = (v) => { const r = Math.round(v * 10000) / 10000; return (Object.is(r, -0) ? 0 : r).toLocaleString("en-US", { maximumFractionDigits: 4 }).replace(/^-/, "−"); };
+
+  /* ================= drawing ================= */
+  const VIEW = { yaw: typeof saved.yaw === "number" ? saved.yaw : -40, pitch: 24 };
+
+  function setup(cv) {
+    const r = cv.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (cv.width !== w * dpr || cv.height !== h * dpr) { cv.width = w * dpr; cv.height = h * dpr; }
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    return { ctx, w, h };
+  }
+  function projector(cx, cy, s) {
+    const a = VIEW.yaw * Math.PI / 180, p = VIEW.pitch * Math.PI / 180;
+    const ca = Math.cos(a), sa = Math.sin(a), cp = Math.cos(p), sp = Math.sin(p);
+    return (v) => {
+      const x1 = ca * v[0] - sa * v[1], y1 = sa * v[0] + ca * v[1], z1 = v[2];
+      return { x: cx + x1 * s, y: cy - (z1 * cp + y1 * sp) * s, d: y1 * cp - z1 * sp };
+    };
+  }
+  function arrow(ctx, a, b, col, w, dashed, head) {
+    ctx.save();
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = w; ctx.lineCap = "round";
+    if (dashed) ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+    if (head) {
+      const ang = Math.atan2(b.y - a.y, b.x - a.x), L = head;
+      ctx.beginPath(); ctx.moveTo(b.x, b.y);
+      ctx.lineTo(b.x - L * Math.cos(ang - 0.42), b.y - L * Math.sin(ang - 0.42));
+      ctx.lineTo(b.x - L * Math.cos(ang + 0.42), b.y - L * Math.sin(ang + 0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  /* draws a system's three axes (and the front arrow) in the physical frame */
+  function drawAxes(ctx, P, R, len, opt) {
+    opt = opt || {};
+    const cols = [css("--ax-x"), css("--ax-y"), css("--ax-z")], names = ["X", "Y", "Z"];
+    const o = P([0, 0, 0]);
+    const items = [];
+    for (let i = 0; i < 3; i++) {
+      const dir = R[i];                               // system axis i, in the physical frame
+      const pos = P([dir[0] * len, dir[1] * len, dir[2] * len]);
+      const neg = P([-dir[0] * len * 0.6, -dir[1] * len * 0.6, -dir[2] * len * 0.6]);
+      items.push({ i, pos, neg, d: pos.d });
+    }
+    // negative halves first, faint
+    items.forEach((it) => { ctx.globalAlpha = 0.35; arrow(ctx, o, it.neg, cols[it.i], opt.thin ? 1.2 : 1.5, true, 0); ctx.globalAlpha = 1; });
+    if (opt.front) {
+      const f = opt.front;
+      // along an axis: run past that axis's label, so the two don't overlap
+      const onAxis = R.some((r) => Math.abs(r[0] * f[0] + r[1] * f[1] + r[2] * f[2]) > 0.99);
+      const fl = len * (onAxis ? 1.55 : 0.85);
+      const fp = P([f[0] * fl, f[1] * fl, f[2] * fl]);
+      arrow(ctx, o, fp, css("--ink-3"), 2, true, 8);
+      if (opt.frontLabel) {
+        ctx.font = "500 10px " + css("--mono").split(",")[0]; ctx.fillStyle = css("--ink-3");
+        const dx = fp.x - o.x, dy = fp.y - o.y, m = Math.hypot(dx, dy) || 1;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        const cw = ctx.canvas.width / Math.min(window.devicePixelRatio || 1, 2), hw = ctx.measureText(opt.frontLabel).width / 2 + 3;
+        ctx.fillText(opt.frontLabel, Math.max(hw, Math.min(cw - hw, fp.x + dx / m * 22)), fp.y + dy / m * 12);
+      }
+    }
+    items.sort((a, b) => b.d - a.d);                  // far first
+    items.forEach((it) => {
+      arrow(ctx, o, it.pos, cols[it.i], opt.thin ? 2 : 2.6, false, opt.thin ? 7 : 9);
+      const dx = it.pos.x - o.x, dy = it.pos.y - o.y, m = Math.hypot(dx, dy) || 1;
+      ctx.font = "600 " + (opt.thin ? 11 : 13) + "px " + css("--mono").split(",")[0];
+      ctx.fillStyle = cols[it.i]; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(names[it.i], it.pos.x + dx / m * 11, it.pos.y + dy / m * 11);
+    });
+    ctx.fillStyle = css("--ink"); ctx.beginPath(); ctx.arc(o.x, o.y, opt.thin ? 2 : 2.5, 0, 7); ctx.fill();
+  }
+
+  /* ---------- the test chair: front faces -Y, pivot at the base, 0.95 m tall ----------
+     One armrest, on +X only, so a mirror shows. */
+  const B = (x0, x1, y0, y1, z0, z1, c) => ({ x0, x1, y0, y1, z0, z1, c });
+  const CHAIR = [
+    B(-0.22, 0.22, -0.22, 0.22, 0.41, 0.46, 0),       // seat
+    B(-0.22, -0.18, -0.22, -0.18, 0, 0.41, 0), B(0.18, 0.22, -0.22, -0.18, 0, 0.41, 0),
+    B(-0.22, -0.18, 0.18, 0.22, 0, 0.41, 0), B(0.18, 0.22, 0.18, 0.22, 0, 0.41, 0),
+    B(-0.22, 0.22, 0.17, 0.22, 0.46, 0.95, 0),        // backrest
+    B(0.19, 0.23, -0.2, -0.16, 0.46, 0.66, 1),         // armrest post
+    B(0.19, 0.23, -0.21, 0.17, 0.64, 0.68, 1)          // armrest rail
+  ];
+  const FACES = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
+  function boxCorners(b) {
+    const c = [];
+    for (const x of [b.x0, b.x1]) for (const y of [b.y0, b.y1]) for (const z of [b.z0, b.z1]) c.push([x, y, z]);
+    return c;  // index = xi*4 + yi*2 + zi
+  }
+  function shade(hex, k) {
+    const m = hex.replace("#", ""); const n = parseInt(m.length === 3 ? m.split("").map((c) => c + c).join("") : m, 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return "rgb(" + Math.round(r * k) + "," + Math.round(g * k) + "," + Math.round(b * k) + ")";
+  }
+  /* M: 3x3 applied to the chair in the physical frame (rotation, mirror and a visual scale); off: offset */
+  function drawChair(ctx, P, M, off) {
+    off = off || [0, 0, 0];
+    const cols = [css("--model"), css("--model-2")];
+    const light = [0.35, -0.55, 0.76];
+    const polys = [];
+    CHAIR.forEach((b) => {
+      const cs = boxCorners(b).map((p) => { const q = mv(M, p); return [q[0] + off[0], q[1] + off[1], q[2] + off[2]]; });
+      FACES.forEach((f) => {
+        const a = cs[f[0]], bb = cs[f[1]], c = cs[f[2]];
+        const u = [bb[0] - a[0], bb[1] - a[1], bb[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+        let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+        const nl = Math.hypot(n[0], n[1], n[2]) || 1; n = n.map((x) => x / nl);
+        const k = 0.62 + 0.38 * Math.abs(n[0] * light[0] + n[1] * light[1] + n[2] * light[2]);
+        const pts = f.map((i) => P(cs[i]));
+        polys.push({ pts, d: pts.reduce((s, p) => s + p.d, 0) / 4, col: shade(cols[b.c], k) });
+      });
+    });
+    polys.sort((a, b) => b.d - a.d);
+    ctx.lineJoin = "round"; ctx.lineWidth = 0.6; ctx.strokeStyle = "rgba(0,0,0,0.25)";
+    polys.forEach((p) => {
+      ctx.beginPath(); ctx.moveTo(p.pts[0].x, p.pts[0].y);
+      for (let i = 1; i < 4; i++) ctx.lineTo(p.pts[i].x, p.pts[i].y);
+      ctx.closePath(); ctx.fillStyle = p.col; ctx.fill(); ctx.stroke();
+    });
+  }
+  function drawGround(ctx, P, half, step) {
+    ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1;
+    for (let v = -half; v <= half + 1e-9; v += step) {
+      let a = P([v, -half, 0]), b = P([v, half, 0]); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      a = P([-half, v, 0]); b = P([half, v, 0]); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+  }
+
+  /* ================= gallery ================= */
+  const usdUp = { v: saved.usdUp === "Y" ? "Y" : "Z" };
+  const cardsEl = $("cards");
+  CARDS.forEach((c) => {
+    const el = document.createElement("article");
+    el.className = "card";
+    el.innerHTML =
+      '<canvas role="img"></canvas><h3>' + c.name + "</h3>" +
+      "<dl><dt>Up</dt><dd><b data-up></b></dd>" +
+      "<dt>Hand</dt><dd>" + (c.hand === "left" ? '<span class="left">left</span>' : "right") + "</dd>" +
+      "<dt>" + (c.frontWord === "forward" ? "Forward" : "Front") + "</dt><dd data-front>" + c.frontText + "</dd>" +
+      "<dt>Unit</dt><dd>" + c.unit + "</dd></dl>" +
+      (c.usd ? '<div class="usd-up" role="group" aria-label="USD upAxis"><button type="button" data-u="Y">upAxis Y</button><button type="button" data-u="Z">upAxis Z</button></div>' : "") +
+      "<p>" + c.note + "</p>";
+    cardsEl.appendChild(el);
+    c.el = el; c.cv = el.querySelector("canvas");
+    if (c.usd) el.querySelectorAll("[data-u]").forEach((b) => b.addEventListener("click", () => { usdUp.v = b.dataset.u; save({ usdUp: usdUp.v }); drawCards(); }));
+  });
+  const upLetter = (R) => { for (let i = 0; i < 3; i++) if (Math.abs(R[i][2]) > 0.5) return (R[i][2] > 0 ? "+" : "−") + "XYZ"[i]; return "?"; };
+  function drawCards() {
+    CARDS.forEach((c) => {
+      const R = c.usd ? (usdUp.v === "Y" ? YUP : ZUP) : c.R;
+      const { ctx, w, h } = setup(c.cv);
+      const P = projector(w / 2, h * 0.6, Math.min(w, h) * 0.32);
+      const front = c.front ? mv(T(R), c.front) : null;
+      drawAxes(ctx, P, R, 1, { front, frontLabel: c.front ? c.frontWord : "" });
+      const upTxt = c.usd ? "upAxis " + usdUp.v + (usdUp.v === "Y" ? " (also when unset)" : " (Blender)") : c.up;
+      c.el.querySelector("[data-up]").textContent = upTxt;
+      if (c.usd) c.el.querySelectorAll("[data-u]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.u === usdUp.v)));
+      c.cv.setAttribute("aria-label", c.name + " axes: " + upLetter(R).replace("+", "") + " points up, " + c.hand + "-handed" +
+        (c.front ? ", " + c.frontWord + " " + c.frontText : "") + ", one unit is " + c.unit + ".");
+    });
+  }
+
+  /* ================= converter ================= */
+  const srcSel = $("src"), tgtSel = $("tgt");
+  const GROUPS = [["Programs", ["blender", "maya", "houdini", "max", "unreal", "unity"]], ["Files", ["gltf", "usdz", "usdy", "usdym", "fbx"]]];
+  [srcSel, tgtSel].forEach((sel) => {
+    GROUPS.forEach(([g, keys]) => {
+      const og = document.createElement("optgroup"); og.label = g;
+      keys.forEach((k) => { const o = document.createElement("option"); o.value = k; o.textContent = SYS[k].name + " (" + SYS[k].up + " up, " + UNITS[SYS[k].unit].short + ")"; og.appendChild(o); });
+      sel.appendChild(og);
+    });
+  });
+  srcSel.value = SYS[saved.src] ? saved.src : "blender";
+  tgtSel.value = SYS[saved.tgt] ? saved.tgt : "unreal";
+
+  /* A maps physical metres into a system's coordinates */
+  const A = (s) => sc(s.R, UNITS[s.unit].per);
+  const Ainv = (s) => sc(T(s.R), 1 / UNITS[s.unit].per);
+
+  /* what the numbers do when nobody converts: physical = A_t^-1 A_s */
+  function rawEffect(s, t) {
+    const M = mul(Ainv(t), A(s));
+    const d = det(M), size = Math.cbrt(Math.abs(d));
+    const N = sc(M, 1 / size);
+    const mirrored = d < 0;
+    const NR = mirrored ? mul(N, [[1, 0, 0], [0, -1, 0], [0, 0, 1]]) : N;   // undo a front-back mirror to read the turn
+    const up = mv(NR, [0, 0, 1]), fr = mv(NR, [0, -1, 0]);
+    let pose = "upright";
+    if (near(up, [0, 0, -1])) pose = "upside down";
+    else if (!near(up, [0, 0, 1])) {
+      if (near(fr, [0, 0, 1])) pose = "on its back";
+      else if (near(fr, [0, 0, -1])) pose = "on its face";
+      else pose = "on its side";
+    } else if (!near(fr, [0, -1, 0])) {
+      pose = near(fr, [0, 1, 0]) ? "turned 180°" : "turned 90°";
+    }
+    return { M, N, size, mirrored, pose };
+  }
+  const times = (f) => { const r = f >= 1 ? f : 1 / f; return r < 1.05 ? null : (Math.abs(r - Math.round(r)) < 0.05 ? Math.round(r) : r.toFixed(1)) + "×"; };
+
+  /* ---------- the settings ---------- */
+  const PROG = ["blender", "maya", "houdini", "max", "unreal", "unity"];
+  function route(s, t) {
+    const S = SYS[s], Tt = SYS[t];
+    if (Tt.fmt) return Tt.fmt;
+    if (S.fmt) return S.fmt;
+    if (t === "unreal") return "usd";
+    if (t === "unity") return "fbx";
+    if (t === "max" || s === "max") return "fbx";
+    return "usd";
+  }
+  const unitWord = { m: "Meters", cm: "Centimeters", in: "Inches" };
+  function exportSteps(s, fmt, t) {
+    const T_ = SYS[t];
+    if (s === "blender") {
+      if (fmt === "usd") {
+        const up = T_.fmt === "usd" ? T_.up : (SYS[t].up === "Y" && t !== "unreal" ? "Y" : "Z");
+        const unit = T_.fmt === "usd" ? T_.unit : "m";
+        return [
+          "<b>File › Export › Universal Scene Description (.usd*)</b>",
+          "General › <b>Units: " + unitWord[unit] + "</b>. The file says metersPerUnit = " + (unit === "m" ? "1" : "0.01") + ". Blender ignores the scene’s Unit Scale here.",
+          up === "Y" ? "<b>Convert Orientation on</b>: Forward Axis −Z, Up Axis Y. The file says upAxis = \"Y\"." :
+            "<b>Convert Orientation off</b> (the default). The file says upAxis = \"Z\", Blender’s own.",
+          "Object Types › <b>World Dome Light off</b>, or Blender’s world arrives as a light.",
+          "Name it <code>.usda</code> once and read the top in a text editor: upAxis and metersPerUnit."
+        ];
+      }
+      if (fmt === "fbx") {
+        const unity = t === "unity";
+        return [
+          "<b>File › Export › FBX (.fbx)</b>",
+          "Transform › <b>Forward: −Z Forward, Up: Y Up</b> (the defaults). The file says Y up.",
+          "<b>Apply Unit on</b> (the default), Scale 1.00.",
+          unity ? "<b>Apply Scalings: FBX Units Scale</b> and <b>Apply Transform on</b>. Objects then arrive with rotation 0 and scale 1. Apply Transform is marked experimental: not for armatures." :
+            "Apply Scalings: <b>All Local</b> (the default) writes centimetres, with Scale 100 and Rotation X −90 on each object; Unreal’s importer undoes it. For a clean file: FBX Units Scale and Apply Transform.",
+          "Apply rotation and scale first (<kbd>Ctrl</kbd> <kbd>A</kbd>), pivot at the base."
+        ];
+      }
+      if (fmt === "gltf") return [
+        "<b>File › Export › glTF 2.0 (.glb/.gltf)</b>, Format: glTF Binary (.glb)",
+        "Transform › <b>+Y Up on</b> (the default). Switched off, the model lies on its face in every viewer.",
+        "No unit option: glTF is always metres. Keep Blender’s Unit Scale at 1.0.",
+        "Check it: Khronos glTF Validator, then a second viewer."
+      ];
+    }
+    const name = SYS[s].name;
+    if (SYS[s].fmt) return null;
+    if (fmt === "usd") return [
+      "Export USD from " + name + ". A good exporter writes its own up axis (" + SYS[s].up + ") and unit (" + UNITS[SYS[s].unit].name + ") into the file: upAxis and metersPerUnit.",
+      "Open it once as <code>.usda</code> and read both at the top. If they don’t describe the numbers, every importer goes wrong."
+    ];
+    if (fmt === "fbx") return [
+      "Export FBX from " + name + ". The file stores its up axis, front axis and unit (UpAxis, FrontAxis, UnitScaleFactor).",
+      "Freeze or reset rotation and scale first, pivot at the base."
+    ];
+    if (fmt === "gltf") return s === "maya" ?
+      ["Maya has no glTF export of its own: export USD and take it through Blender (Week 1), or install a free exporter."] :
+      ["Export glTF from " + name + (s === "houdini" ? " (the glTF ROP)" : "") + ": the exporter converts to Y up and metres."];
+    return null;
+  }
+  function importSteps(fmt, t) {
+    if (t === "unreal") {
+      if (fmt === "usd") return [
+        "<b>File › Import Into Level</b>, pick the .usd*. Or keep it live: Window › Virtual Production › <b>USD Stage</b>, File › Open.",
+        "There is no axis or unit setting: Unreal reads upAxis and metersPerUnit, flips Y and converts to centimetres.",
+        "Measure one object you know: our chair must read 95 cm."
+      ];
+      if (fmt === "fbx") return [
+        "Drag the .fbx into the Content Browser.",
+        "<b>Convert Scene on</b> and <b>Convert Scene Unit on</b> (the defaults): Z up, centimetres, Y flipped.",
+        "<b>Force Front XAxis</b> only if the model should face +X, Unreal’s forward.",
+        "Measure one object you know."
+      ];
+      if (fmt === "gltf") return ["Import the .glb into the Content Browser. glTF is always Y up and metres, so Unreal knows what it gets.", "Measure one object you know."];
+    }
+    if (t === "unity") return [
+      "Drag the file into the Project window’s Assets.",
+      "Inspector › Model: <b>Convert Units on</b>, <b>Bake Axis Conversion on</b>, Scale Factor 1.",
+      "Check the Transform: rotation 0, scale 1."
+    ];
+    if (t === "blender") {
+      if (fmt === "usd") return [
+        "<b>File › Import › Universal Scene Description (.usd*)</b>",
+        "<b>Apply Unit Conversion Scale on</b> (the default): metersPerUnit becomes metres.",
+        "A Y-up stage is turned upright for you; a missing metersPerUnit reads as centimetres (tested in Blender 5.2).",
+        "N panel › Item: check Dimensions."
+      ];
+      if (fmt === "fbx") return [
+        "<b>File › Import › FBX (.fbx)</b>",
+        "Leave Manual Orientation off: the importer reads the file’s axes. Scale 1.0.",
+        "Then apply rotation and scale (<kbd>Ctrl</kbd> <kbd>A</kbd>) if the object arrives at Rotation X 90 or Scale 0.01."
+      ];
+      if (fmt === "gltf") return ["<b>File › Import › glTF 2.0</b>. Nothing to set: Y up becomes Z up, metres stay metres."];
+    }
+    if (SYS[t].fmt) return null;
+    return [
+      "Import the " + (fmt === "usd" ? "USD" : fmt === "fbx" ? "FBX" : "glTF") + " file in " + SYS[t].name + ". Its importer reads the file’s up axis and unit and converts them to " + SYS[t].up + " up and " + UNITS[SYS[t].unit].name + ".",
+      "Measure one object you know."
+    ];
+  }
+  const FMTNAME = { usd: "USD", fbx: "FBX", gltf: "glTF (GLB)" };
+
+  function renderFix(s, t) {
+    const box = $("fix");
+    if (s === t) { box.innerHTML = '<p class="route">Same program, same convention: nothing to convert.</p>'; return; }
+    const fmt = route(s, t);
+    const S = SYS[s], Tt = SYS[t];
+    let html = "";
+    const ex = exportSteps(s, fmt, t), im = importSteps(fmt, t);
+    if (!S.fmt && !Tt.fmt) html += '<p class="route">Route: <b>' + FMTNAME[fmt] + "</b>" +
+      (s === "blender" && t === "unreal" ? ", as in Week 10. FBX or glTF works for one late object." : t === "unity" ? ", Unity’s own format." : ".") + "</p>";
+    if (S.fmt && Tt.fmt) html += '<p class="route">From one file format to another: <b>import it into Blender, check it, export again</b>. Blender’s USD, FBX and glTF importers read the file’s axes and unit.</p>';
+    if (ex) html += "<h4>Export from " + S.name + (Tt.fmt ? "" : " as " + FMTNAME[fmt]) + "</h4><ol>" + ex.map((x) => "<li>" + x + "</li>").join("") + "</ol>";
+    if (im) html += "<h4>Import into " + Tt.name + "</h4><ol>" + im.map((x) => "<li>" + x + "</li>").join("") + "</ol>";
+    if (!S.fmt && s !== "blender" && ex) html += '<p class="route">The course’s settings are for Blender. In ' + S.name + ", check the exporter’s up axis and unit options before you trust them.</p>";
+    box.innerHTML = html;
+  }
+
+  function renderCalc(s, t) {
+    const S = SYS[s], Tt = SYS[t];
+    const C = mul(A(Tt), Ainv(S));                    // source coordinates -> target coordinates
+    $("inLabel").textContent = "In " + S.name + " · " + UNITS[S.unit].name;
+    $("outLabel").textContent = "In " + Tt.name + " · " + UNITS[Tt.unit].name;
+    const v = ["ix", "iy", "iz"].map((id) => { const n = parseFloat($(id).value); return isFinite(n) ? n : 0; });
+    const o = mv(C, v);
+    $("ox").textContent = fmt(o[0]); $("oy").textContent = fmt(o[1]); $("oz").textContent = fmt(o[2]);
+    $("matrix").innerHTML = C.map((r) => "<tr>" + r.map((x) => '<td class="' + (Math.abs(x) < 1e-9 ? "zero" : "") + '">' + fmt(x) + "</td>").join("") + "</tr>").join("");
+    const L = ["x", "y", "z"];
+    $("formula").innerHTML = C.map((r, i) => {
+      const terms = r.map((x, j) => ({ x, j })).filter((q) => Math.abs(q.x) > 1e-9).map((q) => {
+        const sign = q.x < 0 ? "−" : "", m = Math.abs(q.x);
+        return sign + (Math.abs(m - 1) < 1e-9 ? "" : fmt(m) + " · ") + '<span class="' + L[q.j] + '">' + L[q.j] + "</span>";
+      });
+      return '<span class="' + L[i] + '">' + L[i] + "′</span> = " + terms.join(" + ").replace("+ −", "− ");
+    }).join("<br>");
+    // rotations
+    const N = mul(Tt.R, T(S.R)), d = det(N);
+    let rot;
+    if (near(N[0], [1, 0, 0]) && near(N[1], [0, 1, 0]) && near(N[2], [0, 0, 1])) rot = "Same axes: rotations keep their numbers. Only the unit changes" + (S.unit === Tt.unit ? ", and here not even that." : ".");
+    else if (d < 0 && Tt.up === S.up) rot = "Same up axis, different hands: turns about " + S.up + " change sign." +
+      ((s === "blender" && t === "unreal") || (s === "unreal" && t === "blender") ? " Our cutting board, −14° in Blender, reads +14° in Unreal." : "") +
+      " Let the importer convert; never type rotations across.";
+    else rot = "The axes trade places, so rotations change axis as well as number. Let the exporter and importer convert them; never type them across by hand.";
+    $("rot").textContent = rot;
+  }
+
+  function drawConverter() {
+    const s = srcSel.value, t = tgtSel.value;
+    const e = rawEffect(SYS[s], SYS[t]);
+    const vis = e.size > 1.05 ? 1.6 : e.size < 0.95 ? 0.55 : 1;
+    // raw view
+    let c = setup($("cvRaw"));
+    let P = projector(c.w / 2, c.h * 0.66, Math.min(c.w, c.h) * 0.42);
+    drawGround(c.ctx, P, 0.6, 0.2);
+    drawAxes(c.ctx, P, SYS[t].R, 0.5, { thin: true });
+    const Mraw = sc(e.N, vis);
+    // keep it on the ground: lift by the lowest point
+    let minz = 1e9; CHAIR.forEach((b) => boxCorners(b).forEach((p) => { minz = Math.min(minz, mv(Mraw, p)[2]); }));
+    drawChair(c.ctx, P, Mraw, [0, 0, -minz]);
+    const label = [];
+    const tm = times(e.size);
+    if (tm) label.push(tm + (e.size > 1 ? " too big" : " too small"));
+    if (e.pose !== "upright") label.push(e.pose === "on its back" || e.pose === "on its face" || e.pose === "on its side" ? "lying " + e.pose : e.pose);
+    if (e.mirrored) label.push("mirrored");
+    c.ctx.font = "600 12px " + css("--mono").split(",")[0]; c.ctx.fillStyle = css("--fail"); c.ctx.textAlign = "left"; c.ctx.textBaseline = "top";
+    if (tm) {
+      const hm = 0.95 * e.size;
+      const real = hm < 0.1 ? fmt(Math.round(hm * 10000) / 100) + " cm" : fmt(Math.round(hm * 10) / 10) + " m";
+      c.ctx.fillText("Really " + real + " tall", 10, 10);
+      c.ctx.fillStyle = css("--ink-3"); c.ctx.font = "400 11px " + css("--mono").split(",")[0];
+      c.ctx.fillText(e.size > 1 ? "drawn smaller" : "drawn bigger", 10, 27);
+    }
+    $("rawSum").textContent = label.length ? label.join(", ").replace(/^./, (m) => m.toUpperCase()) : "Nothing goes wrong here";
+    $("cvRaw").setAttribute("aria-label", "The chair arriving in " + SYS[t].name + " without conversion: " + ($("rawSum").textContent));
+    // fixed view
+    c = setup($("cvFix"));
+    P = projector(c.w / 2, c.h * 0.66, Math.min(c.w, c.h) * 0.42);
+    drawGround(c.ctx, P, 0.6, 0.2);
+    drawAxes(c.ctx, P, SYS[t].R, 0.5, { thin: true });
+    drawChair(c.ctx, P, [[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+    $("cvFix").setAttribute("aria-label", "The chair arriving in " + SYS[t].name + " with the right settings: upright, facing front, 95 cm tall.");
+    // diagnosis
+    const L = [];
+    const S = SYS[s], Tt = SYS[t];
+    if (s === t) L.push('<li class="ok">Same convention on both sides.</li>');
+    else {
+      if (tm) L.push("<li><b>" + tm + (e.size > 1 ? " too big" : " too small") + "</b>: " + S.name + " counts in " + UNITS[S.unit].name + ", " + Tt.name + " in " + UNITS[Tt.unit].name + ". The numbers survive the trip, their unit doesn’t.</li>");
+      else L.push('<li class="ok">Same unit: ' + UNITS[S.unit].name + ".</li>");
+      if (e.pose !== "upright") L.push("<li><b>" + (e.pose.startsWith("on") ? "Lying " + e.pose : e.pose.replace(/^./, (m) => m.toUpperCase())) + "</b>: " + S.name + " is " + S.up + " up, " + Tt.name + " is " + Tt.up + " up. Nobody converted the up axis.</li>");
+      else L.push('<li class="ok">' + (S.up === Tt.up ? "Same up axis: " + S.up + "." : "Upright.") + "</li>");
+      if (e.mirrored) L.push("<li><b>Mirrored</b>: " + S.name + " is " + S.hand + "-handed, " + Tt.name + " " + Tt.hand + "-handed. Look at the armrest: it changed sides" + (e.pose === "upright" ? ", and the back swapped to the front." : ".") + "</li>");
+      else L.push('<li class="ok">Same hand: both ' + S.hand + "-handed.</li>");
+    }
+    $("diag").innerHTML = L.join("");
+  }
+  function renderConverter() {
+    drawConverter(); renderFix(srcSel.value, tgtSel.value); renderCalc(srcSel.value, tgtSel.value);
+    save({ src: srcSel.value, tgt: tgtSel.value });
+  }
+  srcSel.addEventListener("change", renderConverter);
+  tgtSel.addEventListener("change", renderConverter);
+  $("swap").addEventListener("click", () => { const a = srcSel.value; srcSel.value = tgtSel.value; tgtSel.value = a; renderConverter(); });
+  ["ix", "iy", "iz"].forEach((id) => $(id).addEventListener("input", () => renderCalc(srcSel.value, tgtSel.value)));
+
+  /* ---------- the shared turn ---------- */
+  function setYaw(v) {
+    VIEW.yaw = v;
+    ["yawA", "yawB"].forEach((id) => { $(id).value = v; $(id + "Out").textContent = String(v).replace("-", "−") + "°"; });
+    save({ yaw: v });
+    drawCards(); drawConverter();
+  }
+  ["yawA", "yawB"].forEach((id) => $(id).addEventListener("input", (e) => setYaw(+e.target.value)));
+  $("yawReset").addEventListener("click", () => setYaw(-40));
+
+  /* ================= pivot ================= */
+  const piv = { where: "base", angle: 0, anim: 0 };
+  const PIVOTS = {
+    base: { p: [0, 0, 0], note: "At the base: the chair turns on the spot and stands at height 0. Right for chairs, tables and pots." },
+    centre: { p: [0, 0, 0.475], note: "In the middle of the bounding box: it turns on the spot, but snaps half into the floor when you place it at height 0." },
+    beside: { p: [0.6, 0.3, 0], note: "Beside it: it swings in a wide arc around empty space. That is the chair from Week 10 that spun around a point beside it." }
+  };
+  function drawPivot() {
+    const { ctx, w, h } = setup($("cvPivot"));
+    const pv = PIVOTS[piv.where].p;
+    const P = projector(w / 2 - w * 0.05, h * 0.68, Math.min(w, h) * 0.42);
+    drawGround(ctx, P, 0.8, 0.2);
+    // floor level for "centre": the chair is placed with its pivot at height 0
+    const lift = piv.where === "centre" ? -pv[2] : 0;
+    const a = piv.angle * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+    const Rz = [[ca, -sa, 0], [sa, ca, 0], [0, 0, 1]];
+    // rotate the chair about the pivot: p' = R(p - pv) + pv
+    const off = mv(Rz, [-pv[0], -pv[1], -pv[2]]);
+    drawChair(ctx, P, Rz, [off[0] + pv[0], off[1] + pv[1], off[2] + pv[2] + lift]);
+    if (piv.where === "centre") {
+      // the floor cuts through the chair: draw it again, over the half below it
+      ctx.save(); ctx.globalAlpha = 0.55; ctx.fillStyle = css("--ground");
+      const q = [[-0.8, -0.8], [0.8, -0.8], [0.8, 0.8], [-0.8, 0.8]].map((v) => P([v[0], v[1], 0]));
+      ctx.beginPath(); ctx.moveTo(q[0].x, q[0].y); q.slice(1).forEach((v) => ctx.lineTo(v.x, v.y)); ctx.closePath(); ctx.fill();
+      ctx.restore(); drawGround(ctx, P, 0.8, 0.2);
+    }
+    const pp = P([pv[0], pv[1], pv[2] + lift]);
+    ctx.fillStyle = css("--model-2"); ctx.strokeStyle = css("--surface"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(pp.x, pp.y, 5.5, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.font = "500 11px " + css("--mono").split(",")[0]; ctx.fillStyle = css("--ink-2"); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.fillText("pivot", pp.x + 9, pp.y - 9);
+    if (piv.where === "centre") {
+      const g0 = P([-0.6, -0.6, 0]); ctx.fillStyle = css("--fail"); ctx.fillText("floor: height 0", 8, h - 14);
+      void g0;
+    }
+    $("cvPivot").setAttribute("aria-label", "The chair with its pivot " + { base: "at the base", centre: "in the middle", beside: "beside it" }[piv.where] + ", turned " + Math.round(piv.angle) + " degrees.");
+    $("pivNote").textContent = PIVOTS[piv.where].note;
+  }
+  document.querySelectorAll("[data-piv]").forEach((b) => b.addEventListener("click", () => {
+    piv.where = b.dataset.piv; piv.angle = 0;
+    document.querySelectorAll("[data-piv]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    drawPivot();
+  }));
+  $("turnBtn").addEventListener("click", () => {
+    const from = piv.angle, to = from + 90;
+    if (reduced) { piv.angle = to % 360; drawPivot(); return; }
+    cancelAnimationFrame(piv.anim);
+    const t0 = performance.now(), dur = 650;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      piv.angle = from + (to - from) * e; drawPivot();
+      if (k < 1) piv.anim = requestAnimationFrame(step); else piv.angle = to % 360;
+    };
+    piv.anim = requestAnimationFrame(step);
+  });
+
+  /* ================= quiz ================= */
+  const QS = [
+    { q: "A chair arrives in Unreal lying on its back and 100× too large. Its USD file says upAxis = \"Z\" and metersPerUnit = 1, but it came from a Y-up program working in centimetres. Which setting?",
+      a: ["The exporter’s up axis and unit: export again so the file says what its numbers are (upAxis Y, metersPerUnit 0.01)", "In Unreal’s Details panel: Rotation X 90 and Scale 0.01", "Force Front XAxis in Unreal’s importer", "Switch Unreal to metres"], c: 0,
+      why: "On its back: an up axis nobody converted. 100× too large: centimetre numbers read as metres. Unreal trusts upAxis and metersPerUnit, so fix them at the source and export again. Rotating and scaling in Unreal hides the mistake until the next import, and Unreal always counts in centimetres." },
+    { q: "A point sits at (1, 2, 3) in Blender, in metres. Where does Unreal’s importer put it?",
+      a: ["(100, 200, 300)", "(100, −200, 300)", "(1, −2, 3)", "(100, 300, 200)"], c: 1,
+      why: "Metres become centimetres, ×100. Both are Z up, but Unreal is left-handed, so Y flips: Blender’s +Y is Unreal’s −Y. (100, 300, 200) would be a Y-up program." },
+    { q: "Your GLB arrives lying down in the Babylon.js Sandbox, its top pointing at you. In Blender it stood upright. What happened?",
+      a: ["The normals are flipped", "glTF can’t store Z up, so it always lies down", "+Y Up was switched off in Blender’s glTF export", "Blender’s Unit Scale was 0.01"], c: 2,
+      why: "glTF is Y up by specification. Blender’s exporter converts its Z up to Y up only while Transform › +Y Up is on, which is the default. Off, Blender’s up arrives as glTF’s front, and the model lies on its face." },
+    { q: "In Unreal your chair swings around a point beside it when you rotate it. What do you fix?",
+      a: ["Its pivot: in Blender, set the origin at the base, then export again", "Apply Scale in Blender", "Turn off Convert Scene in the FBX importer", "Rotate it around the 3D cursor"], c: 0,
+      why: "Rotation happens around the pivot. Blender calls it the origin: Object › Set Origin, or place the 3D cursor at the base and use Origin to 3D Cursor. The 3D cursor is Blender’s own; Unreal never sees it." },
+    { q: "Which file says nothing about its unit, and is read as centimetres?",
+      a: ["A glTF file", "A USD file without metersPerUnit", "An FBX file", "A .blend file"], c: 1,
+      why: "A USD stage with no metersPerUnit falls back to 0.01: centimetres. That is how a metre-sized asset arrives 100 times too small. glTF is always metres, and FBX writes its unit into the file." },
+    { q: "A cutting board is turned −14° about Z in Blender. What does Unreal show after import?",
+      a: ["−14°", "+14°", "76°", "−104°"], c: 1,
+      why: "Both are Z up, so nothing lies down, but Unreal is left-handed: turns about Z change sign. The importer converts it; it only bites when you type numbers across by hand." },
+    { q: "Before exporting, your chair’s N panel says Scale 100 and Rotation X −90. What do you do?",
+      a: ["Nothing: Unreal ignores object transforms", "Scale it to 0.01 in Unreal after import", "Apply Location, Rotation and Scale, all three", "Save a version, then Ctrl A › Rotation & Scale"], c: 3,
+      why: "Apply rotation and scale, so the mesh itself is 95 cm and upright, with rotation 0 and scale 1. Leave location alone: applying it moves the pivot to the world origin. Save a version first." }
+  ];
+  let deck = [], qi = 0, score = 0, answered = false, misses = [];
+  const qChoices = $("qChoices");
+  function best() { const b = load().best; return typeof b === "number" ? b : null; }
+  function showBest() { const b = best(); $("qBest").textContent = b == null ? "–" : b + "/" + QS.length; }
+  function qStart() {
+    deck = QS.map((q) => q); qi = 0; score = 0; misses = [];
+    $("qTotal").textContent = deck.length; $("qResult").hidden = true; $("play").hidden = false;
+    showBest(); qShow();
+  }
+  function qShow() {
+    const q = deck[qi]; answered = false;
+    $("qPos").textContent = qi + 1; $("qScore").textContent = score;
+    $("qProg").style.width = (qi / deck.length * 100) + "%";
+    $("qText").textContent = q.q;
+    qChoices.innerHTML = "";
+    q.a.forEach((t, i) => {
+      const b = document.createElement("button"); b.type = "button";
+      b.innerHTML = '<kbd aria-hidden="true">' + (i + 1) + "</kbd><span></span>";
+      b.querySelector("span").textContent = t;
+      b.addEventListener("click", () => qAnswer(i));
+      qChoices.appendChild(b);
+    });
+    $("qFb").hidden = true;
+    $("qLive").textContent = "Question " + (qi + 1) + " of " + deck.length + ".";
+  }
+  function qAnswer(i) {
+    if (answered) return; answered = true;
+    const q = deck[qi], ok = i === q.c;
+    if (ok) score++; else misses.push(q);
+    $("qScore").textContent = score;
+    [...qChoices.children].forEach((b, j) => { b.disabled = true; if (j === q.c) b.classList.add("right"); else if (j === i) b.classList.add("wrong"); });
+    $("qVerdict").textContent = ok ? "✓ Right." : "✗ Not quite. The answer: " + q.a[q.c] + ".";
+    $("qWhy").textContent = q.why;
+    $("qFb").hidden = false; $("qFb").className = "feedback " + (ok ? "right" : "wrong");
+    $("qNext").textContent = qi + 1 < deck.length ? "Next question →" : "See your result →";
+    $("qNext").focus();
+  }
+  function qAdvance() {
+    qi++;
+    if (qi < deck.length) { qShow(); qChoices.firstChild.focus(); return; }
+    $("qProg").style.width = "100%";
+    const prev = best();
+    if (prev == null || score > prev) save({ best: score });
+    $("play").hidden = true; $("qResult").hidden = false;
+    $("qFinal").textContent = score + " of " + deck.length;
+    $("qFinalNote").textContent = score === deck.length ? "All of them. You can find the setting behind every broken import." : (prev != null && score > prev ? "A new best. " : "") + "Worth another look:";
+    const ul = $("qMisses"); ul.innerHTML = "";
+    misses.forEach((q) => { const li = document.createElement("li"); const b = document.createElement("b"); b.textContent = q.a[q.c] + ". "; li.appendChild(b); li.appendChild(document.createTextNode(q.why)); ul.appendChild(li); });
+    showBest(); $("qAgain").focus();
+  }
+  $("qNext").addEventListener("click", qAdvance);
+  $("qAgain").addEventListener("click", () => { qStart(); qChoices.firstChild.focus(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if ($("play").hidden || answered) return;
+    const r = $("quiz").getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) { e.preventDefault(); qAnswer(n - 1); }
+  });
+
+  /* ================= start ================= */
+  function drawAll() { drawCards(); drawConverter(); drawPivot(); }
+  setYaw(VIEW.yaw);
+  renderConverter(); drawPivot(); qStart();
+  let rt = 0;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawAll, 120); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+})();
+</script>
+</body>
+</html>

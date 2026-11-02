@@ -1,0 +1,1433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lens &amp; Focus · 3D Design Foundations</title>
+<meta name="description" content="A virtual camera to play with: focal length, sensor, distance, f-stop and focus, with field of view and depth of field as numbers, a view from above, 18 mm against 85 mm, a guess-the-lens quiz, and where the settings live in Blender 5.2 and Unreal Engine 5.8 — 3D Design Foundations, Week 9.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --sharp: #2439D4;
+    --pass: #1B7A4B;
+    --fail: #B3261E;
+    --warm: #B8780F;
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --sharp: #6B7FFF;
+      --pass: #4ECB8A;
+      --fail: #FF6B6B;
+      --warm: #F0B54A;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --sharp: #6B7FFF;
+    --pass: #4ECB8A;
+    --fail: #FF6B6B;
+    --warm: #F0B54A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 5px 9px;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 40px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin: 26px 0 10px;
+  }
+
+  p.lede { font-size: 15.5px; max-width: 64ch; margin: 14px 0; text-wrap: pretty; }
+  p.note { font-size: 14.5px; color: var(--ink-2); max-width: 66ch; margin: 14px 0; text-wrap: pretty; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 18px;
+  }
+
+  .label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 8px;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  button[disabled] { opacity: 0.45; cursor: default; }
+  button[disabled]:hover { border-color: var(--rule); color: var(--ink-2); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 5px;
+    white-space: nowrap;
+  }
+
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ---------- the camera view ---------- */
+  /* the renders are pictures of a daylight scene; their colours are drawn, never themed */
+  .frame { margin: 14px 0 0; }
+  .frame canvas { display: block; width: 100%; background: #C9D3DA; border: 1px solid var(--rule); border-radius: 2px; }
+  .frame figcaption { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-top: 6px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+  .modes { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+  .modes .label { margin: 0 6px 0 0; }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; margin-top: 16px; }
+  .control { min-width: 0; }
+  .control.wide { grid-column: 1 / -1; }
+  .control-row { display: flex; gap: 10px; align-items: center; }
+  input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--accent); height: 28px; margin: 0; }
+  input[type="number"], select {
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 6px 8px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+  input[type="number"] { width: 84px; flex: 0 0 auto; }
+  select { width: 100%; }
+  .unit { font-family: var(--mono); font-size: 12px; color: var(--ink-3); flex: 0 0 auto; }
+  output.big-out { font-family: var(--mono); font-size: 14px; color: var(--ink); min-width: 52px; text-align: right; flex: 0 0 auto; }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .presets button { font-family: var(--mono); font-size: 12px; padding: 6px 10px; }
+  .check { display: flex; gap: 8px; align-items: center; font-size: 14px; margin: 0 0 6px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+  .readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 18px 0 0; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); }
+  .readouts div { padding: 10px 12px; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); min-width: 0; }
+  .readouts div:nth-child(-n+3) { border-top: 0; }
+  .readouts div:nth-child(3n+1) { border-left: 0; }
+  .readouts dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .readouts dd { margin: 2px 0 0; font-family: var(--mono); font-size: 16px; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .readouts dd small { display: block; font-size: 11px; color: var(--ink-3); }
+  .readouts .hl dd { color: var(--sharp); }
+
+  .typein { margin-top: 12px; display: grid; gap: 6px; }
+  .typein p { margin: 0; font-size: 13.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .typein b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--ink); }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0 5px;
+    margin-right: 6px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  /* ---------- plan ---------- */
+  svg.plan { display: block; width: 100%; height: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; margin-top: 12px; }
+  svg.plan text { font-family: var(--mono); font-size: 11px; fill: var(--ink-2); }
+  svg.plan .t3 { fill: var(--ink-3); }
+  svg.plan .ts { fill: var(--sharp); }
+  svg.plan .wedge { fill: var(--ink); fill-opacity: 0.05; stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 3; }
+  svg.plan .band { fill: var(--sharp); fill-opacity: 0.16; }
+  svg.plan .bandedge { stroke: var(--sharp); stroke-width: 1; stroke-dasharray: 2 3; }
+  svg.plan .focus { stroke: var(--sharp); stroke-width: 2; }
+  svg.plan .axis { stroke: var(--rule); stroke-width: 1; }
+  svg.plan .obj { fill: var(--ink-3); }
+  svg.plan .wall { stroke: var(--ink-2); stroke-width: 4; }
+  svg.plan .fig { fill: var(--warm); stroke: var(--ink); stroke-width: 1; }
+  svg.plan .cam { fill: var(--ink); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+  .legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; }
+  .legend .lg-band::before { background: var(--sharp); opacity: 0.35; }
+  .legend .lg-focus::before { width: 3px; background: var(--sharp); }
+  .legend .lg-fig::before { background: var(--warm); border-radius: 50%; }
+  .legend .lg-wedge::before { border: 1px dashed var(--ink-3); }
+
+  .statement {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(22px, 4vw, 30px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 26px 0 0;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+    max-width: 32ch;
+  }
+
+  /* ---------- compare ---------- */
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+  .pair .frame figcaption b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- quiz ---------- */
+  .quiz-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
+  .quiz-head b { color: var(--ink); font-weight: 500; }
+  .progress { height: 4px; background: var(--rule); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+  .ask { margin-top: 14px; }
+  .ask .presets { margin-top: 0; }
+  .ask .presets button { min-width: 64px; }
+  .ask + .ask { margin-top: 12px; }
+  .choice[disabled] { opacity: 0.5; }
+  .choice.right, .choice.wrong, .choice.near { opacity: 1; }
+  .choice.right { border-color: var(--pass) !important; border-width: 2px; }
+  .choice.wrong { border-color: var(--fail) !important; border-width: 2px; }
+  .choice.near { border-color: var(--warm) !important; border-width: 2px; }
+  .feedback { margin-top: 14px; border-left: 3px solid var(--rule); padding: 4px 0 4px 14px; }
+  .feedback[hidden], .result[hidden], .play[hidden] { display: none; }
+  .feedback.right { border-left-color: var(--pass); }
+  .feedback.wrong { border-left-color: var(--fail); }
+  .feedback.near { border-left-color: var(--warm); }
+  .fb-verdict { font-weight: 600; margin: 0 0 4px; font-size: 15px; }
+  .fb-why { font-size: 14.5px; color: var(--ink-2); margin: 0 0 8px; max-width: 66ch; text-wrap: pretty; }
+  .fb-set { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 12px; overflow-wrap: anywhere; }
+  .next { border-color: var(--accent); color: var(--accent); }
+  .result .score-big {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(46px, 10vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 6px;
+  }
+  .result p:not(.score-big) { margin: 0 0 10px; font-size: 15px; }
+  .keys { font-size: 13px; color: var(--ink-3); margin: 12px 0 0; }
+
+  /* ---------- tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 9px 14px;
+  }
+  td {
+    border-top: 1px solid var(--rule);
+    padding: 8px 14px;
+    font-size: 14.5px;
+    vertical-align: top;
+    text-wrap: pretty;
+  }
+  td:first-child { font-weight: 500; width: 22%; }
+  td.set { font-family: var(--mono); font-size: 12.5px; }
+  td.n { color: var(--ink-2); }
+  .where-line { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 4px; overflow-wrap: anywhere; }
+  ul.tips { margin: 12px 0 0; padding-left: 1.2em; max-width: 68ch; }
+  ul.tips li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 6px; text-wrap: pretty; }
+  ul.tips li b { color: var(--ink); font-weight: 600; }
+
+  .formula { font-family: var(--mono); font-size: 12.5px; color: var(--ink); line-height: 1.8; overflow-wrap: anywhere; margin: 6px 0 12px; }
+  .formula span { color: var(--ink-3); }
+  dl.terms { margin: 10px 0 0; }
+  dl.terms dt { font-weight: 600; font-size: 14.5px; margin-top: 10px; }
+  dl.terms dd { margin: 2px 0 0; font-size: 14.5px; color: var(--ink-2); max-width: 66ch; text-wrap: pretty; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0 0 6px; text-wrap: pretty; }
+
+  a { color: var(--accent); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (pointer: coarse) {
+    button, select, input[type="number"] { min-height: 44px; }
+    .presets button { min-width: 44px; }
+    input[type="range"] { height: 44px; }
+    .check { min-height: 44px; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 70px; }
+    header { padding-top: 36px; }
+    .controls { grid-template-columns: 1fr; }
+    .readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .readouts div:nth-child(-n+3) { border-top: 1px solid var(--rule); }
+    .readouts div:nth-child(3n+1) { border-left: 1px solid var(--rule); }
+    .readouts div:nth-child(-n+2) { border-top: 0; }
+    .readouts div:nth-child(2n+1) { border-left: 0; }
+    .readouts dd { font-size: 15px; }
+    .pair { grid-template-columns: 1fr; }
+    .panel { padding: 14px; }
+    thead { display: none; }
+    table, tbody, tr, td { display: block; }
+    tr { border-top: 1px solid var(--rule); padding: 9px 12px; }
+    tbody tr:first-child { border-top: 0; }
+    td, td:first-child { width: auto; border: 0; padding: 2px 0; }
+    td[data-h]::before {
+      content: attr(data-h) " ";
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .jump, .back, #quiz, .actions { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Lens and focus</h1>
+    <p class="standfirst">
+      Perspective comes from where the camera stands; the lens only decides how much of it you keep.
+      Move a virtual camera, change the lens, the sensor and the aperture, and read what happens as numbers.
+      Then train your eye for the homework: guess the lens and the depth of field of a frame.
+    </p>
+    <nav class="jump" aria-label="On this page">
+      <a href="#camera">The camera</a>
+      <a href="#plan">From above</a>
+      <a href="#compare">18 against 85 mm</a>
+      <a href="#quiz">Guess the lens</a>
+      <a href="#tools">Blender and Unreal</a>
+      <a href="#formulas">The formulas</a>
+    </nav>
+  </header>
+
+  <!-- ================= part 1: the camera ================= -->
+  <section id="camera">
+    <h2>Through the camera &middot; Week 9</h2>
+    <p class="lede">
+      A figure 1.75 m tall in a street, posts every 4 m, crates at several distances and a house front
+      40 m behind the figure. The camera stands 1 m high and looks straight ahead.
+    </p>
+
+    <figure class="frame">
+      <canvas id="view" role="img" aria-label="The camera view"></canvas>
+      <figcaption id="viewCap"></figcaption>
+    </figure>
+
+    <div class="modes" role="group" aria-label="When the focal length changes">
+      <span class="label">New lens</span>
+      <button type="button" data-mode="walk" aria-pressed="true">Camera walks: figure keeps its size</button>
+      <button type="button" data-mode="stay" aria-pressed="false">Camera stays: the lens crops</button>
+    </div>
+
+    <div class="controls">
+      <div class="control">
+        <label class="label" for="fRange">Focal length</label>
+        <div class="control-row">
+          <input type="range" id="fRange" min="0" max="1000" step="4" aria-describedby="fHelp">
+          <input type="number" id="fNum" min="6" max="200" step="1" aria-label="Focal length in millimetres">
+          <span class="unit">mm</span>
+        </div>
+        <div class="presets" id="fPresets" role="group" aria-label="Focal length presets"></div>
+        <span class="sr-only" id="fHelp">6 to 200 millimetres</span>
+      </div>
+
+      <div class="control">
+        <label class="label" for="sensor">Sensor</label>
+        <select id="sensor"></select>
+        <p class="note" id="sensorNote" style="font-size:13px;margin:8px 0 0"></p>
+      </div>
+
+      <div class="control">
+        <label class="label" for="dRange">Camera to figure</label>
+        <div class="control-row">
+          <input type="range" id="dRange" min="0" max="1000" step="4">
+          <input type="number" id="dNum" min="0.3" max="120" step="0.05" aria-label="Camera to figure in metres">
+          <span class="unit">m</span>
+        </div>
+      </div>
+
+      <div class="control">
+        <label class="label" for="nRange">Aperture</label>
+        <div class="control-row">
+          <input type="range" id="nRange" min="0" max="24" step="1">
+          <output class="big-out" id="nOut" for="nRange"></output>
+        </div>
+        <div class="presets" id="nPresets" role="group" aria-label="Full f-stops"></div>
+      </div>
+
+      <div class="control wide">
+        <span class="label">Focus</span>
+        <label class="check"><input type="checkbox" id="focusFig"> Focus on the figure</label>
+        <div class="control-row">
+          <input type="range" id="sRange" min="0" max="1000" step="4" aria-label="Focus distance">
+          <input type="number" id="sNum" min="0.3" max="200" step="0.05" aria-label="Focus distance in metres">
+          <span class="unit">m</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="dolly">Play a dolly zoom, 18 to 85 mm</button>
+      <button type="button" id="rack">Rack focus to the crate in front</button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+
+    <dl class="readouts" id="readouts" aria-live="off"></dl>
+    <p class="sr-only" id="live" aria-live="polite"></p>
+
+    <div class="typein" id="typein"></div>
+
+    <h3 id="plan">From above</h3>
+    <p class="note" style="margin-top:0">
+      The same camera seen from above, to scale. The wedge is what the lens sees across the frame;
+      the band is the depth of field, from the near to the far limit of acceptable sharpness.
+    </p>
+    <svg class="plan" id="planSvg" role="img" aria-label="Top view of the camera"></svg>
+    <div class="legend" aria-hidden="true">
+      <span class="lg-wedge">Field of view</span>
+      <span class="lg-focus">Focus plane</span>
+      <span class="lg-band">Sharp zone</span>
+      <span class="lg-fig">Figure</span>
+    </div>
+
+    <p class="statement">Decide where the camera stands first. Then pick the lens that fits the frame.</p>
+  </section>
+
+  <!-- ================= part 2: compare ================= -->
+  <section id="compare">
+    <h2>18 mm against 85 mm</h2>
+    <p class="lede" id="compareLede"></p>
+    <div class="modes" role="group" aria-label="Compare mode">
+      <span class="label">Compare</span>
+      <button type="button" data-cmp="size" aria-pressed="true">Same size: the camera walks</button>
+      <button type="button" data-cmp="spot" aria-pressed="false">Same spot: the lens crops</button>
+    </div>
+    <div class="pair">
+      <figure class="frame">
+        <canvas id="cmpA" role="img" aria-label="The 18 mm frame"></canvas>
+        <figcaption id="cmpCapA"></figcaption>
+      </figure>
+      <figure class="frame">
+        <canvas id="cmpB" role="img" aria-label="The 85 mm frame"></canvas>
+        <figcaption id="cmpCapB"></figcaption>
+      </figure>
+    </div>
+    <p class="note" id="compareNote"></p>
+  </section>
+
+  <!-- ================= part 3: quiz ================= -->
+  <section id="quiz">
+    <h2>Guess the lens &middot; quiz</h2>
+    <p class="lede">
+      Eight frames, the figure always about the same size, so its size gives nothing away. Read the
+      background instead: how big is the house front, how fast do the posts shrink, how much ground
+      shows? Then judge the depth of field. All frames use Blender&rsquo;s default 36 mm sensor.
+    </p>
+
+    <div class="panel">
+      <div class="play" id="play">
+        <div class="quiz-head">
+          <span>Frame <b id="qNum">1</b> of <b>8</b></span>
+          <span>Score <b id="qScore">0</b> &middot; best <b id="qBest">&ndash;</b></span>
+        </div>
+        <div class="progress"><span id="qBar"></span></div>
+        <figure class="frame" style="margin-top:0">
+          <canvas id="quizView" role="img" aria-label="A frame with a hidden lens"></canvas>
+        </figure>
+
+        <div class="ask">
+          <span class="label" id="lensQ">Which lens?</span>
+          <div class="presets" id="qLens" role="group" aria-labelledby="lensQ"></div>
+        </div>
+        <div class="ask">
+          <span class="label" id="dofQ">Depth of field?</span>
+          <div class="presets" id="qDof" role="group" aria-labelledby="dofQ"></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="next" id="qCheck" disabled>Check</button>
+        </div>
+
+        <div class="feedback" id="qFb" hidden>
+          <p class="fb-verdict" id="qVerdict"></p>
+          <p class="fb-why" id="qWhy"></p>
+          <p class="fb-set" id="qSet"></p>
+          <div class="actions" style="margin-top:0">
+            <button type="button" class="next" id="qNext">Next frame</button>
+            <button type="button" id="qOpen">Open this frame in the camera</button>
+          </div>
+        </div>
+        <p class="sr-only" id="qLive" aria-live="polite"></p>
+        <p class="keys">Keys: <kbd>1</kbd>&ndash;<kbd>6</kbd> the lens, <kbd>S</kbd> <kbd>M</kbd> <kbd>D</kbd> shallow, medium, deep, <kbd>Enter</kbd> check and next.</p>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <span class="label">Your result</span>
+        <p class="score-big" id="finalScore"></p>
+        <p id="finalNote"></p>
+        <button type="button" class="next" id="again">Play again</button>
+      </div>
+    </div>
+    <p class="note">
+      <b>Scoring:</b> the right lens 1 point, one step off half a point; the right depth of field 1 point.
+      Deep: sharp all the way to the house front. Medium: the house front is soft. Shallow: the
+      background melts, its blur wider than about 1/125 of the frame.
+    </p>
+  </section>
+
+  <!-- ================= part 4: tools ================= -->
+  <section id="tools">
+    <h2>Where it lives</h2>
+    <p class="lede">The same four controls under two sets of names. Match the sensor before you copy a focal length.</p>
+
+    <h3 id="blender">Blender 5.2</h3>
+    <p class="where-line">Select the camera &rarr; Properties &rarr; Object Data tab (green camera icon) &middot; Numpad 0 looks through it</p>
+    <table>
+      <thead><tr><th>Panel</th><th>Setting</th><th>Default and notes</th></tr></thead>
+      <tbody>
+        <tr><td>Lens</td><td class="set" data-h="Setting">Focal Length</td><td class="n" data-h="Notes">50 mm. Lens Unit can show it as Field of View instead</td></tr>
+        <tr><td>Camera</td><td class="set" data-h="Setting">Sensor Fit, Size</td><td class="n" data-h="Notes">Auto, 36 mm: the size runs along the longer side of the render. At 1920 &times; 1080 that leaves 20.25 mm of height. Horizontal or Vertical fit shows Width and Height separately</td></tr>
+        <tr><td>Depth of Field</td><td class="set" data-h="Setting">the panel&rsquo;s checkbox</td><td class="n" data-h="Notes">Off by default: no blur at all until you tick it</td></tr>
+        <tr><td>Depth of Field</td><td class="set" data-h="Setting">Focus on Object &middot; Focus Distance</td><td class="n" data-h="Notes">Pick an object and the focus follows it; otherwise Focus Distance, 10 m, measured from the camera</td></tr>
+        <tr><td>Depth of Field &rsaquo; Aperture</td><td class="set" data-h="Setting">F-Stop</td><td class="n" data-h="Notes">2.8. Blades, Rotation and Ratio shape the bokeh</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li>EEVEE has extra depth-of-field settings in the Render Properties; in Cycles the camera&rsquo;s settings are all there is.</li>
+      <li><b>Viewport Display &rsaquo; Composition Guides</b> draws the thirds and the golden section over the camera view.</li>
+    </ul>
+
+    <h3 id="unreal">Unreal Engine 5.8</h3>
+    <p class="where-line">Place Actors &rarr; Cine Camera Actor &rarr; Details &rarr; CineCameraComponent &rarr; Current Camera Settings &middot; right-click &rarr; Pilot to look through it</p>
+    <table>
+      <thead><tr><th>Group</th><th>Setting</th><th>Default and notes</th></tr></thead>
+      <tbody>
+        <tr><td>Filmback</td><td class="set" data-h="Setting">preset, Sensor Width, Sensor Height</td><td class="n" data-h="Notes">16:9 Digital Film, 23.76 &times; 13.365 mm. Full Frame DSLR is 36 &times; 24</td></tr>
+        <tr><td>Lens Settings</td><td class="set" data-h="Setting">Min and Max Focal Length, Min and Max FStop</td><td class="n" data-h="Notes">Universal Zoom, 4&ndash;1000 mm, f/1.2&ndash;22. They limit the two values below</td></tr>
+        <tr><td>Current Focal Length</td><td class="set" data-h="Setting">mm</td><td class="n" data-h="Notes">35 mm. On 23.76 mm that is 37.5&deg; across, not Blender&rsquo;s 54&deg;</td></tr>
+        <tr><td>Current Aperture</td><td class="set" data-h="Setting">the f-number</td><td class="n" data-h="Notes">2.8</td></tr>
+        <tr><td>Focus Settings</td><td class="set" data-h="Setting">Focus Method &middot; Manual Focus Distance</td><td class="n" data-h="Notes">Manual, 100000 cm: a new camera focuses 1 km away. The distance is in centimetres</td></tr>
+        <tr><td>Focus Settings</td><td class="set" data-h="Setting">Draw Debug Focus Plane</td><td class="n" data-h="Notes">Shows the sharp plane in the viewport while you set it</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li><b>Current Horizontal FOV</b> and <b>Current Focus Distance</b> are read-only: Unreal works them out for you.</li>
+      <li>Week 13: the camera moves, so the focus has to follow. Key <b>Manual Focus Distance</b> in the Sequencer: a follow focus keeps the subject sharp, a rack jumps from one thing to another.</li>
+      <li>From Blender to Unreal: set the same sensor width, or scale the focal length. 35 &times; 23.76 &divide; 36 &asymp; 23 mm.</li>
+    </ul>
+  </section>
+
+  <!-- ================= part 5: formulas ================= -->
+  <section id="formulas">
+    <h2>The formulas</h2>
+    <p class="lede">Every number on this page comes from the thin-lens model. Distances are measured from the camera, lengths in millimetres unless marked.</p>
+    <div class="panel">
+      <span class="label">Field of view</span>
+      <p class="formula">angle = 2 &middot; atan( sensor size &divide; (2 &middot; f) ) <span>&middot; across: width, up: height, corner to corner: diagonal</span></p>
+      <span class="label">35 mm equivalent</span>
+      <p class="formula">crop = 43.27 &divide; sensor diagonal &nbsp; equivalent = f &middot; crop <span>&middot; 43.27 mm is the diagonal of 36 &times; 24</span></p>
+      <span class="label">Circle of confusion</span>
+      <p class="formula">c = 0.030 mm &divide; crop <span>&middot; 0.030 on full frame, about 0.019 on APS-C, 0.015 on Micro Four Thirds: the same blur on the final picture</span></p>
+      <span class="label">Hyperfocal distance</span>
+      <p class="formula">H = f&sup2; &divide; (N &middot; c) + f <span>&middot; focus here and everything from H/2 to infinity is sharp</span></p>
+      <span class="label">Near and far limit, focused at s</span>
+      <p class="formula">near = s (H &minus; f) &divide; (H + s &minus; 2f) &nbsp; far = s (H &minus; f) &divide; (H &minus; s) <span>&middot; far is infinite once s &ge; H</span></p>
+      <span class="label">Blur of a point at distance x</span>
+      <p class="formula">b = (f &divide; N) &middot; f &middot; |s &minus; x| &divide; ( x (s &minus; f) ) <span>&middot; on the sensor; sharp while b &le; c</span></p>
+    </div>
+    <dl class="terms">
+      <dt>Check it yourself</dt>
+      <dd>50 mm on full frame sees 39.6&deg; across and 46.8&deg; corner to corner. At f/2.8, focused at 3 m, with c = 0.030 mm: sharp from 2.73 m to 3.33 m, 0.60 m of depth of field; the hyperfocal distance is 29.8 m.</dd>
+      <dt>How the picture blurs</dt>
+      <dd>Each object is blurred by its own b, worked out from its distance. The blur is a soft Gaussian of the same spread as the blur circle, so it reads a little softer than real bokeh, but grows and shrinks exactly as the formula says.</dd>
+      <dt>Why c changes with the sensor</dt>
+      <dd>A small sensor&rsquo;s picture is enlarged more to reach the same screen, so its blur must be smaller on the sensor to look the same. Some calculators use the diagonal &divide; 1500 (0.029 mm on full frame) instead; the limits move by a few centimetres.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p>3D Design Foundations &middot; Smart Interactive Media, TH Rosenheim &middot; Prof. Seb Hirsch</p>
+    <p>Thin-lens optics; the street is drawn by this page. Blender names and defaults checked in Blender 5.2, Unreal names, defaults and filmback presets in the Unreal Engine 5.8 source, October 2026. Your last settings and best score are saved on this device only.</p>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ================= optics (thin lens) ================= */
+const FF_DIAG = Math.hypot(36, 24);          // 43.27 mm
+const COC_FF = 0.030;                        // mm on full frame
+const DEG = 180 / Math.PI;
+
+function optics(f, sw, sh, sM, N) {
+  const diag = Math.hypot(sw, sh);
+  const crop = FF_DIAG / diag;
+  const c = COC_FF / crop;
+  const s = sM * 1000;
+  const H = f * f / (N * c) + f;
+  const near = s * (H - f) / (H + s - 2 * f);
+  const far = s < H ? s * (H - f) / (H - s) : Infinity;
+  return {
+    hfov: 2 * Math.atan(sw / (2 * f)) * DEG,
+    vfov: 2 * Math.atan(sh / (2 * f)) * DEG,
+    dfov: 2 * Math.atan(diag / (2 * f)) * DEG,
+    crop, eq: f * crop, c,
+    H: H / 1000, near: near / 1000, far: far / 1000,
+    dof: far === Infinity ? Infinity : (far - near) / 1000
+  };
+}
+/* blur circle on the sensor (mm) of a point x metres away, focused at s metres */
+function blurMM(f, N, sM, xM) {
+  const s = sM * 1000, x = xM * 1000;
+  return (f / N) * f * Math.abs(s - x) / (x * (s - f));
+}
+window.LensOptics = { optics, blurMM };
+
+/* ================= data ================= */
+const SENSORS = [
+  { id: "blender", name: "Blender default, 36 mm wide", sw: 36, sh: 20.25, note: "Sensor Fit Auto, Size 36 mm, on a 1920 × 1080 render: 36 × 20.25 mm." },
+  { id: "ff", name: "Full frame, 36 × 24", sw: 36, sh: 24, note: "The stills format that 35 mm equivalents refer to." },
+  { id: "s35", name: "Super 35, 24.89 × 18.66", sw: 24.89, sh: 18.66, note: "Cinema film's frame; Unreal's Super 35mm filmback." },
+  { id: "apsc", name: "APS-C, 23.5 × 15.6", sw: 23.5, sh: 15.6, note: "Most mirrorless and DSLR cameras below full frame." },
+  { id: "ue", name: "Unreal default, 23.76 × 13.365", sw: 23.76, sh: 13.365, note: "The Cine Camera's 16:9 Digital Film filmback." },
+  { id: "m43", name: "Micro Four Thirds, 17.3 × 13", sw: 17.3, sh: 13, note: "Panasonic and OM System cameras." },
+  { id: "phone", name: "Phone main camera, about 9.8 × 7.4", sw: 9.8, sh: 7.35, note: "A 1/1.3-inch sensor. Its lens is about 7 mm: 24 mm equivalent." }
+];
+const PRESETS = [18, 24, 35, 50, 85, 135];
+const STOPS = [1.4, 1.6, 1.8, 2, 2.2, 2.5, 2.8, 3.2, 3.5, 4, 4.5, 5, 5.6, 6.3, 7.1, 8, 9, 10, 11, 13, 14, 16, 18, 20, 22];
+const FULL_STOPS = [1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
+const F_MIN = 6, F_MAX = 200, D_MIN = 0.3, D_MAX = 120, S_MIN = 0.3, S_MAX = 200;
+const CAM_H = 1.0, WALL_Z = 40, FIG_H = 1.75;
+const DEFAULTS = { f: 35, sensor: "blender", d: 4.5, N: 2.8, s: 4.5, focusFig: true, mode: "walk" };
+
+/* ================= storage ================= */
+const KEY = "3ddf-lens-v1";
+function loadStore() { try { const r = localStorage.getItem(KEY); const o = r ? JSON.parse(r) : null; return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+function saveStore(patch) { try { const o = loadStore(); Object.assign(o, patch); localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* private mode */ } }
+
+/* ================= scene ================= */
+const COL = { post: "#3B4048", lamp: "#E9E4D2", crate: "#9A6B43", crate2: "#7E8C6A", coat: "#E3A72F", trousers: "#2E3442", skin: "#E2B392", hair: "#3B2A20", wall: "#CDB394", cornice: "#B39876", window: "#56606E", door: "#6B4A35", ground: "#BDB5A7" };
+const LIGHT = (() => { const v = [-0.45, 0.8, -0.4]; const l = Math.hypot(...v); return v.map(a => a / l); })();
+
+function box(x, y, z, w, h, d, col) { return { kind: "box", x0: x - w / 2, x1: x + w / 2, y0: y, y1: y + h, z0: z - d / 2, z1: z + d / 2, col }; }
+const OBJECTS = (() => {
+  const list = [];
+  for (let z = -16; z <= 36; z += 4) {
+    for (const side of [-1, 1]) {
+      const x = side * 2.6;
+      list.push({ z, label: "post", parts: [
+        box(x, 0, z, 0.12, 3.2, 0.12, COL.post),
+        box(x - side * 0.3, 3.08, z, 0.6, 0.06, 0.06, COL.post),
+        box(x - side * 0.55, 2.98, z, 0.26, 0.1, 0.16, COL.lamp)
+      ] });
+    }
+  }
+  const crates = [[-1.3, -1.6, 0.55, COL.crate], [1.5, 2.5, 0.8, COL.crate2], [-1.1, 7, 0.9, COL.crate], [0.9, 14, 1.0, COL.crate2], [-0.7, 24, 1.2, COL.crate]];
+  for (const [x, z, s, col] of crates) list.push({ z, label: "crate", parts: [box(x, 0, z, s, s, s, col)] });
+  list.push({ z: 0, label: "figure", parts: [
+    box(-0.1, 0, 0, 0.15, 0.86, 0.2, COL.trousers),
+    box(0.1, 0, 0, 0.15, 0.86, 0.2, COL.trousers),
+    box(0, 0.78, 0, 0.46, 0.72, 0.27, COL.coat),
+    box(-0.3, 0.8, 0.02, 0.12, 0.68, 0.14, COL.coat),
+    box(0.3, 0.8, 0.02, 0.12, 0.68, 0.14, COL.coat),
+    box(0, 1.48, 0, 0.1, 0.06, 0.1, COL.skin),
+    { kind: "sphere", c: [0, 1.625, 0], r: 0.115, col: COL.skin, hair: COL.hair }
+  ] });
+  return list;
+})();
+const FRONT_CRATE_Z = -1.6;
+
+/* ================= renderer ================= */
+const NEAR = 0.05;
+const DPR_CAP = 2;
+const FILTER_OK = (() => { try { const c = document.createElement("canvas").getContext("2d"); c.filter = "blur(2px)"; return c.filter === "blur(2px)"; } catch (e) { return false; } })();
+const off = document.createElement("canvas");
+const offCtx = off.getContext("2d");
+const tiny = document.createElement("canvas");
+const tinyCtx = tiny.getContext("2d");
+
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function shade(hex, k) { const [r, g, b] = hexRgb(hex); const q = v => Math.max(0, Math.min(255, Math.round(v * k))); return `rgb(${q(r)},${q(g)},${q(b)})`; }
+
+function makeCam(view, W, H) {
+  const k = W / view.sw * view.f;          // pixels per unit of X/Z
+  const cx = view.camX || 0, cz = -view.d;
+  return {
+    k, W, H, cx, cz,
+    toCam(p) { return [p[0] - cx, p[1] - CAM_H, p[2] - cz]; },
+    proj(q) { return [W / 2 + k * q[0] / q[2], H / 2 - k * q[1] / q[2]]; }
+  };
+}
+function clipPoly(pts) {           // camera-space points, keep Z >= NEAR
+  const out = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i], b = pts[(i + 1) % pts.length];
+    const ai = a[2] >= NEAR, bi = b[2] >= NEAR;
+    if (ai) out.push(a);
+    if (ai !== bi) { const t = (NEAR - a[2]) / (b[2] - a[2]); out.push([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]), NEAR]); }
+  }
+  return out;
+}
+function fillPoly(ctx, cam, world, color) {
+  const q = clipPoly(world.map(p => cam.toCam(p)));
+  if (q.length < 3) return;
+  ctx.beginPath();
+  q.forEach((p, i) => { const s = cam.proj(p); if (i) ctx.lineTo(s[0], s[1]); else ctx.moveTo(s[0], s[1]); });
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+function drawBox(ctx, cam, b) {
+  const { x0, x1, y0, y1, z0, z1 } = b;
+  const faces = [
+    [[0, 0, -1], [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0]]],
+    [[0, 0, 1], [[x1, y0, z1], [x0, y0, z1], [x0, y1, z1], [x1, y1, z1]]],
+    [[-1, 0, 0], [[x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1]]],
+    [[1, 0, 0], [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]]],
+    [[0, 1, 0], [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]]],
+    [[0, -1, 0], [[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x0, y0, z0]]]
+  ];
+  for (const [n, pts] of faces) {
+    const p = pts[0];
+    const v = [p[0] - cam.cx, p[1] - CAM_H, p[2] - cam.cz];
+    if (n[0] * v[0] + n[1] * v[1] + n[2] * v[2] >= 0) continue;
+    const lam = Math.max(0, n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]);
+    fillPoly(ctx, cam, pts, shade(b.col, 0.58 + 0.5 * lam));
+  }
+}
+function drawSphere(ctx, cam, s) {
+  const q = cam.toCam(s.c);
+  if (q[2] - s.r < NEAR) return;
+  const [u, v] = cam.proj(q);
+  const r = cam.k * s.r / q[2];
+  if (r < 0.2) return;
+  const g = ctx.createRadialGradient(u - r * 0.35, v - r * 0.4, r * 0.1, u, v, r);
+  g.addColorStop(0, shade(s.col, 1.08)); g.addColorStop(1, shade(s.col, 0.62));
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(u, v, r, 0, Math.PI * 2); ctx.fill();
+  if (s.hair) {
+    ctx.fillStyle = s.hair;
+    ctx.beginPath(); ctx.arc(u, v, r * 1.02, Math.PI * 1.02, Math.PI * 1.98); ctx.closePath(); ctx.fill();
+  }
+}
+function drawObject(ctx, cam, obj) {
+  const parts = obj.parts.slice().sort((a, b) => partDist(cam, b) - partDist(cam, a));
+  for (const p of parts) p.kind === "box" ? drawBox(ctx, cam, p) : drawSphere(ctx, cam, p);
+}
+function partDist(cam, p) {
+  const c = p.kind === "box" ? [(p.x0 + p.x1) / 2, (p.y0 + p.y1) / 2, (p.z0 + p.z1) / 2] : p.c;
+  return Math.hypot(c[0] - cam.cx, c[1] - CAM_H, c[2] - cam.cz);
+}
+function drawWall(ctx, cam) {
+  fillPoly(ctx, cam, [[-150, 0, WALL_Z], [150, 0, WALL_Z], [150, 13, WALL_Z], [-150, 13, WALL_Z]], COL.wall);
+  fillPoly(ctx, cam, [[-150, 12.3, WALL_Z], [150, 12.3, WALL_Z], [150, 13, WALL_Z], [-150, 13, WALL_Z]], COL.cornice);
+  const halfW = cam.W / 2 / cam.k * (WALL_Z - cam.cz) + 2;
+  for (let x = -147; x <= 147; x += 3) {
+    if (Math.abs(x - cam.cx) > halfW) continue;
+    for (const y of [1.4, 5.0, 8.6]) {
+      if (y === 1.4 && Math.abs(x) < 2) {
+        fillPoly(ctx, cam, [[x - 0.7, 0, WALL_Z], [x + 0.7, 0, WALL_Z], [x + 0.7, 2.6, WALL_Z], [x - 0.7, 2.6, WALL_Z]], COL.door);
+        continue;
+      }
+      fillPoly(ctx, cam, [[x - 0.65, y, WALL_Z], [x + 0.65, y, WALL_Z], [x + 0.65, y + 2, WALL_Z], [x - 0.65, y + 2, WALL_Z]], COL.window);
+    }
+  }
+}
+function drawGroundLines(ctx, cam, zA, zB) {   // world z range [zA, zB)
+  const zm = Math.sqrt(Math.max(0.01, zA - cam.cz) * Math.max(0.01, zB - cam.cz));
+  const pxPerM = cam.k / zm;
+  const alpha = 0.42 * Math.max(0, Math.min(1, (pxPerM - 2.5) / 10));
+  if (alpha <= 0.01) return;
+  ctx.strokeStyle = `rgba(74,64,52,${alpha.toFixed(3)})`;
+  ctx.lineWidth = Math.max(0.7, Math.min(2.4, 0.025 * pxPerM));
+  ctx.beginPath();
+  const seg = (a, b) => {
+    let p = cam.toCam(a), q = cam.toCam(b);
+    if (p[2] < NEAR && q[2] < NEAR) return;
+    if (p[2] < NEAR) { const t = (NEAR - p[2]) / (q[2] - p[2]); p = p.map((v, i) => v + t * (q[i] - v)); }
+    if (q[2] < NEAR) { const t = (NEAR - q[2]) / (p[2] - q[2]); q = q.map((v, i) => v + t * (p[i] - v)); }
+    const s1 = cam.proj(p), s2 = cam.proj(q);
+    ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]);
+  };
+  for (let z = Math.ceil(zA); z < zB; z++) seg([-14, 0, z], [14, 0, z]);
+  for (let x = -14; x <= 14; x++) seg([x, 0, zA], [x, 0, zB]);
+  ctx.stroke();
+}
+
+function prepCanvas(cv, view) {
+  const dpr = Math.min(DPR_CAP, window.devicePixelRatio || 1);
+  const cssW = cv.clientWidth || cv.parentNode.clientWidth || 600;
+  const cssH = Math.round(cssW * view.sh / view.sw);
+  cv.style.height = cssH + "px";
+  const W = Math.round(cssW * dpr), H = Math.round(cssH * dpr);
+  if (cv.width !== W) cv.width = W;
+  if (cv.height !== H) cv.height = H;
+  return { W, H };
+}
+
+function render(cv, view, opt) {
+  opt = opt || {};
+  const { W, H } = prepCanvas(cv, view);
+  const ctx = cv.getContext("2d");
+  const cam = makeCam(view, W, H);
+  const maxSigma = W * 0.05;
+  const sigmaAt = Z => {
+    if (Z <= NEAR) return maxSigma;
+    const b = blurMM(view.f, view.N, view.s, Z);
+    return Math.min(maxSigma, b / view.sw * W / 4);     // disk of diameter D has spread D/4
+  };
+
+  // sky and ground base (unblurred: flat colours)
+  const sky = ctx.createLinearGradient(0, 0, 0, H / 2);
+  sky.addColorStop(0, "#8FB0CC"); sky.addColorStop(1, "#E2E8EC");
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H / 2 + 1);
+  ctx.fillStyle = COL.ground; ctx.fillRect(0, H / 2, W, H / 2);
+
+  // collect layers far to near
+  const items = [];
+  const wallZ = WALL_Z - cam.cz;
+  items.push({ Z: wallZ, draw: c => drawWall(c, cam), ground: true });
+  // ground lines in depth strips
+  let a = Math.max(NEAR + 0.01, 0.2);
+  const strips = [];
+  while (a < wallZ) { const b = Math.min(wallZ, a * 1.3); strips.push([a, b]); a = b; }
+  for (const [za, zb] of strips) {
+    items.push({ Z: Math.sqrt(za * zb), draw: c => drawGroundLines(c, cam, za + cam.cz, zb + cam.cz), ground: true });
+  }
+  const objs = [];
+  for (const o of OBJECTS) {
+    const Z = o.z - cam.cz;
+    if (Z < -1) continue;
+    objs.push({ Z, draw: c => drawObject(c, cam, o) });
+  }
+  items.sort((p, q) => (q.ground - p.ground) || (q.Z - p.Z));
+  objs.sort((p, q) => q.Z - p.Z);
+  const all = items.concat(objs);
+
+  // merge neighbours with similar blur into one layer
+  const layers = [];
+  for (const it of all) {
+    const sg = sigmaAt(it.Z);
+    const qz = sg < 0.4 ? -99 : Math.round(Math.log(sg) / Math.log(1.35));
+    const last = layers[layers.length - 1];
+    if (last && last.q === qz) { last.items.push(it); last.sigma = Math.max(last.sigma, sg); }
+    else layers.push({ q: qz, sigma: sg, items: [it] });
+  }
+  if (off.width !== W || off.height !== H) { off.width = W; off.height = H; }
+  for (const L of layers) {
+    if (L.q === -99) { for (const it of L.items) it.draw(ctx); continue; }
+    offCtx.clearRect(0, 0, W, H);
+    for (const it of L.items) it.draw(offCtx);
+    compositeBlur(ctx, L.sigma, W, H);
+  }
+
+  if (opt.cropTo) {           // frame of a longer lens from the same spot
+    const r = view.f / opt.cropTo;
+    const w = W * r, h = H * r;
+    ctx.save();
+    ctx.lineWidth = Math.max(1.5, W / 300);
+    ctx.setLineDash([6 * W / 600, 4 * W / 600]);
+    ctx.strokeStyle = "rgba(0,0,0,0.75)";
+    ctx.strokeRect((W - w) / 2, (H - h) / 2, w, h);
+    ctx.lineDashOffset = 5 * W / 600;
+    ctx.strokeStyle = "rgba(255,255,255,0.95)";
+    ctx.strokeRect((W - w) / 2, (H - h) / 2, w, h);
+    ctx.restore();
+    ctx.font = `500 ${Math.round(11 * W / 400)}px "JetBrains Mono", monospace`;
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.fillText(opt.cropTo + " mm", (W - w) / 2 + 4, (H - h) / 2 - 6);
+  }
+  return layers.length;
+}
+function compositeBlur(ctx, sigma, W, H) {
+  if (FILTER_OK) {
+    ctx.filter = `blur(${sigma.toFixed(2)}px)`;
+    ctx.drawImage(off, 0, 0);
+    ctx.filter = "none";
+    return;
+  }
+  // fallback: shrink and enlarge
+  const k = Math.max(1, sigma * 1.2);
+  const tw = Math.max(1, Math.round(W / k)), th = Math.max(1, Math.round(H / k));
+  if (tiny.width !== tw || tiny.height !== th) { tiny.width = tw; tiny.height = th; }
+  tinyCtx.clearRect(0, 0, tw, th);
+  tinyCtx.imageSmoothingQuality = "high";
+  tinyCtx.drawImage(off, 0, 0, tw, th);
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(tiny, 0, 0, W, H);
+}
+window.LensRender = { render, OBJECTS };
+
+/* ================= formatting ================= */
+const fmtF = f => (f < 10 ? f.toFixed(1) : String(Math.round(f)));
+function fmtM(m) {
+  if (!isFinite(m)) return "∞";
+  if (m < 10) return m.toFixed(2) + " m";
+  if (m < 100) return m.toFixed(1) + " m";
+  return Math.round(m) + " m";
+}
+const fmtDeg = a => a.toFixed(1) + "°";
+const fmtN = N => "f/" + (N % 1 ? N.toFixed(1) : N);
+const fmtNum = (v, d) => String(Number(v.toFixed(d)));
+
+/* log sliders */
+const toLog = (v, a, b) => a * Math.pow(b / a, v / 1000);
+const fromLog = (x, a, b) => Math.round(1000 * Math.log(x / a) / Math.log(b / a));
+
+/* ================= state ================= */
+const st = Object.assign({}, DEFAULTS);
+(function restore() {
+  const o = loadStore().settings;
+  if (!o) return;
+  const num = (v, a, b) => typeof v === "number" && isFinite(v) && v >= a && v <= b;
+  if (num(o.f, F_MIN, F_MAX)) st.f = o.f;
+  if (SENSORS.some(s => s.id === o.sensor)) st.sensor = o.sensor;
+  if (num(o.d, D_MIN, D_MAX)) st.d = o.d;
+  if (STOPS.includes(o.N)) st.N = o.N;
+  if (num(o.s, S_MIN, S_MAX)) st.s = o.s;
+  if (typeof o.focusFig === "boolean") st.focusFig = o.focusFig;
+  if (o.mode === "walk" || o.mode === "stay") st.mode = o.mode;
+})();
+const sensorOf = id => SENSORS.find(s => s.id === id) || SENSORS[0];
+const $ = id => document.getElementById(id);
+
+/* ================= part 1 ================= */
+const el = {
+  view: $("view"), viewCap: $("viewCap"),
+  fRange: $("fRange"), fNum: $("fNum"), fPresets: $("fPresets"),
+  sensor: $("sensor"), sensorNote: $("sensorNote"),
+  dRange: $("dRange"), dNum: $("dNum"),
+  nRange: $("nRange"), nOut: $("nOut"), nPresets: $("nPresets"),
+  focusFig: $("focusFig"), sRange: $("sRange"), sNum: $("sNum"),
+  readouts: $("readouts"), typein: $("typein"), plan: $("planSvg"), live: $("live")
+};
+
+SENSORS.forEach(s => { const o = document.createElement("option"); o.value = s.id; o.textContent = s.name; el.sensor.appendChild(o); });
+PRESETS.forEach(f => { const b = document.createElement("button"); b.type = "button"; b.textContent = f; b.dataset.f = f; b.setAttribute("aria-label", f + " millimetres"); el.fPresets.appendChild(b); });
+FULL_STOPS.forEach(N => { const b = document.createElement("button"); b.type = "button"; b.textContent = fmtN(N); b.dataset.n = N; el.nPresets.appendChild(b); });
+
+function setFocal(f) {
+  f = Math.max(F_MIN, Math.min(F_MAX, f));
+  if (st.mode === "walk") st.d = Math.max(D_MIN, Math.min(D_MAX, st.d * f / st.f));
+  st.f = f;
+}
+el.fRange.addEventListener("input", () => { setFocal(toLog(+el.fRange.value, F_MIN, F_MAX)); update("f"); });
+el.fNum.addEventListener("change", () => { const v = parseFloat(el.fNum.value); if (isFinite(v)) setFocal(v); update(); });
+el.fPresets.addEventListener("click", e => { const b = e.target.closest("button[data-f]"); if (!b) return; stopAnim(); setFocal(+b.dataset.f); update(); });
+el.sensor.addEventListener("change", () => { st.sensor = el.sensor.value; update(); });
+el.dRange.addEventListener("input", () => { st.d = toLog(+el.dRange.value, D_MIN, D_MAX); update("d"); });
+el.dNum.addEventListener("change", () => { const v = parseFloat(el.dNum.value); if (isFinite(v)) st.d = Math.max(D_MIN, Math.min(D_MAX, v)); update(); });
+el.nRange.addEventListener("input", () => { st.N = STOPS[+el.nRange.value]; update("n"); });
+el.nPresets.addEventListener("click", e => { const b = e.target.closest("button[data-n]"); if (!b) return; st.N = +b.dataset.n; update(); });
+el.focusFig.addEventListener("change", () => { st.focusFig = el.focusFig.checked; if (!st.focusFig) st.s = st.d; update(); });
+el.sRange.addEventListener("input", () => { st.focusFig = false; st.s = toLog(+el.sRange.value, S_MIN, S_MAX); update("s"); });
+el.sNum.addEventListener("change", () => { const v = parseFloat(el.sNum.value); if (isFinite(v)) { st.focusFig = false; st.s = Math.max(S_MIN, Math.min(S_MAX, v)); } update(); });
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { st.mode = b.dataset.mode; update(); }));
+$("reset").addEventListener("click", () => { stopAnim(); Object.assign(st, DEFAULTS); update(); });
+
+function focusDist() { return st.focusFig ? st.d : st.s; }
+function mainView() { const s = sensorOf(st.sensor); return { f: st.f, sw: s.sw, sh: s.sh, d: st.d, s: focusDist(), N: st.N, camX: 0 }; }
+
+let raf = 0;
+function update(from) {
+  syncControls(from);
+  if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); });
+  clearTimeout(update.t);
+  update.t = setTimeout(() => {
+    saveStore({ settings: { f: +st.f.toFixed(2), sensor: st.sensor, d: +st.d.toFixed(3), N: st.N, s: +st.s.toFixed(3), focusFig: st.focusFig, mode: st.mode } });
+    announce();
+  }, 450);
+}
+function syncControls(from) {
+  if (from !== "f") el.fRange.value = fromLog(st.f, F_MIN, F_MAX);
+  el.fRange.setAttribute("aria-valuetext", fmtF(st.f) + " millimetres");
+  if (document.activeElement !== el.fNum) el.fNum.value = fmtNum(st.f, 1);
+  el.fPresets.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(Math.abs(+b.dataset.f - st.f) < 0.05)));
+  el.sensor.value = st.sensor;
+  el.sensorNote.textContent = sensorOf(st.sensor).note;
+  if (from !== "d") el.dRange.value = fromLog(st.d, D_MIN, D_MAX);
+  el.dRange.setAttribute("aria-valuetext", fmtM(st.d));
+  if (document.activeElement !== el.dNum) el.dNum.value = fmtNum(st.d, 2);
+  el.nRange.value = STOPS.indexOf(st.N);
+  el.nRange.setAttribute("aria-valuetext", fmtN(st.N));
+  el.nOut.textContent = fmtN(st.N);
+  el.nPresets.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.n === st.N)));
+  el.focusFig.checked = st.focusFig;
+  const s = focusDist();
+  if (from !== "s") el.sRange.value = fromLog(Math.max(S_MIN, Math.min(S_MAX, s)), S_MIN, S_MAX);
+  el.sRange.setAttribute("aria-valuetext", fmtM(s));
+  if (document.activeElement !== el.sNum) el.sNum.value = fmtNum(s, 2);
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === st.mode)));
+}
+
+function draw() {
+  const v = mainView();
+  const sen = sensorOf(st.sensor);
+  const o = optics(v.f, v.sw, v.sh, v.s, v.N);
+  render(el.view, v);
+  const figPct = FIG_H / (v.d * v.sh / v.f) * 100;
+  const wallBlur = blurMM(v.f, v.N, v.s, v.d + WALL_Z) / v.sw * 100;
+  el.viewCap.textContent = `${fmtF(v.f)} mm · ${fmtN(v.N)} · camera ${fmtM(v.d)} from the figure · focus ${fmtM(v.s)} · ${sen.sw} × ${sen.sh} mm sensor`;
+  el.view.setAttribute("aria-label", `Camera view: figure ${fmtM(v.d)} away through a ${fmtF(v.f)} mm lens at ${fmtN(v.N)}, sharp from ${fmtM(o.near)} to ${fmtM(o.far)}.`);
+
+  const cell = (t, val, small, hl) => `<div${hl ? ' class="hl"' : ""}><dt>${t}</dt><dd>${val}${small ? `<small>${small}</small>` : ""}</dd></div>`;
+  el.readouts.innerHTML =
+    cell("Across (horizontal)", fmtDeg(o.hfov), "field of view") +
+    cell("Up (vertical)", fmtDeg(o.vfov), "field of view") +
+    cell("Diagonal", fmtDeg(o.dfov), "field of view") +
+    cell("35 mm equivalent", fmtF(o.eq) + " mm", "crop × " + o.crop.toFixed(2)) +
+    cell("Circle of confusion", o.c.toFixed(3) + " mm", "0.030 ÷ crop") +
+    cell("Hyperfocal", fmtM(o.H), "focus here: sharp to ∞") +
+    cell("Near limit", fmtM(o.near), "sharp from", true) +
+    cell("Far limit", fmtM(o.far), "sharp to", true) +
+    cell("Depth of field", isFinite(o.dof) ? fmtM(o.dof) : "∞", "far − near", true) +
+    cell("Figure height", Math.round(figPct) + "%", "of the frame height") +
+    cell("House front blur", wallBlur < 0.05 ? "sharp" : wallBlur.toFixed(1) + "%", "of the frame width") +
+    cell("Camera to house", fmtM(v.d + WALL_Z), "the house front");
+
+  const fitNote = sen.id === "blender" ? "Sensor Fit Auto, Size 36 mm" : `Sensor Fit Auto, Size ${sen.sw} mm, render at ${aspectName(sen)}`;
+  el.typein.innerHTML =
+    `<p><span class="tag">Blender</span>Focal Length <b>${fmtF(v.f)} mm</b> · ${fitNote.replace(/(\d[\d.]* mm)/, "<b>$1</b>")} · F-Stop <b>${v.N}</b> · Focus Distance <b>${fmtNum(v.s, 2)} m</b></p>` +
+    `<p><span class="tag">Unreal</span>Current Focal Length <b>${fmtF(v.f)} mm</b> · Filmback <b>${sen.sw} × ${sen.sh} mm</b> · Current Aperture <b>${v.N}</b> · Manual Focus Distance <b>${Math.round(v.s * 100)} cm</b></p>`;
+  drawPlan(v, o);
+  scheduleCompare();
+}
+function aspectName(sen) {
+  const r = sen.sw / sen.sh;
+  if (Math.abs(r - 1.5) < 0.03) return "3:2";
+  if (Math.abs(r - 4 / 3) < 0.03) return "4:3";
+  if (Math.abs(r - 16 / 9) < 0.03) return "16:9";
+  return r.toFixed(2) + ":1";
+}
+function announce() {
+  const v = mainView(); const o = optics(v.f, v.sw, v.sh, v.s, v.N);
+  el.live.textContent = `${fmtF(v.f)} millimetres, ${fmtDeg(o.hfov)} across. Sharp from ${fmtM(o.near)} to ${fmtM(o.far)}.`;
+}
+
+/* ---------- plan ---------- */
+function drawPlan(v, o) {
+  const svg = el.plan;
+  const Wd = Math.max(300, Math.round(svg.getBoundingClientRect().width) || 772), Hd = Wd < 500 ? 220 : 240;
+  const padL = 34, padR = 16, top = 30, bot = 30;
+  const wallD = v.d + WALL_Z;
+  let R = Math.max(6, v.d * 1.6, v.s * 1.3, isFinite(o.far) ? o.far * 1.1 : 0);
+  R = Math.min(R, wallD + 3);
+  const k = (Wd - padL - padR) / R;
+  const cy = top + (Hd - top - bot) / 2;
+  const X = z => padL + z * k;           // z: distance from the camera
+  const Y = x => cy + x * k;             // x: sideways, camera's left up
+  const half = o.hfov / 2 / DEG;
+  const reach = R * 1.05;
+  const ex = reach, ey = Math.tan(half) * reach;
+  let s = `<svg viewBox="0 0 ${Wd} ${Hd}" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<defs><clipPath id="pc"><rect x="0" y="${top - 6}" width="${Wd}" height="${Hd - top - bot + 12}"/></clipPath></defs>`;
+  s += `<g clip-path="url(#pc)">`;
+  const nx = X(Math.max(0, o.near)), fx = isFinite(o.far) ? X(Math.min(o.far, reach)) : Wd;
+  if (nx < Wd) s += `<rect class="band" x="${nx.toFixed(1)}" y="${top - 6}" width="${Math.max(1.5, fx - nx).toFixed(1)}" height="${Hd - top - bot + 12}"/>`;
+  s += `<polygon class="wedge" points="${X(0)},${cy} ${X(ex).toFixed(1)},${Y(-ey).toFixed(1)} ${X(ex).toFixed(1)},${Y(ey).toFixed(1)}"/>`;
+  s += `<line class="axis" x1="${X(0)}" y1="${cy}" x2="${Wd}" y2="${cy}"/>`;
+  // objects
+  for (const ob of OBJECTS) {
+    const z = ob.z + v.d;
+    if (z < -0.5 || z > reach) continue;
+    if (ob.label === "figure") continue;
+    const p = ob.parts[0];
+    const w = Math.max(3, (p.x1 - p.x0) * k), dz = Math.max(3, (p.z1 - p.z0) * k);
+    const xc = (p.x0 + p.x1) / 2, zc = (p.z0 + p.z1) / 2 + v.d;
+    s += `<rect class="obj" x="${(X(zc) - dz / 2).toFixed(1)}" y="${(Y(xc) - w / 2).toFixed(1)}" width="${dz.toFixed(1)}" height="${w.toFixed(1)}"/>`;
+  }
+  if (wallD <= reach) s += `<line class="wall" x1="${X(wallD).toFixed(1)}" y1="0" x2="${X(wallD).toFixed(1)}" y2="${Hd}"/>`;
+  s += `<circle class="fig" cx="${X(v.d).toFixed(1)}" cy="${cy}" r="${Math.max(4, 0.25 * k).toFixed(1)}"/>`;
+  if (v.s <= reach) s += `<line class="focus" x1="${X(v.s).toFixed(1)}" y1="${top - 6}" x2="${X(v.s).toFixed(1)}" y2="${Hd - bot + 6}"/>`;
+  s += `</g>`;
+  // camera
+  s += `<rect class="cam" x="${X(0) - 22}" y="${cy - 7}" width="16" height="14" rx="1"/><polygon class="cam" points="${X(0) - 7},${cy - 4} ${X(0)},${cy - 7} ${X(0)},${cy + 7} ${X(0) - 7},${cy + 4}"/>`;
+  // labels on top
+  const lab = (x, txt, cls, anchor) => `<text x="${x.toFixed(1)}" y="18" class="${cls}" text-anchor="${anchor}">${txt}</text>`;
+  if (nx < Wd - 40) s += lab(Math.max(padL + 30, nx - 4), "near " + fmtM(o.near), "ts", "end");
+  s += isFinite(o.far) && fx < Wd - 10 ? lab(Math.min(Wd - 80, fx + 4), "far " + fmtM(o.far), "ts", "start") : lab(Wd - 4, "far ∞ →", "ts", "end");
+  // scale at the bottom
+  const step = [0.5, 1, 2, 5, 10, 20, 50].find(t => t * k >= 44) || 50;
+  for (let m = 0; m <= R + 1e-6; m += step) {
+    const x = X(m);
+    s += `<line class="axis" x1="${x.toFixed(1)}" y1="${Hd - bot + 8}" x2="${x.toFixed(1)}" y2="${Hd - bot + 13}"/>`;
+    s += `<text x="${x.toFixed(1)}" y="${Hd - 6}" class="t3" text-anchor="middle">${m === 0 ? "0" : fmtNum(m, 1) + (m + step > R ? " m" : "")}</text>`;
+  }
+  s += `<text x="${(X(v.s) + 5).toFixed(1)}" y="${Hd - bot - 4}" class="ts">focus ${fmtM(v.s)}</text>`;
+  s += `</svg>`;
+  svg.outerHTML = s.replace("<svg ", `<svg class="plan" id="planSvg" role="img" aria-label="Top view to scale: camera on the left, figure ${fmtM(v.d)} away, focus at ${fmtM(v.s)}, sharp from ${fmtM(o.near)} to ${fmtM(o.far)}." `);
+  el.plan = $("planSvg");
+}
+
+/* ---------- dolly zoom and rack focus ---------- */
+let anim = 0;
+const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function stopAnim() { if (anim) { cancelAnimationFrame(anim); clearTimeout(anim); anim = 0; } $("dolly").textContent = "Play a dolly zoom, 18 to 85 mm"; }
+$("dolly").addEventListener("click", () => {
+  if (anim) { stopAnim(); return; }
+  st.mode = "walk"; st.focusFig = true;
+  if (Math.abs(st.f - 18) > 0.05) setFocal(18);
+  update();
+  $("dolly").textContent = "Stop";
+  if (reduce) {
+    const seq = [24, 35, 50, 85]; let i = 0;
+    const tick = () => { setFocal(seq[i++]); update(); anim = i < seq.length ? setTimeout(tick, 900) : 0; if (!anim) stopAnim(); };
+    anim = setTimeout(tick, 900);
+    return;
+  }
+  const t0 = performance.now(), T = 4200;
+  const step = now => {
+    const t = Math.min(1, (now - t0) / T);
+    const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    setFocal(18 * Math.pow(85 / 18, e));
+    update();
+    if (t < 1) anim = requestAnimationFrame(step); else stopAnim();
+  };
+  anim = requestAnimationFrame(step);
+});
+$("rack").addEventListener("click", () => {
+  stopAnim();
+  const front = st.d + FRONT_CRATE_Z;
+  const from = focusDist();
+  const to = (Math.abs(from - front) < 0.05 || front < 0.4) ? st.d : front;
+  st.focusFig = false;
+  $("rack").textContent = to === st.d ? "Rack focus to the crate in front" : "Rack focus back to the figure";
+  if (front < 0.4) { st.focusFig = true; update(); return; }
+  const t0 = performance.now(), T = reduce ? 1 : 1400;
+  const step = now => {
+    const t = Math.min(1, (now - t0) / T);
+    const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    st.s = from * Math.pow(to / from, e);
+    if (t >= 1 && to === st.d) st.focusFig = true;
+    update();
+    if (t < 1) anim = requestAnimationFrame(step); else anim = 0;
+  };
+  anim = requestAnimationFrame(step);
+});
+
+/* ================= part 2: compare ================= */
+let cmpMode = "size";
+const cmp = { A: $("cmpA"), B: $("cmpB"), capA: $("cmpCapA"), capB: $("cmpCapB"), note: $("compareNote"), lede: $("compareLede") };
+document.querySelectorAll("[data-cmp]").forEach(b => b.addEventListener("click", () => {
+  cmpMode = b.dataset.cmp;
+  document.querySelectorAll("[data-cmp]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  drawCompare();
+}));
+let cmpRaf = 0, cmpVisible = true;
+function scheduleCompare() { if (!cmpVisible) { scheduleCompare.dirty = true; return; } if (!cmpRaf) cmpRaf = requestAnimationFrame(() => { cmpRaf = 0; drawCompare(); }); }
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(es => { cmpVisible = es[0].isIntersecting; if (cmpVisible && scheduleCompare.dirty) { scheduleCompare.dirty = false; drawCompare(); } }, { rootMargin: "200px" }).observe($("compare"));
+}
+function fullShotDistance(f, sh) { return 2.3 * f / sh; }   // figure from feet to head, a little air
+function drawCompare() {
+  const sen = sensorOf(st.sensor);
+  const base = { sw: sen.sw, sh: sen.sh, N: st.N, camX: 0 };
+  let dA, dB;
+  if (cmpMode === "size") { dA = fullShotDistance(18, sen.sh); dB = fullShotDistance(85, sen.sh); }
+  else { dA = dB = fullShotDistance(35, sen.sh); }
+  const vA = Object.assign({}, base, { f: 18, d: dA, s: dA });
+  const vB = Object.assign({}, base, { f: 85, d: dB, s: dB });
+  render(cmp.A, vA, cmpMode === "spot" ? { cropTo: 85 } : null);
+  render(cmp.B, vB);
+  const oA = optics(18, sen.sw, sen.sh, dA, st.N), oB = optics(85, sen.sw, sen.sh, dB, st.N);
+  const wA = blurMM(18, st.N, dA, dA + WALL_Z) / sen.sw * 100, wB = blurMM(85, st.N, dB, dB + WALL_Z) / sen.sw * 100;
+  const cap = (f, d, o, w) => `<b>${f} mm</b> · ${fmtM(d)} away · ${fmtDeg(o.hfov)} across · sharp ${fmtM(o.near)} to ${fmtM(o.far)} (${isFinite(o.dof) ? fmtM(o.dof) : "∞"}) · wall blur ${w < 0.05 ? "none" : w.toFixed(1) + "%"}`;
+  cmp.capA.innerHTML = cap(18, dA, oA, wA);
+  cmp.capB.innerHTML = cap(85, dB, oB, wB);
+  cmp.A.setAttribute("aria-label", `18 millimetre frame, camera ${fmtM(dA)} from the figure.`);
+  cmp.B.setAttribute("aria-label", `85 millimetre frame, camera ${fmtM(dB)} from the figure.`);
+  cmp.lede.textContent = cmpMode === "size"
+    ? `The figure is the same size in both, so the camera walked back from ${fmtM(dA)} to ${fmtM(dB)}. Look behind the figure: the house front swells and crowds in. That is the distance, not the lens.`
+    : `Both cameras stand ${fmtM(dA)} from the figure. The 85 mm sees only the dashed part of the 18 mm frame: cut it out and enlarge it, and you have the same picture. Nothing about the perspective changed.`;
+  cmp.note.textContent = cmpMode === "size"
+    ? `Same size, same ${fmtN(st.N)}: the depth of field in metres is nearly the same. But the 85 mm shows a small piece of the background, enlarged, so its blur looks bigger. Sensor and f-stop come from the camera above.`
+    : `Same spot, same ${fmtN(st.N)}: the longer lens has much less depth of field, because the figure is now much bigger in the frame.`;
+}
+
+/* ================= part 3: quiz ================= */
+const ROUNDS = 8;
+const DOFS = [["shallow", "Shallow", "s"], ["medium", "Medium", "m"], ["deep", "Deep", "d"]];
+const Q = { view: $("quizView"), lens: $("qLens"), dof: $("qDof"), check: $("qCheck"), fb: $("qFb"), verdict: $("qVerdict"), why: $("qWhy"), set: $("qSet"), next: $("qNext"), open: $("qOpen"), live: $("qLive") };
+let quiz = null;
+PRESETS.forEach((f, i) => { const b = document.createElement("button"); b.type = "button"; b.className = "choice"; b.dataset.f = f; b.textContent = f + " mm"; b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-keyshortcuts", String(i + 1)); Q.lens.appendChild(b); });
+DOFS.forEach(([id, name, key]) => { const b = document.createElement("button"); b.type = "button"; b.className = "choice"; b.dataset.dof = id; b.textContent = name; b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-keyshortcuts", key.toUpperCase()); Q.dof.appendChild(b); });
+
+function classify(f, N, d) {
+  const o = optics(f, 36, 20.25, d, N);
+  const wall = d + WALL_Z;
+  if (o.far >= wall) return "deep";
+  return blurMM(f, N, d, wall) / 36 >= 0.008 ? "shallow" : "medium";
+}
+function makeRound(prevF) {
+  let f; do { f = PRESETS[Math.floor(Math.random() * PRESETS.length)]; } while (f === prevF && Math.random() < 0.7);
+  const framing = (Math.random() < 0.5 ? 2.3 : 1.8) * (0.96 + Math.random() * 0.12);
+  const d = framing * f / 20.25;
+  const want = DOFS[Math.floor(Math.random() * 3)][0];
+  const order = STOPS.slice().sort(() => Math.random() - 0.5);
+  let N = order.find(n => classify(f, n, d) === want);
+  if (N === undefined) N = order[0];
+  return { f, d, N, camX: (Math.random() - 0.5) * 1.2, dof: classify(f, N, d) };
+}
+function newQuiz() {
+  quiz = { i: 0, score: 0, rounds: [], answered: false, pickF: null, pickD: null };
+  let prev = null;
+  for (let i = 0; i < ROUNDS; i++) { const r = makeRound(prev); prev = r.f; quiz.rounds.push(r); }
+  $("play").hidden = false; $("result").hidden = true;
+  showRound();
+}
+function quizView(r) { return { f: r.f, sw: 36, sh: 20.25, d: r.d, s: r.d, N: r.N, camX: r.camX }; }
+function showRound() {
+  const r = quiz.rounds[quiz.i];
+  quiz.answered = false; quiz.pickF = null; quiz.pickD = null;
+  $("qNum").textContent = quiz.i + 1;
+  $("qScore").textContent = fmtNum(quiz.score, 1);
+  const best = loadStore().best;
+  $("qBest").textContent = typeof best === "number" ? fmtNum(best, 1) + " / " + ROUNDS * 2 : "–";
+  $("qBar").style.width = (quiz.i / ROUNDS * 100) + "%";
+  document.querySelectorAll("#qLens .choice, #qDof .choice").forEach(b => { b.disabled = false; b.classList.remove("right", "wrong", "near"); b.setAttribute("aria-pressed", "false"); });
+  Q.check.disabled = true;
+  Q.fb.hidden = true;
+  render(Q.view, quizView(r));
+  Q.view.setAttribute("aria-label", `Frame ${quiz.i + 1}: the figure in the street, lens hidden.`);
+}
+function pickedChanged() {
+  document.querySelectorAll("#qLens .choice").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.f === quiz.pickF)));
+  document.querySelectorAll("#qDof .choice").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.dof === quiz.pickD)));
+  Q.check.disabled = !(quiz.pickF && quiz.pickD);
+}
+Q.lens.addEventListener("click", e => { const b = e.target.closest("button"); if (!b || quiz.answered) return; quiz.pickF = +b.dataset.f; pickedChanged(); });
+Q.dof.addEventListener("click", e => { const b = e.target.closest("button"); if (!b || quiz.answered) return; quiz.pickD = b.dataset.dof; pickedChanged(); });
+const LENS_CUE = {
+  wide: "Wide: the house front is small and far away, the posts shrink fast, and a lot of ground shows between the figure and the wall.",
+  normal: "Normal: the house front sits at about the size your eye expects, the posts shrink at a moderate pace.",
+  long: "Long: the house front crowds in right behind the figure, the posts hardly shrink, and almost no ground shows."
+};
+const lensClass = f => (f <= 24 ? "wide" : f <= 50 ? "normal" : "long");
+function check() {
+  if (quiz.answered || !(quiz.pickF && quiz.pickD)) return;
+  quiz.answered = true;
+  Q.check.disabled = true;
+  const r = quiz.rounds[quiz.i];
+  const step = Math.abs(PRESETS.indexOf(quiz.pickF) - PRESETS.indexOf(r.f));
+  const lensPts = step === 0 ? 1 : step === 1 ? 0.5 : 0;
+  const dofPts = quiz.pickD === r.dof ? 1 : 0;
+  quiz.score += lensPts + dofPts;
+  $("qScore").textContent = fmtNum(quiz.score, 1);
+  document.querySelectorAll("#qLens .choice").forEach(b => {
+    b.disabled = true; const f = +b.dataset.f;
+    if (f === r.f) b.classList.add("right");
+    else if (f === quiz.pickF) b.classList.add(step === 1 ? "near" : "wrong");
+  });
+  document.querySelectorAll("#qDof .choice").forEach(b => {
+    b.disabled = true;
+    if (b.dataset.dof === r.dof) b.classList.add("right");
+    else if (b.dataset.dof === quiz.pickD) b.classList.add("wrong");
+  });
+  const o = optics(r.f, 36, 20.25, r.d, r.N);
+  const wb = blurMM(r.f, r.N, r.d, r.d + WALL_Z) / 36 * 100;
+  const pts = lensPts + dofPts;
+  Q.fb.className = "feedback " + (pts === 2 ? "right" : pts >= 1 ? "near" : "wrong");
+  Q.verdict.textContent = (pts === 2 ? "Both right. " : pts === 0 ? "Not this time. " : "Partly. ") + `It was ${r.f} mm, ${r.dof} depth of field (+${fmtNum(pts, 1)}).`;
+  const dofWhy = r.dof === "deep" ? "Deep: everything to the house front is sharp." : r.dof === "shallow" ? `Shallow: the house front melts, its blur ${wb.toFixed(1)}% of the frame width.` : `Medium: the figure is sharp, the house front soft, its blur ${wb.toFixed(1)}% of the frame width.`;
+  Q.why.textContent = LENS_CUE[lensClass(r.f)] + " " + dofWhy;
+  Q.set.textContent = `${r.f} mm · ${fmtN(r.N)} · camera ${fmtM(r.d)} from the figure · sharp ${fmtM(o.near)} to ${fmtM(o.far)}`;
+  Q.fb.hidden = false;
+  Q.next.textContent = quiz.i + 1 < ROUNDS ? "Next frame" : "See your result";
+  Q.live.textContent = Q.verdict.textContent;
+  Q.next.focus({ preventScroll: true });
+}
+Q.check.addEventListener("click", check);
+function next() {
+  if (!quiz.answered) return;
+  quiz.i++;
+  if (quiz.i < ROUNDS) { showRound(); Q.lens.querySelector("button").focus({ preventScroll: true }); return; }
+  $("qBar").style.width = "100%";
+  const total = ROUNDS * 2;
+  const prev = loadStore().best;
+  const isBest = typeof prev !== "number" || quiz.score > prev;
+  if (isBest) saveStore({ best: quiz.score });
+  $("play").hidden = true; $("result").hidden = false;
+  $("finalScore").textContent = fmtNum(quiz.score, 1) + " / " + total;
+  $("finalNote").textContent = (quiz.score >= total * 0.8 ? "You read lenses well. Now try it on real film frames for the homework."
+    : quiz.score >= total * 0.5 ? "Getting there. Compare the house front with the figure, then count the ground tiles."
+    : "Go back to 18 against 85 mm and switch between them, then play again.") + (isBest ? " A new best on this device." : ` Your best: ${fmtNum(prev, 1)}.`);
+  $("again").focus({ preventScroll: true });
+}
+Q.next.addEventListener("click", next);
+$("again").addEventListener("click", newQuiz);
+Q.open.addEventListener("click", () => {
+  const r = quiz.rounds[quiz.i];
+  stopAnim();
+  Object.assign(st, { f: r.f, sensor: "blender", d: r.d, N: r.N, focusFig: true, s: r.d, mode: "stay" });
+  update();
+  $("camera").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+});
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || !quiz || $("play").hidden) return;
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) return;
+  const r = $("quiz").getBoundingClientRect();
+  if (r.bottom < 0 || r.top > window.innerHeight) return;
+  const key = e.key.toLowerCase();
+  if (!quiz.answered && /^[1-6]$/.test(key)) { quiz.pickF = PRESETS[+key - 1]; pickedChanged(); e.preventDefault(); }
+  else if (!quiz.answered && (key === "s" || key === "m" || key === "d")) { quiz.pickD = DOFS.find(x => x[2] === key)[0]; pickedChanged(); e.preventDefault(); }
+  else if (key === "enter" && !(t && t.tagName === "BUTTON")) { quiz.answered ? next() : check(); e.preventDefault(); }
+});
+
+/* ================= go ================= */
+let lastW = window.innerWidth;
+window.addEventListener("resize", () => {
+  if (window.innerWidth === lastW) return;
+  lastW = window.innerWidth;
+  update();
+  if (quiz && !quiz.answered && !$("play").hidden) render(Q.view, quizView(quiz.rounds[quiz.i]));
+  else if (quiz && !$("play").hidden) render(Q.view, quizView(quiz.rounds[quiz.i]));
+});
+update();
+newQuiz();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (cmpMode === "spot") drawCompare(); });
+})();
+</script>
+</body>
+</html>

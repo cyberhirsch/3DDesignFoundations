@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capture Card · 3D Design Foundations</title>
+<meta name="description" content="Open it on your phone while you capture: an object for photogrammetry (Week 4) or a place for a Gaussian splat (Week 8). Light, movement, counts, a self-check, processing routes and what to hand in.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --ground: #EDEEF1;
+  --surface: #FFFFFF;
+  --ink: #14161B;
+  --ink-2: #565D6C;
+  --ink-3: #878E9E;
+  --rule: #D3D7E0;
+  --accent: #2439D4;
+  --accent-ink: #FFFFFF;
+  --done: #1B7A4B;
+  --bad: #D33A2C;
+  --cage: #D5D9E1;
+
+  --display: "Syne", "Archivo", system-ui, sans-serif;
+  --body: "Archivo", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --done: #4ECB8A;
+    --bad: #FF6B5C;
+    --cage: #2A303C;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground: #0D0F14;
+  --surface: #161A23;
+  --ink: #EDEFF4;
+  --ink-2: #A4ACBB;
+  --ink-3: #6C7488;
+  --rule: #2A303C;
+  --accent: #6B7FFF;
+  --accent-ink: #0D0F14;
+  --done: #4ECB8A;
+  --bad: #FF6B5C;
+  --cage: #2A303C;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  line-height: 1.5;
+}
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+/* ---------- masthead ---------- */
+header { padding: 40px 0 22px; }
+
+.back {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 8px;
+}
+.back:hover { color: var(--accent); }
+
+h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(32px, 6vw, 56px);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0 0 16px;
+}
+
+.standfirst {
+  font-size: 16px;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+.jump a {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  text-decoration: none;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- sticky mode bar ---------- */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  border-bottom: 1px solid var(--rule);
+  padding: 10px 0;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.modes { display: flex; flex: 1; gap: 0; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); }
+.modes button {
+  flex: 1 1 0;
+  min-height: 54px;
+  border: 0;
+  border-radius: 1px;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 6px;
+}
+.modes button small {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.modes button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.modes button[aria-pressed="true"] small { color: var(--accent-ink); opacity: 0.8; }
+.tally {
+  flex: none;
+  min-width: 64px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+}
+.tally b { font-weight: 500; font-size: 16px; color: var(--ink); line-height: 1.1; }
+.tally span { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.tally.complete b { color: var(--done); }
+
+/* modes show and hide */
+body[data-mode="object"] .m-place,
+body[data-mode="place"] .m-object { display: none !important; }
+
+/* ---------- sections ---------- */
+section { margin-top: 34px; }
+
+h2 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 400;
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+h2 .n { color: var(--accent); }
+
+h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 22px 0 10px;
+}
+
+p.note { font-size: 15px; color: var(--ink-2); max-width: 60ch; margin: 12px 0; text-wrap: pretty; }
+p.note b { color: var(--ink); font-weight: 600; }
+
+/* big rule list */
+ul.rules { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; }
+ul.rules li {
+  padding: 12px 14px 12px 40px;
+  border-top: 1px solid var(--rule);
+  font-size: 16.5px;
+  line-height: 1.4;
+  position: relative;
+  text-wrap: pretty;
+}
+ul.rules li:first-child { border-top: 0; }
+ul.rules li::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 20px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+ul.rules li.no::before { background: var(--bad); border-radius: 1px; transform: rotate(45deg); }
+ul.rules li small { display: block; font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+ul.rules li b { font-weight: 600; }
+
+/* two-column works / fails */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.split h3 { margin-top: 0; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+.split h3 .tag { font-size: 10px; }
+.tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 400; border-radius: 2px; padding: 2px 6px;
+}
+.tag.ok { background: var(--done); color: #fff; }
+.tag.no { background: var(--bad); color: #fff; }
+.tag.def { background: var(--accent); color: var(--accent-ink); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.ok, :root:not([data-theme="light"]) .tag.no { color: #0D0F14; } }
+:root[data-theme="dark"] .tag.ok, :root[data-theme="dark"] .tag.no { color: #0D0F14; }
+
+/* ---------- checklist ---------- */
+ul.ticks { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; }
+ul.ticks li { border-top: 1px solid var(--rule); }
+ul.ticks li:first-child { border-top: 0; }
+body[data-mode="object"] ul.ticks li.m-object:first-child,
+body[data-mode="place"] ul.ticks li.m-place:first-child { border-top: 0; }
+ul.ticks label {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 56px;
+  padding: 14px 14px;
+  cursor: pointer;
+  font-size: 16.5px;
+  line-height: 1.4;
+  text-wrap: pretty;
+  -webkit-tap-highlight-color: transparent;
+}
+ul.ticks label:hover { background: color-mix(in srgb, var(--ground) 60%, var(--surface)); }
+ul.ticks label small { display: block; font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: -1px 0 0;
+  border: 2px solid var(--ink-3);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+input[type="checkbox"]:checked { background: var(--done); border-color: var(--done); }
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 2px;
+  width: 7px;
+  height: 13px;
+  border: solid var(--surface);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+input[type="checkbox"]:checked + span { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+input[type="checkbox"]:checked + span small { color: var(--ink-3); }
+
+/* ---------- figures ---------- */
+figure { margin: 14px 0 0; }
+figure.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 12px;
+}
+figure.card figcaption { font-size: 14px; color: var(--ink-2); margin-top: 10px; text-wrap: pretty; }
+figure.card figcaption b { color: var(--ink); font-weight: 600; }
+.shots { display: grid; gap: 8px; }
+.shots.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.shots.c2 { grid-template-columns: 1fr 1fr; }
+.shot img { display: block; width: 100%; height: auto; border-radius: 2px; background: #EEF0F3; }
+.shot span { display: block; font-family: var(--mono); font-size: 11px; line-height: 1.35; color: var(--ink-3); margin-top: 5px; }
+.shot span b { color: var(--ink); font-weight: 500; }
+.shot.bad span b { color: var(--bad); }
+.shot.good span b { color: var(--done); }
+img.full { display: block; width: 100%; height: auto; border-radius: 2px; background: #EEF0F3; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .shot img, :root:not([data-theme="light"]) img.full { outline: 1px solid var(--rule); outline-offset: -1px; } }
+:root[data-theme="dark"] .shot img, :root[data-theme="dark"] img.full { outline: 1px solid var(--rule); outline-offset: -1px; }
+
+/* ---------- diagrams ---------- */
+svg.dg { display: block; width: 100%; max-width: 540px; height: auto; margin: 0 auto; }
+svg.dg text { font-family: var(--mono); font-size: 13px; fill: var(--ink-2); }
+svg.dg text.t { fill: var(--ink); font-family: var(--display); font-weight: 700; font-size: 15px; }
+svg.dg text.ok { fill: var(--done); }
+svg.dg text.no { fill: var(--bad); }
+svg.dg .ground { fill: var(--cage); opacity: 0.55; }
+svg.dg .line { stroke: var(--rule); stroke-width: 1.5; fill: none; }
+svg.dg .ring { stroke: var(--ink-3); stroke-width: 1.2; fill: none; stroke-dasharray: 3 4; }
+svg.dg .obj { fill: var(--cage); stroke: var(--ink); stroke-width: 1.6; stroke-linejoin: round; }
+svg.dg .objtop { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+svg.dg .cam { fill: var(--accent); }
+svg.dg .cam.back { opacity: 0.4; }
+svg.dg .aim { stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; }
+svg.dg .aim.back { opacity: 0.4; }
+svg.dg .cone { fill: var(--accent); opacity: 0.13; }
+svg.dg .cone.hi { opacity: 0.28; }
+svg.dg .cone.bad { fill: var(--bad); opacity: 0.16; }
+svg.dg .cam.bad { fill: var(--bad); }
+svg.dg .ruler { fill: #E8B23A; stroke: var(--ink); stroke-width: 1; }
+svg.dg .tick { stroke: var(--ink); stroke-width: 1; }
+svg.dg .fig { stroke: var(--ink-3); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg.dg .figh { fill: var(--ink-3); }
+svg.dg .cross { stroke: var(--bad); stroke-width: 3; stroke-linecap: round; }
+
+/* ---------- route cards ---------- */
+.routes { display: grid; gap: 10px; }
+.route {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  border-radius: 2px;
+  padding: 14px 16px;
+}
+.route.default { border-left-color: var(--accent); }
+.route h3 { margin: 0 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.route .on { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); margin: 0 0 8px; }
+.route ul { margin: 0; padding-left: 1.1em; font-size: 15.5px; line-height: 1.4; }
+.route li { margin-bottom: 5px; text-wrap: pretty; }
+.route li::marker { color: var(--ink-3); }
+.route .warn { color: var(--ink); }
+.links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+a.btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  padding: 0 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+a.btn:hover { background: var(--accent); color: var(--accent-ink); }
+
+ol.steps { margin: 0; padding: 4px 16px 4px 42px; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; }
+ol.steps li { padding: 8px 0; border-top: 1px solid var(--rule); font-size: 15.5px; line-height: 1.4; text-wrap: pretty; }
+ol.steps li:first-child { border-top: 0; }
+ol.steps li::marker { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+
+kbd {
+  font-family: var(--mono); font-size: 12.5px; color: var(--ink); background: var(--ground);
+  border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; padding: 0 5px; white-space: nowrap;
+}
+code { font-family: var(--mono); font-size: 0.88em; overflow-wrap: anywhere; }
+.name {
+  font-family: var(--mono); font-size: 14px; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 2px; padding: 10px 12px; margin: 8px 0 0; overflow-wrap: anywhere;
+}
+.name b { color: var(--accent); font-weight: 500; }
+
+.big { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.big div {
+  flex: 1 1 140px; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; padding: 12px 14px;
+}
+.big b { display: block; white-space: nowrap; font-family: var(--display); font-weight: 800; font-size: clamp(24px, 7vw, 30px); letter-spacing: -0.03em; line-height: 1.05; }
+.big span { font-size: 14px; color: var(--ink-2); }
+
+/* ---------- footer ---------- */
+footer {
+  border-top: 1px solid var(--rule);
+  margin-top: 40px;
+  padding-top: 22px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+footer p { margin: 0 0 8px; text-wrap: pretty; }
+.reset { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+button.clear {
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+button.clear:hover { border-color: var(--accent); color: var(--accent); }
+
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px 70px; }
+  header { padding-top: 22px; }
+  .split { grid-template-columns: 1fr; }
+  h3 { font-size: 19px; }
+}
+
+@media print {
+  body { background: #fff; color: #000; }
+  .jump, .back, .bar, .reset { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  section, figure, .route { break-inside: avoid; }
+}
+</style>
+</head>
+<body data-mode="object">
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Capture card</h1>
+    <p class="standfirst">
+      Open this on your phone while you shoot. Pick what you're capturing: an object for
+      photogrammetry in Week 4, or a place for a splat in Week 8. Tick things off as you go;
+      your ticks stay on this phone.
+    </p>
+    <nav class="jump"><a href="#before">Before you go</a><a href="#light">Light</a><a href="#scans">What scans, what won't</a><a href="#move">How to move</a><a href="#check">Count and check</a><a href="#after">After capture</a><a href="#names">Name your files</a><a href="#hand">Hand in</a></nav>
+  </header>
+
+  <div class="bar">
+    <div class="modes" role="group" aria-label="What are you capturing?">
+      <button type="button" data-mode="object" aria-pressed="true">Object<small>Week 4 · scan</small></button>
+      <button type="button" data-mode="place" aria-pressed="false">Place<small>Week 8 · splat</small></button>
+    </div>
+    <div class="tally" id="tally" aria-live="polite"><b>0/0</b><span>ticked</span></div>
+  </div>
+
+  <section id="before"><h2><span class="n">01</span>Before you go</h2><ul class="ticks" data-group="before"><li><label><input type="checkbox" data-id="before-battery"><span>Battery charged<small>A power bank, if you have one</small></span></label></li><li><label><input type="checkbox" data-id="before-storage"><span>Space free on the phone<small>Enough for the whole capture, twice</small></span></label></li><li><label><input type="checkbox" data-id="before-lens"><span>Lens wiped clean</span></label></li><li><label><input type="checkbox" data-id="before-lock"><span>Focus and exposure locked, if your app lets you<small>Often: press and hold on the screen</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="before-zoom"><span>One lens, no zoom<small>Stay on the main camera for every photo</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="before-object"><span>The object from your scene brief<small>Matte and textured: not shiny, not see-through</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="before-ruler"><span>A ruler or another known length beside it<small>It sets the real size later, in Blender</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="before-route"><span>Your processing route ready<small>RealityScan on a lab PC, or the phone app: see After capture</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="before-app"><span>Scaniverse installed and opened once<small>iPhone 12 or newer, or Android with ARCore Depth</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="before-sketch"><span>Your rings sketched from above<small>Where can you walk? Draw the arcs you can</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="before-marks"><span>Marked what moves, shines or is see-through</span></label></li><li class="m-place"><label><input type="checkbox" data-id="before-time"><span>A time when the place is empty<small>Early, or on a quiet day, in even light</small></span></label></li></ul></section><section id="light"><h2><span class="n">02</span>Light</h2><ul class="rules"><li>Overcast or shade<small>The best studio you'll ever get</small></li><li class="no">No flash</li><li class="no">No hard sun, no moving shadows<small>Shadows get baked into the result</small></li><li class="m-object">Enough light for a sharp photo<small>Steady hands; no motion blur</small></li><li class="m-place no">Clouds change the light between rings<small>Lock the exposure; pick a day with even light</small></li><li class="m-place">Short shutter, enough light<small>A blurred capture won't train sharp</small></li></ul></section><section id="scans"><h2><span class="n">03</span>What scans, what won't</h2><div class="split"><div><h3><span class="tag ok">Works</span></h3><ul class="rules"><li>Matte surfaces</li><li>Real texture<small>Stone, bark, wood, worn leather</small></li><li>Still<small>Nothing moves while you shoot</small></li><li class="m-place">Leaves and hair<small>Better as splats than as meshes, if they hold still</small></li></ul></div><div><h3><span class="tag no">Fails</span></h3><ul class="rules"><li class="no">Shiny<small>Reflections move with you</small></li><li class="no">See-through<small>Glass, water</small></li><li class="no">Moving<small>People, leaves, cars: ghosts and blur</small></li><li class="m-object no">Plain<small>Nothing to match on a blank surface</small></li><li class="m-object no">Thin<small>Antennas and wires vanish</small></li><li class="m-place no">Mirrors<small>A different world from every angle: mush</small></li></ul></div></div><figure class="card m-object"><div class="shots c3"><div class="shot good"><img src="img/capture/scan_textured.webp" width="480" height="270" alt="The boombox scan, complete and textured" loading="lazy" decoding="async"><span><b>As it is</b><br>64 of 64 photos</span></div><div class="shot bad"><img src="img/capture/scan_chrome.webp" width="480" height="270" alt="The chrome boombox scan: torn shards" loading="lazy" decoding="async"><span><b>Chrome</b><br>42 of 64</span></div><div class="shot bad"><img src="img/capture/scan_white.webp" width="480" height="270" alt="The plain white boombox scan: a lumpy slab" loading="lazy" decoding="async"><span><b>Plain white</b><br>44 of 64</span></div></div><figcaption>One boombox, photographed 64 times in exactly the same way. Only the textured one came back: chrome tore into shards, plain white became a lumpy slab.</figcaption></figure></section><section id="move"><h2><span class="n">04</span>How to move</h2><figure class="card m-object"><svg class="dg" viewBox="0 0 420 240" role="img" aria-label="An object with a ruler beside it, and camera positions on three loops: low, middle and high."><ellipse class="ground" cx="175" cy="182" rx="167.4" ry="50.2"/><ellipse class="ring" cx="175" cy="155.1" rx="152.6" ry="45.8"/><ellipse class="ring" cx="175" cy="99.9" rx="131.4" ry="39.4"/><ellipse class="ring" cx="175" cy="50.6" rx="82.1" ry="24.6"/><line class="aim back" x1="326.4" y1="149.1" x2="315.4" y2="149.9"/><circle class="cam back" cx="326.4" cy="149.1" r="3.6"/><line class="aim back" x1="316.1" y1="137.6" x2="305.2" y2="139.3"/><circle class="cam back" cx="316.1" cy="137.6" r="3.6"/><line class="aim back" x1="296.2" y1="127.2" x2="285.6" y2="130.1"/><circle class="cam back" cx="296.2" cy="127.2" r="3.6"/><line class="aim back" x1="268" y1="118.8" x2="258" y2="123.2"/><circle class="cam back" cx="268" cy="118.8" r="3.6"/><line class="aim back" x1="233.5" y1="112.8" x2="225" y2="119.7"/><circle class="cam back" cx="233.5" cy="112.8" r="3.6"/><line class="aim back" x1="195.1" y1="109.7" x2="191" y2="119.9"/><circle class="cam back" cx="195.1" cy="109.7" r="3.6"/><line class="aim back" x1="155.2" y1="109.7" x2="159.2" y2="119.9"/><circle class="cam back" cx="155.2" cy="109.7" r="3.6"/><line class="aim back" x1="116.7" y1="112.8" x2="125.3" y2="119.7"/><circle class="cam back" cx="116.7" cy="112.8" r="3.6"/><line class="aim back" x1="82.2" y1="118.7" x2="92.2" y2="123.2"/><circle class="cam back" cx="82.2" cy="118.7" r="3.6"/><line class="aim back" x1="54" y1="127.2" x2="64.6" y2="130.1"/><circle class="cam back" cx="54" cy="127.2" r="3.6"/><line class="aim back" x1="34" y1="137.5" x2="44.9" y2="139.3"/><circle class="cam back" cx="34" cy="137.5" r="3.6"/><line class="aim back" x1="23.7" y1="149.1" x2="34.7" y2="149.9"/><circle class="cam back" cx="23.7" cy="149.1" r="3.6"/><line class="aim back" x1="305.3" y1="94.8" x2="295.5" y2="99.7"/><circle class="cam back" cx="305.3" cy="94.8" r="3.6"/><line class="aim back" x1="296.5" y1="84.8" x2="287.1" y2="90.6"/><circle class="cam back" cx="296.5" cy="84.8" r="3.6"/><line class="aim back" x1="279.4" y1="75.9" x2="270.8" y2="82.8"/><circle class="cam back" cx="279.4" cy="75.9" r="3.6"/><line class="aim back" x1="255.1" y1="68.6" x2="247.9" y2="76.9"/><circle class="cam back" cx="255.1" cy="68.6" r="3.6"/><line class="aim back" x1="225.4" y1="63.4" x2="220.3" y2="73.2"/><circle class="cam back" cx="225.4" cy="63.4" r="3.6"/><line class="aim back" x1="192.3" y1="60.8" x2="190.4" y2="71.6"/><circle class="cam back" cx="192.3" cy="60.8" r="3.6"/><line class="aim back" x1="158" y1="60.8" x2="159.8" y2="71.6"/><circle class="cam back" cx="158" cy="60.8" r="3.6"/><line class="aim back" x1="124.8" y1="63.4" x2="129.9" y2="73.2"/><circle class="cam back" cx="124.8" cy="63.4" r="3.6"/><line class="aim back" x1="95.1" y1="68.6" x2="102.3" y2="76.8"/><circle class="cam back" cx="95.1" cy="68.6" r="3.6"/><line class="aim back" x1="70.8" y1="75.8" x2="79.3" y2="82.7"/><circle class="cam back" cx="70.8" cy="75.8" r="3.6"/><line class="aim back" x1="53.6" y1="84.7" x2="63" y2="90.5"/><circle class="cam back" cx="53.6" cy="84.7" r="3.6"/><line class="aim back" x1="44.7" y1="94.7" x2="54.5" y2="99.6"/><circle class="cam back" cx="44.7" cy="94.7" r="3.6"/><line class="aim back" x1="252.8" y1="42.7" x2="246.7" y2="51.8"/><circle class="cam back" cx="252.8" cy="42.7" r="3.6"/><line class="aim back" x1="236.8" y1="34.3" x2="231.9" y2="44.2"/><circle class="cam back" cx="236.8" cy="34.3" r="3.6"/><line class="aim back" x1="211.4" y1="28.5" x2="208.5" y2="39.1"/><circle class="cam back" cx="211.4" cy="28.5" r="3.6"/><line class="aim back" x1="180.4" y1="26" x2="180" y2="37"/><circle class="cam back" cx="180.4" cy="26" r="3.6"/><line class="aim back" x1="148.7" y1="27.2" x2="150.8" y2="38"/><circle class="cam back" cx="148.7" cy="27.2" r="3.6"/><line class="aim back" x1="120.9" y1="32" x2="125.2" y2="42.1"/><circle class="cam back" cx="120.9" cy="32" r="3.6"/><line class="aim back" x1="101.4" y1="39.6" x2="107.1" y2="49"/><circle class="cam back" cx="101.4" cy="39.6" r="3.6"/><line class="aim back" x1="93" y1="48.9" x2="99.6" y2="57.8"/><circle class="cam back" cx="93" cy="48.9" r="3.6"/><path class="obj" d="M143,137 L143,182 A32,9.6 0 0 0 207,182 L207,137 Z"/><ellipse class="objtop" cx="175" cy="137" rx="32" ry="9.6"/><polygon class="ruler" points="75,185.6 133,188 133,190.4 75,188"/><line class="tick" x1="84.7" y1="186" x2="84.7" y2="190"/><line class="tick" x1="94.3" y1="186.4" x2="94.3" y2="190.4"/><line class="tick" x1="104" y1="186.8" x2="104" y2="190.8"/><line class="tick" x1="113.7" y1="187.2" x2="113.7" y2="191.2"/><line class="tick" x1="123.3" y1="187.6" x2="123.3" y2="191.6"/><line class="aim" x1="23.6" y1="161" x2="34.6" y2="160.9"/><circle class="cam" cx="23.6" cy="161" r="3.6"/><line class="aim" x1="33.9" y1="172.6" x2="44.9" y2="171.6"/><circle class="cam" cx="33.9" cy="172.6" r="3.6"/><line class="aim" x1="53.8" y1="182.9" x2="64.6" y2="180.9"/><circle class="cam" cx="53.8" cy="182.9" r="3.6"/><line class="aim" x1="82" y1="191.4" x2="92.4" y2="187.9"/><circle class="cam" cx="82" cy="191.4" r="3.6"/><line class="aim" x1="116.5" y1="197.4" x2="125.7" y2="191.5"/><circle class="cam" cx="116.5" cy="197.4" r="3.6"/><line class="aim" x1="154.9" y1="200.5" x2="159.8" y2="190.6"/><circle class="cam" cx="154.9" cy="200.5" r="3.6"/><line class="aim" x1="194.8" y1="200.5" x2="190" y2="190.6"/><circle class="cam" cx="194.8" cy="200.5" r="3.6"/><line class="aim" x1="233.3" y1="197.4" x2="224" y2="191.5"/><circle class="cam" cx="233.3" cy="197.4" r="3.6"/><line class="aim" x1="267.8" y1="191.4" x2="257.4" y2="187.9"/><circle class="cam" cx="267.8" cy="191.4" r="3.6"/><line class="aim" x1="296" y1="183" x2="285.2" y2="180.9"/><circle class="cam" cx="296" cy="183" r="3.6"/><line class="aim" x1="316" y1="172.6" x2="305" y2="171.7"/><circle class="cam" cx="316" cy="172.6" r="3.6"/><line class="aim" x1="326.3" y1="161.1" x2="315.3" y2="161"/><circle class="cam" cx="326.3" cy="161.1" r="3.6"/><line class="aim" x1="44.7" y1="105" x2="54.8" y2="109.3"/><circle class="cam" cx="44.7" cy="105" r="3.6"/><line class="aim" x1="53.5" y1="114.9" x2="63.8" y2="118.7"/><circle class="cam" cx="53.5" cy="114.9" r="3.6"/><line class="aim" x1="70.6" y1="123.8" x2="81" y2="127.4"/><circle class="cam" cx="70.6" cy="123.8" r="3.6"/><line class="aim" x1="94.9" y1="131.1" x2="105.2" y2="134.9"/><circle class="cam" cx="94.9" cy="131.1" r="3.6"/><line class="aim" x1="124.6" y1="136.3" x2="134.5" y2="141"/><circle class="cam" cx="124.6" cy="136.3" r="3.6"/><line class="aim" x1="157.7" y1="139" x2="164.7" y2="147.5"/><circle class="cam" cx="157.7" cy="139" r="3.6"/><line class="aim" x1="192" y1="139" x2="185.1" y2="147.5"/><circle class="cam" cx="192" cy="139" r="3.6"/><line class="aim" x1="225.2" y1="136.3" x2="215.2" y2="141"/><circle class="cam" cx="225.2" cy="136.3" r="3.6"/><line class="aim" x1="254.9" y1="131.2" x2="244.6" y2="134.9"/><circle class="cam" cx="254.9" cy="131.2" r="3.6"/><line class="aim" x1="279.2" y1="123.9" x2="268.8" y2="127.5"/><circle class="cam" cx="279.2" cy="123.9" r="3.6"/><line class="aim" x1="296.4" y1="115" x2="286.1" y2="118.8"/><circle class="cam" cx="296.4" cy="115" r="3.6"/><line class="aim" x1="305.3" y1="105" x2="295.2" y2="109.3"/><circle class="cam" cx="305.3" cy="105" r="3.6"/><line class="aim" x1="97.2" y1="58.5" x2="103.9" y2="67.2"/><circle class="cam" cx="97.2" cy="58.5" r="3.6"/><line class="aim" x1="113.2" y1="66.8" x2="119.3" y2="76"/><circle class="cam" cx="113.2" cy="66.8" r="3.6"/><line class="aim" x1="138.6" y1="72.6" x2="142.8" y2="82.8"/><circle class="cam" cx="138.6" cy="72.6" r="3.6"/><line class="aim" x1="169.6" y1="75.1" x2="170.3" y2="86.1"/><circle class="cam" cx="169.6" cy="75.1" r="3.6"/><line class="aim" x1="201.3" y1="73.9" x2="198.1" y2="84.4"/><circle class="cam" cx="201.3" cy="73.9" r="3.6"/><line class="aim" x1="229.1" y1="69.1" x2="223.5" y2="78.5"/><circle class="cam" cx="229.1" cy="69.1" r="3.6"/><line class="aim" x1="248.6" y1="61.5" x2="242" y2="70.3"/><circle class="cam" cx="248.6" cy="61.5" r="3.6"/><line class="aim" x1="257" y1="52.2" x2="250.3" y2="60.9"/><circle class="cam" cx="257" cy="52.2" r="3.6"/><text x="339.6" y="159.1">low · 24</text><text x="318.4" y="103.9">middle · 24</text><text x="269.1" y="54.6">high · 16</text><text x="73" y="176">ruler</text></svg><figcaption><b>Three loops, then the details.</b> Our boombox: 24 + 24 + 16 = 64 photos, with a ruler in the frame.</figcaption></figure><figure class="card m-place"><svg class="dg" viewBox="0 0 420 250" role="img" aria-label="Side view: phone positions at 0.5, 1.2 and 1.9 metres, each looking into the place."><line class="line" x1="0" y1="222" x2="420" y2="222"/><rect class="ground" x="330" y="20" width="90" height="202"/><path class="obj" d="M260,153 h80 v6 h-80 Z"/><path class="fig" style="stroke:var(--ink)" d="M266,159 V222 M334,159 V222"/><polygon class="cone" points="112,47.2 321.7,36.2 292,155.4"/><polygon class="cone" points="112,111.6 316.6,64.4 308.1,186.9"/><polygon class="cone" points="112,176 299.1,80.7 320.4,201.6"/><line class="aim" x1="112" y1="47.2" x2="123.6" y2="50.1"/><circle class="cam" cx="112" cy="47.2" r="4.5"/><text x="108" y="37.2" text-anchor="end">head 1.9 m</text><line class="aim" x1="112" y1="111.6" x2="124" y2="112.4"/><circle class="cam" cx="112" cy="111.6" r="4.5"/><text x="108" y="101.6" text-anchor="end">chest 1.2 m</text><line class="aim" x1="112" y1="176" x2="123.8" y2="173.9"/><circle class="cam" cx="112" cy="176" r="4.5"/><text x="108" y="166" text-anchor="end">knee 0.5 m</text></svg><figcaption><b>Two or three rings at different heights</b>: knee, chest and head, each looking into the place.</figcaption></figure><div style="margin-top:14px"><ul class="rules"><li class="m-object">Full loops at three heights: low, middle, high</li><li class="m-object">At most 30° between photos<small>20 to 30° is safe: 12 to 18 photos a loop</small></li><li class="m-object">About 70 % overlap, photo to photo<small>Every point in at least two photos, better three</small></li><li class="m-object">The whole object in every frame</li><li class="m-object">Then close-ups of the details</li><li class="m-place">Two or three rings, at different heights<small>A big place may need more: up to five</small></li><li class="m-place">30 to 50 % overlap, picture to picture<small>A third to a half shared with the one before</small></li><li class="m-place">Walk slowly, at the same distance</li><li class="m-place">Divide a big place into parts</li><li class="m-place">Each scan under three minutes<small>Scaniverse warns you past that</small></li><li>Step, don't turn<small>Move the camera; never pan, tilt or roll on the spot</small></li></ul></div><figure class="card"><svg class="dg" viewBox="0 0 420 230" role="img" aria-label="Seen from above. Left: one position, the phone turned: no depth. Right: the phone moved in steps round the subject, every picture overlapping the last."><path class="ring" d="M237.3,106.6 A84,84 0 0 0 404,92"/><text class="t" x="10" y="20">Turn on the spot</text><polygon class="cone bad" points="100,150 10.7,127.7 36.1,83.8"/><polygon class="cone bad" points="100,150 33.8,86.1 77.7,60.7"/><polygon class="cone bad" points="100,150 74.6,61.6 125.4,61.6"/><polygon class="cone bad" points="100,150 122.3,60.7 166.2,86.1"/><polygon class="cone bad" points="100,150 163.9,83.8 189.3,127.7"/><line class="aim bad" style="stroke:var(--bad)" x1="100" y1="150" x2="100" y2="138"/><circle class="cam bad" cx="100" cy="150" r="4.5"/><line class="cross" x1="91" y1="168" x2="109" y2="186"/><line class="cross" x1="109" y1="168" x2="91" y2="186"/><text class="no" x="10" y="222">one spot: no depth</text><text class="t" x="222" y="20">Step round it</text><rect class="obj" x="302" y="78" width="36" height="28" rx="2"/><polygon class="cone hi" points="305.4,174.7 288.7,80.2 353.4,91.6"/><polygon class="cone hi" points="348.7,170.9 287,97.4 348.7,74.9"/><line class="aim" x1="241.1" y1="120.7" x2="252.3" y2="116.6"/><circle class="cam" cx="241.1" cy="120.7" r="4.5"/><line class="aim" x1="266" y1="156.3" x2="273.7" y2="147.2"/><circle class="cam" cx="266" cy="156.3" r="4.5"/><line class="aim" x1="305.4" y1="174.7" x2="307.5" y2="162.9"/><circle class="cam" cx="305.4" cy="174.7" r="4.5"/><line class="aim" x1="348.7" y1="170.9" x2="344.6" y2="159.7"/><circle class="cam" cx="348.7" cy="170.9" r="4.5"/><line class="aim" x1="384.3" y1="146" x2="375.2" y2="138.3"/><circle class="cam" cx="384.3" cy="146" r="4.5"/><line class="aim" x1="402.7" y1="106.6" x2="390.9" y2="104.5"/><circle class="cam" cx="402.7" cy="106.6" r="4.5"/><text class="ok" x="222" y="222">every step: a new angle</text><line class="line" x1="210" y1="34" x2="210" y2="226"/></svg><figcaption>Seen from above. Turning on the spot gives a panorama: no parallax, no depth. Every step gives each point a new angle.</figcaption></figure><figure class="card m-place"><img class="full" src="img/capture/place_rings.webp" width="900" height="506" alt="A kitchen corner with 72 capture positions on three rings" loading="lazy" decoding="async"><figcaption>The Week 8 kitchen corner: 72 positions on three rings, at 0.5, 1.2 and 1.9 m.</figcaption></figure></section><section id="check"><h2><span class="n">05</span>Count and check</h2><div class="big m-object"><div><b>50–100</b><span>photos for one object</span></div><div><b>3</b><span>loops: low, middle, high</span></div></div><div class="big m-place"><div><b>2–3</b><span>rings at different heights</span></div><div><b>3 min</b><span>at most, for one scan</span></div></div><p class="note m-object">Before you leave, scroll through every photo.</p><p class="note m-place">While it processes, check your pictures. Then orbit the splat on the phone.</p><ul class="ticks" data-group="check"><li class="m-object"><label><input type="checkbox" data-id="check-count"><span>50 to 100 photos</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-blur"><span>No blurred photos<small>Shaken photos smear the features</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-gaps"><span>No gaps<small>Every side, the top too, seen from several places</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-light"><span>The light stayed the same</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-still"><span>Nothing moved</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-frame"><span>Never cut off, never zoomed</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-exposure"><span>Nothing burnt out to white</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-length"><span>The known length is in the photos</span></label></li><li class="m-object"><label><input type="checkbox" data-id="check-delete"><span>Bad photos deleted<small>Better than feeding them to the software</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-rings"><span>Two or three rings captured</span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-blur"><span>No motion blur in the pictures</span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-worst"><span>Flew to the worst view of the splat</span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-floaters"><span>Floaters or smears? Another ring there<small>They come from views you never covered</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-soft"><span>Blurry everywhere? Check your pictures<small>Blurred pictures won't train sharp</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="check-twice"><span>Captured twice, if you could<small>The second one is almost always better</small></span></label></li></ul><figure class="card m-object"><img class="full" src="img/capture/keep_or_delete.webp" width="960" height="480" alt="Six photos of the boombox, numbered 1 to 6" loading="lazy" decoding="async"><figcaption><b>Keep 1 and 4.</b> Delete 2: shaken. 3: zoomed in. 5: cut off. 6: overexposed.</figcaption></figure><figure class="card m-place"><div class="shots c2"><div class="shot good"><img src="img/capture/place_3rings.webp" width="560" height="315" alt="The splat trained from three rings: sharp" loading="lazy" decoding="async"><span><b>Three rings</b>, 72 pictures</span></div><div class="shot bad"><img src="img/capture/place_1ring.webp" width="560" height="315" alt="The splat trained from one ring: smeared, with a dark floater" loading="lazy" decoding="async"><span><b>One ring</b>, 24 pictures</span></div></div><figcaption>The same view, never photographed. With one ring the boombox and window smear, and a dark floater hangs in the air.</figcaption></figure></section><section id="after"><h2><span class="n">06</span>After capture</h2><div class="routes"><div class="route default m-object"><h3>RealityScan<span class="tag def">Default</span></h3><p class="on">Windows · NVIDIA or recent AMD card</p><ul><li>Free for students; free Epic account, through the Epic Games Launcher</li><li>Without a supported card it can only align, not build a mesh</li><li>Simplify to a few hundred thousand triangles, then texture again: a simplified model loses its texture</li><li>No spaces or umlauts in file names, or it refuses to export</li></ul><div class="links"><a class="btn" href="https://dev.epicgames.com/documentation/en-us/realityscan/getting-realityscan" target="_blank" rel="noopener">Get it</a><a class="btn" href="https://rshelp.capturingreality.com/en-US/tutorials/quickstart.htm" target="_blank" rel="noopener">Quick start</a></div></div><div class="route m-object"><h3>RealityScan Mobile</h3><p class="on">iPhone or Android · processed in the cloud</p><ul><li>Free, up to 300 photos</li><li>Exports .obj on iPhone, only .glb on Android: open it in Blender, export .fbx</li></ul><div class="links"><a class="btn" href="https://dev.epicgames.com/documentation/en-us/realityscan-mobile/realityscan-step-by-step-guide" target="_blank" rel="noopener">Step by step</a></div></div><div class="route m-object"><h3>Meshroom</h3><p class="on">Windows or Linux · NVIDIA card</p><ul><li>Free, open source</li><li>Without NVIDIA: Draft Meshing only</li></ul></div><p class="note m-object">Polycam's free tier exports glTF only: convert it in Blender.</p><div class="route default m-place"><h3>Scaniverse<span class="tag def">Default</span></h3><p class="on">iPhone 12 or newer · Android with ARCore Depth</p><ul><li>Free; makes the splat on the phone in a minute or two</li><li>Exports .ply or .spz, and makes a share link</li><li>Keep each scan under three minutes</li></ul><div class="links"><a class="btn" href="https://apps.apple.com/us/app/scaniverse-3d-scanner/id1541433223" target="_blank" rel="noopener">iPhone</a><a class="btn" href="https://play.google.com/store/apps/details?id=com.nianticlabs.scaniverse" target="_blank" rel="noopener">Android</a></div></div><div class="route m-place"><h3>Postshot</h3><p class="on">Windows · NVIDIA card</p><ul><li>Free to train; saves its own .psht</li><li>.ply only with Indie, €204 a year</li></ul><div class="links"><a class="btn" href="https://www.jawset.com/" target="_blank" rel="noopener">Postshot</a></div></div><div class="route m-place"><h3>Brush or LichtFeld Studio</h3><p class="on">PC · free, open source</p><ul><li>Export .ply</li><li>Need the camera positions from COLMAP first: an evening of its own</li><li>LichtFeld needs an NVIDIA card; Brush runs on any graphics card</li></ul><div class="links"><a class="btn" href="https://github.com/ArthurBrussee/brush" target="_blank" rel="noopener">Brush</a><a class="btn" href="https://github.com/MrNeRF/LichtFeld-Studio" target="_blank" rel="noopener">LichtFeld</a></div></div><div class="route m-place"><h3>SuperSplat: clean it</h3><p class="on">Any browser with WebGPU</p><ul><li>Free, no account to load, edit and export</li><li>Crop to your place; delete the floaters</li><li>Export .ply; a share link needs a free PlayCanvas account</li></ul><div class="links"><a class="btn" href="https://superspl.at/editor" target="_blank" rel="noopener">Open the editor</a></div></div></div><h3 class="m-object">Then clean it in Blender</h3><ol class="steps m-object"><li>Delete the floor: select it, <kbd>X</kbd></li><li>Delete the floaters: <kbd>L</kbd> on the object, invert, delete</li><li>Close the holes: <kbd>F</kbd> or Fill Holes</li><li>Scale it from your known length; check a second one</li><li>Pivot at the base, Z up (Blender: origin)</li><li>Name it, save v001, export .fbx with its texture</li></ol><p class="note m-object">Keep the full-resolution scan: it is your second high-poly source for the Week 5 bake.</p><p class="note m-place"><b>Keep the .ply</b>, whatever else you export. It goes into Unreal in Week 10.</p></section><section id="names"><h2><span class="n">07</span>Name your files</h2><ul class="rules"><li><code>familyname_asset_task_v001</code><small>Lowercase, underscores, a version</small></li><li>No spaces, no umlauts<small>ä → ae, ö → oe, ü → ue, ß → ss</small></li><li class="m-object">Each capture in its own folder, in /Scans<small>Leave the photos as the camera named them, like IMG_0001</small></li></ul><p class="name m-object">hirsch_sarcophagus_<b>scan</b>_v001.zip<br>hirsch_sarcophagus_<b>photo_01</b>_v001.jpg</p><p class="name m-place">hirsch_kitchen_<b>splat</b>_v001.ply<br>hirsch_kitchen_<b>splat</b>_v001.jpg</p></section><section id="hand"><h2><span class="n">08</span>Hand in</h2><p class="note m-object"><b>One zip</b>: the cleaned mesh, its texture and three photos.</p><ul class="ticks" data-group="hand"><li class="m-object"><label><input type="checkbox" data-id="hand-clean"><span>Cleaned: floor, floaters, holes<small>Real size from the known length; pivot at the base</small></span></label></li><li class="m-object"><label><input type="checkbox" data-id="hand-fbx"><span>The processed mesh, low-res, as .fbx</span></label></li><li class="m-object"><label><input type="checkbox" data-id="hand-tex"><span>Its texture map</span></label></li><li class="m-object"><label><input type="checkbox" data-id="hand-photos"><span>Three photos from your capture<small>One from each loop</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="hand-ply"><span>The .ply, or a link to an online viewer<small>Scaniverse's share link or a SuperSplat publish link</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="hand-shot"><span>A screenshot of the captured scene<small>The whole place, from a view between your rings</small></span></label></li><li class="m-place"><label><input type="checkbox" data-id="hand-keep"><span>The .ply kept for Week 10<small>Even if you hand in a link</small></span></label></li></ul><div class="links"><a class="btn" href="checklists.html#week-4" data-w="4">Week 4 homework checklist</a></div></section>
+
+  <footer>
+    <div class="reset"><button class="clear" id="clear" type="button">Clear ticks for this mode</button><span>Saved on this device only.</span></div>
+    <p>3D Design Foundations &middot; Smart Interactive Media, TH Rosenheim &middot; Prof. Seb Hirsch</p>
+    <p>Pictures from the course's own test captures: Poly Haven's Boombox by Thomas Paul Mouilleron (CC0), rendered in Blender 5.2 and scanned in RealityScan 2.0.1; the kitchen corner trained as a splat in LichtFeld Studio. Diagrams drawn for this page.</p>
+  </footer>
+</div>
+<script>
+(function () {
+  var KEY = "3ddf-capture-v1";
+  var state = { mode: "object", ticks: {} };
+  try {
+    var raw = localStorage.getItem(KEY);
+    var p = raw ? JSON.parse(raw) : null;
+    if (p && typeof p === "object") {
+      if (p.mode === "object" || p.mode === "place") state.mode = p.mode;
+      if (p.ticks && typeof p.ticks === "object") state.ticks = p.ticks;
+    }
+  } catch (e) {}
+  var h = location.hash.replace("#", "");
+  if (h === "object" || h === "place") state.mode = h;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("input[data-id]"));
+  var buttons = Array.prototype.slice.call(document.querySelectorAll(".modes button"));
+  var tally = document.getElementById("tally");
+  var hw = document.querySelector("a[data-w]");
+
+  function visible(b) {
+    var li = b.closest("li");
+    return !li.classList.contains(state.mode === "object" ? "m-place" : "m-object");
+  }
+  function count() {
+    var n = 0, d = 0;
+    boxes.forEach(function (b) { if (visible(b)) { n++; if (b.checked) d++; } });
+    tally.querySelector("b").textContent = d + "/" + n;
+    tally.classList.toggle("complete", d === n && n > 0);
+  }
+  function apply() {
+    document.body.setAttribute("data-mode", state.mode);
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.mode === state.mode ? "true" : "false"); });
+    var t = state.ticks[state.mode] || {};
+    boxes.forEach(function (b) { b.checked = !!t[b.dataset.id]; });
+    var w = state.mode === "object" ? "4" : "8";
+    hw.href = "checklists.html#week-" + w;
+    hw.textContent = "Week " + w + " homework checklist";
+    count();
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.mode = b.dataset.mode;
+      try { history.replaceState(null, "", "#" + state.mode); } catch (e) {}
+      save(); apply();
+    });
+  });
+  boxes.forEach(function (b) {
+    b.addEventListener("change", function () {
+      var t = state.ticks[state.mode] || (state.ticks[state.mode] = {});
+      if (b.checked) t[b.dataset.id] = 1; else delete t[b.dataset.id];
+      save(); count();
+    });
+  });
+  document.getElementById("clear").addEventListener("click", function () {
+    state.ticks[state.mode] = {};
+    save(); apply();
+  });
+  apply();
+})();
+</script>
+</body>
+</html>

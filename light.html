@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Light · 3D Design Foundations</title>
+<meta name="description" content="Colour temperature, the inverse square law, real-world light values and exposure, three-point lighting with high and low key, and a fix list for Unreal lighting — 3D Design Foundations, Weeks 11 and 12.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --shadow: rgba(20, 22, 27, 0.18);
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --shadow: rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --shadow: rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 5px 9px;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+  section { margin-top: 40px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin: 26px 0 10px;
+  }
+
+  p.lede { font-size: 15.5px; max-width: 64ch; margin: 14px 0; text-wrap: pretty; }
+  p.note { font-size: 14.5px; color: var(--ink-2); max-width: 66ch; margin: 14px 0; text-wrap: pretty; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 18px;
+    margin-top: 14px;
+  }
+
+  .label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 8px;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .control-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  input[type="range"] { flex: 1 1 240px; min-width: 0; accent-color: var(--accent); height: 28px; margin: 0; }
+  input[type="number"], select {
+    font-family: var(--mono);
+    font-size: 15px;
+    padding: 7px 9px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+  input[type="number"] { width: 108px; }
+  input[type="color"] { width: 44px; height: 32px; padding: 2px; border: 1px solid var(--rule); border-radius: 2px; background: var(--ground); cursor: pointer; }
+  .unit { font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+  .presets .label { margin: 0 6px 0 0; }
+  .presets button { font-family: var(--mono); font-size: 12px; padding: 6px 10px; }
+
+  .big {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(34px, 7vw, 50px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .big-label { font-size: 13px; color: var(--ink-2); margin: 4px 0 0; }
+
+  /* ---------- part 1: kelvin ---------- */
+  .strip-wrap { position: relative; }
+  canvas#strip { display: block; width: 100%; height: 64px; border: 1px solid var(--rule); border-radius: 2px; cursor: pointer; touch-action: none; }
+  svg#stripMarks { display: block; width: 100%; height: 16px; overflow: visible; }
+  .strip-labels { position: relative; height: 18px; font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+  .strip-labels span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+  .strip-labels span.first { transform: none; }
+  .strip-labels span.last { transform: translateX(-100%); }
+  svg#stripMarks line { stroke: var(--ink-3); stroke-width: 1; }
+  svg#stripMarks rect.rng { fill: var(--ink-3); opacity: 0.55; }
+  svg#stripMarks text { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+  svg#stripMarks path.now { fill: var(--ink); }
+  .k-read { display: grid; grid-template-columns: 150px 1fr; gap: 18px; margin-top: 16px; align-items: stretch; }
+  /* swatches show real light; their colour is set inline and never themed */
+  .swatch { border: 1px solid var(--rule); border-radius: 2px; min-height: 120px; }
+  .k-facts p { margin: 0 0 6px; font-size: 14.5px; }
+  .k-facts .src { font-weight: 600; }
+  .k-facts .dim { color: var(--ink-2); }
+  .wb { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 14px; }
+
+  /* ---------- part 2: inverse square ---------- */
+  svg.fig { display: block; width: 100%; height: auto; }
+  svg.fig .axis { stroke: var(--rule); stroke-width: 1; }
+  svg.fig .tick { stroke: var(--ink-3); stroke-width: 1; }
+  svg.fig text { font-family: var(--mono); font-size: 11px; fill: var(--ink-3); }
+  svg.fig text.strong { fill: var(--ink); font-weight: 500; }
+  svg.fig .ray { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 4; fill: none; }
+  svg.fig .wall { stroke: var(--ink-2); stroke-width: 1; }
+  svg.fig .grid { stroke: var(--ink-3); stroke-width: 0.75; fill: none; }
+  .readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+  .readout div { border-top: 1px solid var(--rule); padding-top: 8px; }
+  .readout .big { font-size: clamp(26px, 4.6vw, 40px); white-space: nowrap; }
+  .tile-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .tile-legend p { margin: 0; border-top: 1px solid var(--rule); padding-top: 6px; }
+  .tile-legend b { display: block; color: var(--ink); font-weight: 500; }
+  .formula { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); line-height: 1.7; overflow-wrap: anywhere; margin: 12px 0 0; }
+  .check { display: flex; gap: 8px; align-items: center; font-size: 14.5px; }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+
+  /* ---------- part 3: values ---------- */
+  .ev-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+  .ev-row label { display: flex; flex-direction: column; }
+
+  /* ---------- part 4: three-point ---------- */
+  .tp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+  .tp figure { margin: 0; }
+  .tp figcaption { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
+  canvas#bust { display: block; width: 100%; height: auto; aspect-ratio: 9 / 10; border: 1px solid var(--rule); border-radius: 2px; background: #000; }
+  svg#top { display: block; width: 100%; height: auto; aspect-ratio: 9 / 10; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); }
+  svg#top .ring { stroke: var(--rule); stroke-width: 1; fill: none; stroke-dasharray: 2 4; }
+  svg#top .head { fill: var(--ground); stroke: var(--ink-2); stroke-width: 1.5; }
+  svg#top .beam { stroke-width: 1.25; stroke-dasharray: 4 4; }
+  svg#top text { font-family: var(--mono); font-size: 12px; fill: var(--ink-2); }
+  svg#top .cam { fill: var(--ink-2); }
+  .lights { display: grid; gap: 10px; margin-top: 14px; }
+  .light-row { display: grid; grid-template-columns: 92px 44px minmax(0, 1fr) 64px; gap: 12px; align-items: center; border-top: 1px solid var(--rule); padding-top: 10px; }
+  .light-row .check { font-weight: 600; }
+  .light-row .ang { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); text-align: right; }
+  .tp-status { font-size: 15px; margin: 14px 0 0; text-wrap: pretty; }
+  .tp-status b { font-family: var(--mono); font-weight: 500; }
+
+  /* ---------- tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 9px 14px;
+  }
+  td {
+    border-top: 1px solid var(--rule);
+    padding: 8px 14px;
+    font-size: 14.5px;
+    vertical-align: top;
+    text-wrap: pretty;
+  }
+  td:first-child { font-weight: 500; width: 30%; }
+  td.set { font-family: var(--mono); font-size: 12.5px; }
+  td.n { color: var(--ink-2); }
+  table.fix td:first-child { width: 26%; }
+  table.fix td { color: var(--ink-2); }
+  table.fix td:first-child { color: var(--ink); }
+  .where-line { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 4px; overflow-wrap: anywhere; }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0 5px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  ul.tips { margin: 12px 0 0; padding-left: 1.2em; max-width: 68ch; }
+  ul.tips li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 6px; text-wrap: pretty; }
+  ul.tips li b { color: var(--ink); font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0 0 6px; text-wrap: pretty; }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 70px; }
+    .k-read { grid-template-columns: 1fr; }
+    .strip-labels span.minor { display: none; }
+    svg#isq text { font-size: 22px; }
+    .swatch { min-height: 70px; }
+    .readout { grid-template-columns: 1fr 1fr; }
+    .tp { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .light-row { grid-template-columns: 80px 40px minmax(0, 1fr); }
+    .light-row .ang { grid-column: 3; text-align: left; margin-top: -8px; }
+    svg#top text { font-size: 15px; }
+    thead { display: none; }
+    table, tbody, tr, td { display: block; }
+    tr { border-top: 1px solid var(--rule); padding: 9px 12px; }
+    tbody tr:first-child { border-top: 0; }
+    td, td:first-child, table.fix td:first-child { width: auto; border: 0; padding: 2px 0; }
+    td[data-h]::before {
+      content: attr(data-h) " ";
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .jump, .back { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Light</h1>
+    <p class="standfirst">
+      Light has a colour, a strength that falls with distance, and a job in the picture. Drag through
+      the kelvin scale, move a lamp away from a wall, look up real light levels and exposure, light a
+      head with three lights, and find the fix when Unreal&rsquo;s picture looks wrong.
+    </p>
+    <nav class="jump" aria-label="On this page">
+      <a href="#kelvin">Colour temperature</a>
+      <a href="#falloff">Inverse square law</a>
+      <a href="#values">Real-world values</a>
+      <a href="#exposure">Exposure</a>
+      <a href="#threepoint">Three-point lighting</a>
+      <a href="#fixes">Symptom, cause, fix</a>
+    </nav>
+  </header>
+
+  <!-- ================= part 1 ================= -->
+  <section id="kelvin">
+    <h2>Colour temperature &middot; Week 11</h2>
+    <p class="lede">
+      Colour temperature is measured in kelvin. It comes from an ideal glowing body: as it heats up,
+      its light turns from red through white to light blue. Low is warm, high is cool.
+    </p>
+
+    <div class="panel">
+      <label class="label" for="kRange">Temperature</label>
+      <div class="strip-wrap">
+        <canvas id="strip" width="1540" height="128" aria-hidden="true"></canvas>
+        <svg id="stripMarks" viewBox="0 0 770 16" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="strip-labels" id="stripLabels" aria-hidden="true"></div>
+      </div>
+      <div class="control-row" style="margin-top:6px">
+        <input type="range" id="kRange" min="1000" max="12000" step="50" value="5500" aria-describedby="kSource">
+        <input type="number" id="kNum" min="1000" max="12000" step="50" value="5500" aria-label="Temperature in kelvin">
+        <span class="unit">K</span>
+      </div>
+      <div class="presets" id="kPresets"><span class="label">Jump to</span></div>
+
+      <div class="k-read">
+        <div class="swatch" id="kSwatch" role="img" aria-label="Colour of the light"></div>
+        <div class="k-facts">
+          <p class="big" id="kBig">5,500 K</p>
+          <p class="src" id="kSource">Midday sun and flash</p>
+          <p class="dim" id="kWord">neutral white</p>
+          <p class="dim num" id="kHex">#FFEDDE &middot; rgb 255 237 222</p>
+        </div>
+      </div>
+
+      <div class="wb">
+        <label class="label" for="wbRange">Camera white balance</label>
+        <div class="control-row">
+          <input type="range" id="wbRange" min="2000" max="12000" step="50" value="6500" aria-describedby="wbNote">
+          <input type="number" id="wbNum" min="2000" max="12000" step="50" value="6500" aria-label="White balance in kelvin">
+          <span class="unit">K</span>
+          <button type="button" id="wbReset">6,500 K</button>
+        </div>
+        <p class="note" id="wbNote" style="margin-bottom:0">
+          The light that matches the white balance looks white. Raise the white balance and every
+          light looks warmer: our morning grade uses 7,200 K. Lower it and the scene turns blue: the night uses 5,200 K.
+        </p>
+      </div>
+    </div>
+
+    <h3>Kelvin reference</h3>
+    <table>
+      <thead><tr><th>Light source</th><th>Temperature</th><th>Colour</th></tr></thead>
+      <tbody id="kTable"></tbody>
+    </table>
+    <p class="note">
+      Street lamps and fluorescent tubes don&rsquo;t glow like a hot body; their kelvin is the
+      nearest match (the correlated colour temperature). A sodium lamp is far more orange and spiky than its 2,000 K swatch.
+    </p>
+
+    <h3>Where you set it</h3>
+    <table>
+      <thead><tr><th>Program</th><th>Where</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Unreal 5.8, any light</td><td class="set" data-h="Where">Details &rarr; Light &rarr; Use Temperature, then Temperature</td><td class="n" data-h="Notes">Slider 1,700&ndash;12,000 K. Default 6,500 K, which Unreal treats as white (D65). Light Color still tints on top</td></tr>
+        <tr><td>Unreal 5.8, the whole picture</td><td class="set" data-h="Where">Post Process Volume &rarr; Color Grading &rarr; Temperature &rarr; Temp</td><td class="n" data-h="Notes">White balance; default 6,500 K. Slider 1,500&ndash;15,000 K</td></tr>
+        <tr><td>Blender 5.2, any light</td><td class="set" data-h="Where">Light properties &rarr; Use Temperature, then Temperature</td><td class="n" data-h="Notes">800&ndash;20,000 K, default 6,500 K</td></tr>
+        <tr><td>Blender 5.2, a material</td><td class="set" data-h="Where">Shader Editor &rarr; Add &rarr; Color &rarr; Blackbody</td><td class="n" data-h="Notes">Kelvin in, colour out: plug it into an emission colour</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      The swatches are display colours for a plain sRGB screen: the glow&rsquo;s spectrum (Planck&rsquo;s law)
+      through the CIE 1931 colour matching functions, converted to sRGB, brightest channel set to 1, with 6,500 K shown as white, as in Unreal.
+      They show the hue, not the brightness, and no screen can show the real thing.
+    </p>
+  </section>
+
+  <!-- ================= part 2 ================= -->
+  <section id="falloff">
+    <h2>The inverse square law &middot; Week 11</h2>
+    <p class="lede">
+      Light from a small source spreads over a growing sphere. Twice the distance, the same light
+      covers four times the area: a quarter of the light. A distant sun doesn&rsquo;t fall off.
+    </p>
+
+    <div class="panel">
+      <svg class="fig" id="isq" viewBox="0 0 640 210" role="img" aria-label="A lamp and a wall; the wall gets darker as the lamp moves away"></svg>
+
+      <label class="label" for="dRange" style="margin-top:10px">Distance to the wall</label>
+      <div class="control-row">
+        <input type="range" id="dRange" min="0.25" max="8" step="0.05" value="2" aria-describedby="isqText">
+        <input type="number" id="dNum" min="0.25" max="8" step="0.05" value="2" aria-label="Distance in metres">
+        <span class="unit">m</span>
+      </div>
+
+      <label class="label" for="cdNum" style="margin-top:14px">Light strength</label>
+      <div class="control-row">
+        <input type="number" id="cdNum" min="0.1" max="100000" step="0.1" value="64" aria-label="Luminous intensity in candela">
+        <span class="unit">cd</span>
+        <label class="check"><input type="checkbox" id="sunToggle"> Directional light (a sun)</label>
+      </div>
+      <div class="presets" id="cdPresets"><span class="label">Try</span></div>
+
+      <div class="readout">
+        <div><span class="label">On the wall</span><p class="big" id="luxBig">16 lx</p></div>
+        <div><span class="label">Compared with 1 m</span><p class="big" id="ratioBig">&frac14;</p></div>
+        <div><span class="label">In stops</span><p class="big" id="stopBig">&minus;2</p></div>
+      </div>
+      <p class="note" id="isqText" aria-live="polite"></p>
+      <p class="formula">illuminance (lux) = intensity (candela) &divide; distance&sup2; (m&sup2;)</p>
+    </div>
+
+    <h3>The same light at 1, 2 and 4 m</h3>
+    <svg class="fig" id="tiles" viewBox="0 0 640 178" role="img" aria-label="At 1 metre the light covers one tile, at 2 metres four tiles, at 4 metres sixteen tiles, so each tile gets 100, 25 and 6.25 percent"></svg>
+    <div class="tile-legend" aria-hidden="true">
+      <p><b>1 m</b> 1 tile &middot; 100%</p><p><b>2 m</b> 4 tiles &middot; 25%</p><p><b>4 m</b> 16 tiles &middot; 6.25%</p>
+    </div>
+    <p class="note">
+      This is why a lamp far from its object needs absurd intensities, and why a directional sun lights near and far alike.
+      It holds for small sources that shine in all directions; close to a large area light the light falls off more slowly.
+      Unreal&rsquo;s point and spot lights follow it while Use Inverse Squared Falloff is on, the default.
+    </p>
+  </section>
+
+  <!-- ================= part 3 ================= -->
+  <section id="values">
+    <h2>Real-world values</h2>
+    <p class="lede">
+      Your eyes adapt, so a room and a sunny street feel similar. The light meter disagrees by a
+      factor of a thousand. Real values let you light a scene once and expose it like a camera.
+    </p>
+
+    <h3>Illuminance: light falling on a surface</h3>
+    <table>
+      <thead><tr><th>Situation</th><th>Lux</th><th>EV100</th></tr></thead>
+      <tbody>
+        <tr><td>Full moon, clear night</td><td class="set" data-h="Lux">0.05&ndash;0.3</td><td class="set" data-h="EV100">&minus;5.6 to &minus;3</td></tr>
+        <tr><td>Dark limit of civil twilight</td><td class="set" data-h="Lux">3.4</td><td class="set" data-h="EV100">0.4</td></tr>
+        <tr><td>Living room lights</td><td class="set" data-h="Lux">50&ndash;150</td><td class="set" data-h="EV100">4.3 to 5.9</td></tr>
+        <tr><td>Office</td><td class="set" data-h="Lux">320&ndash;500</td><td class="set" data-h="EV100">7 to 7.6</td></tr>
+        <tr><td>Sunrise or sunset, clear day</td><td class="set" data-h="Lux">400</td><td class="set" data-h="EV100">7.3</td></tr>
+        <tr><td>Overcast day, TV studio</td><td class="set" data-h="Lux">1,000</td><td class="set" data-h="EV100">8.6</td></tr>
+        <tr><td>Full daylight, not direct sun</td><td class="set" data-h="Lux">10,000&ndash;25,000</td><td class="set" data-h="EV100">12 to 13.3</td></tr>
+        <tr><td>Direct sunlight</td><td class="set" data-h="Lux">32,000&ndash;100,000</td><td class="set" data-h="EV100">13.6 to 15.3</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      EV100 here is what an incident light meter at ISO 100 would read: lux = 2.5 &times; 2<sup>EV100</sup>.
+      Compare Epic&rsquo;s rule of thumb from Week 12: a home 5 to 7, an office 7 to 8, a sunny day 15.
+    </p>
+
+    <h3>Light units in Unreal 5.8</h3>
+    <table>
+      <thead><tr><th>Actor</th><th>Unit</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Directional Light</td><td class="set" data-h="Unit">lux</td><td class="n" data-h="Notes">Light on a surface facing the sun. A physically based clear-sky sun is around 100,000 lux; a new Directional Light starts at 10. Our kitchen&rsquo;s six-in-the-morning sun: 10 lux, 3,800 K</td></tr>
+        <tr><td>Point, Spot, Rect Light</td><td class="set" data-h="Unit">candela or lumen</td><td class="n" data-h="Notes">Intensity Units: Candelas, Lumens, EV, Nits or Unitless. New projects place them in candelas; a new point light has 8 cd (5,000 unitless &divide; 625)</td></tr>
+        <tr><td>Sky Light</td><td class="set" data-h="Unit">cd/m&sup2;</td><td class="n" data-h="Notes">Its Intensity Scale multiplies the captured sky. With Real Time Capture on, it follows the Sky Atmosphere</td></tr>
+        <tr><td>Sky Atmosphere</td><td class="set" data-h="Unit">none of its own</td><td class="n" data-h="Notes">Lit by the Directional Light that has Atmosphere Sun Light on: a brighter sun, a brighter sky</td></tr>
+        <tr><td>Emissive material</td><td class="set" data-h="Unit">cd/m&sup2;</td><td class="n" data-h="Notes">Lumen turns its glow into light on nearby surfaces</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li>With real lux values the scene is bright or dark like a real place, so the <b>exposure</b> must be set like a camera: a 100,000 lux sun needs about EV100 15, a lamp-lit room about 5.</li>
+      <li>Blender&rsquo;s units differ: point, spot and area lights in <b>watts</b> (radiant, not the bulb&rsquo;s electrical watts), the sun in <b>W/m&sup2;</b>. The manual suggests 1,000 W/m&sup2; for a clear sky, 0.001 for moonlight.</li>
+    </ul>
+  </section>
+
+  <section id="exposure">
+    <h2>Exposure &middot; Week 12</h2>
+    <p class="lede">
+      Exposure value (EV) counts how much light a camera lets in. One step, or stop, is twice the light.
+      EV100 is the exposure value at ISO 100; Unreal&rsquo;s exposure fields use it.
+    </p>
+
+    <div class="panel">
+      <span class="label">Camera settings</span>
+      <div class="ev-row">
+        <label><span class="label">Aperture</span><select id="evN" aria-label="Aperture f-number"></select></label>
+        <label><span class="label">Shutter</span><select id="evT" aria-label="Shutter time"></select></label>
+        <label><span class="label">ISO</span><select id="evIso" aria-label="ISO"></select></label>
+      </div>
+      <div class="readout">
+        <div><span class="label">EV100</span><p class="big" id="evBig">15.0</p></div>
+        <div style="grid-column: span 2"><span class="label">That much light</span><p class="big-label" id="evText" aria-live="polite"></p></div>
+      </div>
+      <p class="formula">EV = log<sub>2</sub>(N&sup2; &divide; t) &nbsp;&middot;&nbsp; N = f-number, t = seconds &nbsp;&middot;&nbsp; EV100 = EV &minus; log<sub>2</sub>(ISO &divide; 100)</p>
+      <div class="presets" id="evPresets"><span class="label">Try</span></div>
+    </div>
+
+    <h3>Fix the exposure in Unreal</h3>
+    <p class="where-line">Post Process Volume &rarr; Details &rarr; Lens &rarr; Exposure (and Lens &rarr; Camera)</p>
+    <table>
+      <thead><tr><th>Setting</th><th>What it does</th><th>For your render</th></tr></thead>
+      <tbody>
+        <tr><td>Metering Mode</td><td class="n" data-h="What it does">Auto Exposure Histogram (default), Auto Exposure Basic, or Manual</td><td class="set" data-h="For your render">Manual</td></tr>
+        <tr><td>Exposure Compensation</td><td class="n" data-h="What it does">Brighter or darker in stops: +1 is twice as bright, &minus;1 half</td><td class="set" data-h="For your render">to taste, around 0</td></tr>
+        <tr><td>Min EV100, Max EV100</td><td class="n" data-h="What it does">The range auto exposure may drift in. Min = Max switches the drifting off</td><td class="set" data-h="For your render">same value, e.g. 7.5 for an office-bright room</td></tr>
+        <tr><td>Apply Physical Camera Exposure</td><td class="n" data-h="What it does">Manual only: exposes from Shutter Speed, ISO and Aperture under Lens &rarr; Camera. Off means ISO 100, f/1, 1 s: EV100 0</td><td class="set" data-h="For your render">on, with real camera values</td></tr>
+        <tr><td>Infinite Extent (Unbound)</td><td class="n" data-h="What it does">The volume affects the whole level, not only inside its box</td><td class="set" data-h="For your render">on</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li><b>Read the field names before you type.</b> A project made in the Project Browser shows Min EV100 and Max EV100. Our example project was made another way and shows Min Brightness and Max Brightness, in cd/m&sup2;: there, 0 or below whites the frame out. The switch is Project Settings &rarr; Rendering &rarr; Default Settings &rarr; Extend default luminance range in Auto Exposure settings.</li>
+      <li>Auto exposure works like your eye: the bright window comes into frame and the room darkens. In a shot that looks like a mistake, so keep the exposure fixed through the whole shot.</li>
+      <li>In Unreal, a higher Min EV100 makes the picture <b>darker</b>: you expose for more light.</li>
+    </ul>
+  </section>
+
+  <!-- ================= part 4 ================= -->
+  <section id="threepoint">
+    <h2>Three-point lighting &middot; high key and low key</h2>
+    <p class="lede">
+      The key sets the main direction and form, the fill lifts the shadows, the rim draws an edge
+      against the background. The key-to-fill ratio and the background decide whether the picture is high key or low key.
+    </p>
+
+    <div class="presets" id="tpPresets"><span class="label">Start from</span></div>
+    <div class="tp">
+      <figure>
+        <figcaption>Top view &middot; camera below</figcaption>
+        <svg id="top" viewBox="0 0 360 400" role="img" aria-label="Top view of the head with the camera and the three lights"></svg>
+      </figure>
+      <figure>
+        <figcaption>Camera view</figcaption>
+        <canvas id="bust" width="270" height="300" role="img" aria-label="The lit head as the camera sees it"></canvas>
+      </figure>
+    </div>
+
+    <div class="panel">
+      <div class="lights" id="lights"></div>
+
+      <div class="control-row" style="margin-top:16px">
+        <label class="label" for="ratio" style="margin:0;min-width:120px">Key : fill</label>
+        <input type="range" id="ratio" min="0" max="3" step="1" value="1" aria-valuetext="2 to 1">
+        <span class="num" id="ratioOut" style="min-width:64px">2 : 1</span>
+      </div>
+      <div class="control-row" style="margin-top:8px">
+        <label class="label" for="bg" style="margin:0;min-width:120px">Background</label>
+        <input type="range" id="bg" min="0" max="100" step="1" value="20">
+        <span class="num" id="bgOut" style="min-width:64px">20%</span>
+      </div>
+      <div class="control-row" style="margin-top:8px">
+        <label class="label" for="expo" style="margin:0;min-width:120px">Exposure</label>
+        <input type="range" id="expo" min="-3" max="2" step="0.5" value="0">
+        <span class="num" id="expoOut" style="min-width:64px">0 stops</span>
+      </div>
+      <div class="presets">
+        <button type="button" id="rgbBtn" aria-pressed="false">One colour per light</button>
+        <button type="button" id="whiteBtn">All lights white</button>
+      </div>
+      <p class="tp-status" id="tpStatus" aria-live="polite"></p>
+    </div>
+    <ul class="tips">
+      <li><b>Key : fill</b> here is key strength divided by fill strength. 2 : 1 is one stop between them, 4 : 1 two stops, 8 : 1 three.</li>
+      <li><b>High key</b>: bright tones, soft light, low contrast, few shadows and none of them black. <b>Low key</b>: dark tones and large black areas; what is lit is where the eye goes.</li>
+      <li><b>One colour per light</b>: red key, green fill, blue rim while you set up; where colours mix, two lights overlap. Set them back to white afterwards.</li>
+      <li>This head has no cast shadows and only diffuse light: it shows direction and ratio, not a final render.</li>
+    </ul>
+  </section>
+
+  <!-- ================= part 5 ================= -->
+  <section id="fixes">
+    <h2>Symptom, cause, fix &middot; Unreal 5.8</h2>
+    <p class="lede">
+      Change one thing at a time, and check in Detail Lighting whether the material or the light is to blame.
+    </p>
+    <table class="fix">
+      <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th><th>Week</th></tr></thead>
+      <tbody>
+        <tr><td>Everything white, or black, after real light values</td><td data-h="Cause">Exposure range doesn&rsquo;t match the light, or numbers typed into Brightness fields as if they were EV100</td><td data-h="Fix">Metering Mode Manual, or Min = Max EV100 around the scene&rsquo;s value; read the field names first</td><td data-h="Week">12</td></tr>
+        <tr><td>Picture brightens and darkens as the camera moves</td><td data-h="Cause">Auto exposure (eye adaptation)</td><td data-h="Fix">Min = Max, or Metering Mode Manual</td><td data-h="Week">12</td></tr>
+        <tr><td>Grade, fog settings or exposure do nothing</td><td data-h="Cause">Camera outside the Post Process Volume&rsquo;s box</td><td data-h="Fix">Infinite Extent (Unbound) on</td><td data-h="Week">11, 12</td></tr>
+        <tr><td>Room lit only where the sun falls, the rest flat grey</td><td data-h="Cause">No bounce light: Global Illumination Method None</td><td data-h="Fix">Post Process Volume &rarr; Global Illumination &rarr; Method Lumen, Reflections Lumen</td><td data-h="Week">11</td></tr>
+        <tr><td>Cold grey-blue light inside a closed room</td><td data-h="Cause">Sky light leaking in where there is no bounce, or through walls</td><td data-h="Fix">Lumen GI on; walls at least 10 cm thick; raise Lumen Scene Detail and Max Trace Distance</td><td data-h="Week">11, 12</td></tr>
+        <tr><td>Blotchy, noisy bounce light</td><td data-h="Cause">Lumen quality too low, or a small, very bright emissive</td><td data-h="Fix">Final Gather Quality and Lumen Scene Lighting Quality to 2; larger, dimmer emissives</td><td data-h="Week">11</td></tr>
+        <tr><td>Wood looks varnished, too glossy</td><td data-h="Cause">Packed ORM imported with sRGB on: roughness 0.37 read as 0.11</td><td data-h="Fix">Texture: sRGB off, Compression Masks; sampler type Masks</td><td data-h="Week">11</td></tr>
+        <tr><td>Bumps look like dents</td><td data-h="Cause">OpenGL normal map; Unreal expects DirectX</td><td data-h="Fix">Texture &rarr; Flip Green Channel, or export with Painter&rsquo;s Unreal preset</td><td data-h="Week">11</td></tr>
+        <tr><td>Fog hazes the room, but no light shafts</td><td data-h="Cause">Volumetric Fog off, or the light barely scatters</td><td data-h="Fix">Exponential Height Fog &rarr; Volumetric Fog on; the sun&rsquo;s Volumetric Scattering Intensity up (ours: 4); Cast Volumetric Shadow on</td><td data-h="Week">12</td></tr>
+        <tr><td>Shafts vanish when the camera turns away from the window</td><td data-h="Cause">Scattering Distribution sends light forward (ours: 0.7)</td><td data-h="Fix">Expected: shafts are brightest looking toward the light. Lower it for a more even glow</td><td data-h="Week">12</td></tr>
+        <tr><td>Whole room filled with grey-blue haze</td><td data-h="Cause">The fog&rsquo;s own glow raised (Fog Inscattering Color)</td><td data-h="Fix">Back near black, the default; let the lights light the fog</td><td data-h="Week">12</td></tr>
+        <tr><td>Shafts look washed out, shadows in the fog too bright</td><td data-h="Cause">Sky light scattering into the fog everywhere</td><td data-h="Fix">Sky Light &rarr; Volumetric Scattering Intensity down (ours: 0.1)</td><td data-h="Week">12</td></tr>
+        <tr><td>Whole picture too orange or too blue</td><td data-h="Cause">White balance and light temperatures pulling different ways</td><td data-h="Fix">Color Grading &rarr; Temp (default 6,500 K); decide the mood, then move light, air and grade the same way</td><td data-h="Week">12</td></tr>
+        <tr><td>A LUT crushes the highlights</td><td data-h="Cause">LUTs apply after the tone mapper, in low dynamic range</td><td data-h="Fix">Use the grading wheels instead: Gamma, Gain, Offset</td><td data-h="Week">12</td></tr>
+        <tr><td>Shadows too hard</td><td data-h="Cause">The light source is too small</td><td data-h="Fix">Bigger source: Source Radius on point lights, Source Angle on the sun (0.5357&deg; is our sun)</td><td data-h="Week">11</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      Fog names as in Unreal 5.8&rsquo;s Details panel. The decks call the fog&rsquo;s own glow
+      Fog Inscattering Luminance; the panel labels it Fog Inscattering Color.
+    </p>
+  </section>
+
+  <footer>
+    <p>3D Design Foundations &middot; Smart Interactive Media, TH Rosenheim &middot; Prof. Seb Hirsch</p>
+    <p>
+      Swatches: Planck&rsquo;s law through the CIE 1931 colour matching functions (the analytic fit of Wyman, Sloan and Shirley, 2013), converted to sRGB (IEC 61966-2-1), display-referred.
+      Lux values: the table in Wikipedia&rsquo;s Lux article. EV and its relation to lux (C = 250): Wikipedia, Exposure value.
+      Unreal: Epic&rsquo;s Using Physical Lighting Units, Auto Exposure and Lumen Technical Details pages, and the Unreal Engine 5.8 source.
+      Blender: the Blender 5.2 manual, Light Objects, and Blender 5.2 itself. Kelvin reference, exposure ranges and our kitchen&rsquo;s values: the Week 11 and 12 decks.
+      Every picture on this page is drawn by the page. Checked October 2026.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+/* ================= shared ================= */
+const $ = (id) => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+const fmt = (n, d = 0) => n.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+function toSRGB(l) { l = Math.min(1, Math.max(0, l)); return l <= 0.0031308 ? 12.92 * l : 1.055 * Math.pow(l, 1 / 2.4) - 0.055; }
+function toLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function rgbCss(lin) { return "rgb(" + lin.map((v) => Math.round(toSRGB(v) * 255)).join(" ") + ")"; }
+function hex(lin) { return "#" + lin.map((v) => Math.round(toSRGB(v) * 255).toString(16).padStart(2, "0")).join("").toUpperCase(); }
+
+/* per-viewer settings */
+const KEY = "3ddf-light-v1";
+const store = (function () {
+  let s = {};
+  try { const raw = localStorage.getItem(KEY); if (raw) s = JSON.parse(raw) || {}; } catch (e) { s = {}; }
+  return {
+    get: (k, d) => (s && s[k] !== undefined ? s[k] : d),
+    set: (k, v) => { s[k] = v; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* private mode */ } }
+  };
+})();
+
+/* ================= blackbody -> linear sRGB ================= */
+// CIE 1931 2° colour matching functions, multi-lobe fit (Wyman, Sloan, Shirley 2013)
+function g(x, mu, s1, s2) { const t = (x - mu) / (x < mu ? s1 : s2); return Math.exp(-0.5 * t * t); }
+function cmf(l) {
+  return [
+    1.056 * g(l, 599.8, 37.9, 31.0) + 0.362 * g(l, 442.0, 16.0, 26.7) - 0.065 * g(l, 501.1, 20.4, 26.2),
+    0.821 * g(l, 568.8, 46.9, 40.5) + 0.286 * g(l, 530.9, 16.3, 31.1),
+    1.217 * g(l, 437.0, 11.8, 36.0) + 0.681 * g(l, 459.0, 26.0, 13.8)
+  ];
+}
+const CMF = []; for (let l = 380; l <= 780; l += 5) CMF.push([l, cmf(l)]);
+const bbCache = new Map();
+function blackbody(T) {
+  // relative linear sRGB (D65 white), brightest channel = 1
+  const key = Math.round(T);
+  if (bbCache.has(key)) return bbCache.get(key);
+  const c2 = 1.4388e-2;
+  let X = 0, Y = 0, Z = 0;
+  for (const [l, c] of CMF) {
+    const lm = l * 1e-9;
+    const B = 1 / (Math.pow(lm, 5) * (Math.exp(c2 / (lm * T)) - 1));
+    X += B * c[0]; Y += B * c[1]; Z += B * c[2];
+  }
+  let r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z;
+  let gg = -0.9689 * X + 1.8758 * Y + 0.0415 * Z;
+  let b = 0.0557 * X - 0.2040 * Y + 1.0570 * Z;
+  r = Math.max(0, r); gg = Math.max(0, gg); b = Math.max(0, b);
+  const m = Math.max(r, gg, b);
+  const out = [r / m, gg / m, b / m];
+  bbCache.set(key, out);
+  return out;
+}
+// what a light of temperature T looks like under white balance W (simple per-channel scaling)
+function underWB(T, W) {
+  const c = blackbody(T), w = blackbody(W);
+  const v = [c[0] / w[0], c[1] / w[1], c[2] / w[2]];
+  const m = Math.max(v[0], v[1], v[2]);
+  return v.map((x) => x / m);
+}
+
+/* ================= part 1: kelvin ================= */
+(function () {
+  const SOURCES = [
+    { name: "Candle", lo: 1500, hi: 1500 },
+    { name: "Sodium street lamp", lo: 2000, hi: 2000 },
+    { name: "Incandescent bulb", lo: 2600, hi: 3000 },
+    { name: "Halogen and photo lamps", lo: 3000, hi: 3200 },
+    { name: "Our kitchen’s morning sun", lo: 3800, hi: 3800, ours: true },
+    { name: "Neutral-white fluorescent", lo: 4000, hi: 4000 },
+    { name: "Morning or evening sun", lo: 5000, hi: 5000 },
+    { name: "Midday sun and flash", lo: 5500, hi: 5800 },
+    { name: "Overcast sky", lo: 6500, hi: 7500 },
+    { name: "Blue sky in shade", lo: 9000, hi: 12000 }
+  ];
+  const KMIN = 1000, KMAX = 12000;
+  const range = $("kRange"), num = $("kNum"), wbR = $("wbRange"), wbN = $("wbNum");
+  const strip = $("strip"), marks = $("stripMarks");
+  const ctx = strip.getContext("2d");
+  const fx = (k) => (k - KMIN) / (KMAX - KMIN);
+
+  function drawStrip(W) {
+    const w = strip.width, h = strip.height;
+    for (let x = 0; x < w; x++) {
+      const k = KMIN + (x + 0.5) / w * (KMAX - KMIN);
+      ctx.fillStyle = rgbCss(underWB(k, W));
+      ctx.fillRect(x, 0, 1, h);
+    }
+  }
+  function drawMarks(k) {
+    marks.textContent = "";
+    const W = 770;
+    SOURCES.forEach((s) => {
+      if (s.ours) return;
+      const x0 = fx(s.lo) * W, x1 = fx(s.hi) * W;
+      if (s.hi > s.lo) marks.appendChild(el("rect", { class: "rng", x: x0, y: 1, width: x1 - x0, height: 3 }));
+      else marks.appendChild(el("line", { x1: x0, x2: x0, y1: 0, y2: 7 }));
+    });
+    const lab = $("stripLabels");
+    if (!lab.childElementCount) {
+      [1000, 2000, 4000, 6000, 8000, 10000, 12000].forEach((t) => {
+        const sp = document.createElement("span");
+        sp.textContent = fmt(t) + (t === 12000 ? " K" : "");
+        sp.style.left = (fx(t) * 100) + "%";
+        sp.className = t === 1000 ? "first" : t === 12000 ? "last" : (t === 2000 || t === 6000 || t === 10000) ? "minor" : "";
+        lab.appendChild(sp);
+      });
+    }
+    const xn = fx(k) * W;
+    marks.appendChild(el("path", { class: "now", d: `M${xn} 6 l-6 9 h12 z` }));
+  }
+  function nearest(k) {
+    const inside = SOURCES.filter((s) => k >= s.lo - 100 && k <= s.hi + 100);
+    if (inside.length) return inside.map((s) => s.name).join(" · ");
+    let best = null, bd = 1e9;
+    SOURCES.forEach((s) => { const d = k < s.lo ? s.lo - k : k - s.hi; if (d < bd) { bd = d; best = s; } });
+    return k < 1500 ? "Below a candle: embers, a dying fire" : "Between " + best.name.toLowerCase() + " and its neighbours";
+  }
+  function word(k) {
+    if (k < 2200) return "very warm, orange-red";
+    if (k < 3500) return "warm";
+    if (k < 5000) return "warm white";
+    if (k < 6000) return "neutral white";
+    if (k < 7600) return "cool white";
+    return "cool, bluish";
+  }
+  let K = store.get("k", 5500), WB = store.get("wb", 6500);
+  function render(save) {
+    range.value = K; num.value = K; wbR.value = WB; wbN.value = WB;
+    const c = underWB(K, WB);
+    $("kSwatch").style.background = rgbCss(c);
+    $("kSwatch").setAttribute("aria-label", "Colour of a " + fmt(K) + " K light: " + hex(c));
+    $("kBig").textContent = fmt(K) + " K";
+    $("kSource").textContent = nearest(K);
+    $("kWord").textContent = word(K) + (WB !== 6500 ? " · white balance " + fmt(WB) + " K" : "");
+    $("kHex").textContent = hex(c) + " · rgb " + c.map((v) => Math.round(toSRGB(v) * 255)).join(" ");
+    range.setAttribute("aria-valuetext", fmt(K) + " kelvin, " + nearest(K));
+    drawMarks(K);
+    if (render.lastWB !== WB) { drawStrip(WB); renderTable(); render.lastWB = WB; }
+    if (save) { store.set("k", K); store.set("wb", WB); }
+  }
+  function renderTable() {
+    const tb = $("kTable"); tb.textContent = "";
+    SOURCES.forEach((s) => {
+      const tr = document.createElement("tr");
+      const mid = (s.lo + s.hi) / 2;
+      const c = underWB(mid, WB);
+      const t = s.lo === s.hi ? fmt(s.lo) + " K" : fmt(s.lo) + "–" + fmt(s.hi) + " K";
+      tr.innerHTML = `<td>${s.name}</td><td class="set" data-h="Temperature">${t}</td><td data-h="Colour"><span style="display:inline-block;width:56px;height:16px;vertical-align:middle;border:1px solid var(--rule);border-radius:2px;background:${rgbCss(c)}"></span> <span class="num" style="font-size:12px;color:var(--ink-3)">${hex(c)}</span></td>`;
+      tb.appendChild(tr);
+    });
+  }
+  const clampK = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(v / 50) * 50));
+  range.addEventListener("input", () => { K = +range.value; render(true); });
+  num.addEventListener("change", () => { const v = parseFloat(num.value); if (!isNaN(v)) K = clampK(v, KMIN, KMAX); render(true); });
+  wbR.addEventListener("input", () => { WB = +wbR.value; render(true); });
+  wbN.addEventListener("change", () => { const v = parseFloat(wbN.value); if (!isNaN(v)) WB = clampK(v, 2000, 12000); render(true); });
+  $("wbReset").addEventListener("click", () => { WB = 6500; render(true); });
+  function fromPointer(e) {
+    const r = strip.getBoundingClientRect();
+    K = clampK(KMIN + (e.clientX - r.left) / r.width * (KMAX - KMIN), KMIN, KMAX);
+    render(true);
+  }
+  strip.addEventListener("pointerdown", (e) => { strip.setPointerCapture(e.pointerId); fromPointer(e); });
+  strip.addEventListener("pointermove", (e) => { if (e.buttons) fromPointer(e); });
+  const pre = $("kPresets");
+  SOURCES.forEach((s) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    const mid = Math.round((s.lo + s.hi) / 2 / 50) * 50;
+    b.textContent = s.name.replace("Halogen and photo lamps", "Halogen").replace("Neutral-white fluorescent", "Fluorescent").replace("Our kitchen’s morning sun", "Our kitchen sun") + " " + fmt(mid);
+    b.addEventListener("click", () => { K = mid; render(true); });
+    pre.appendChild(b);
+  });
+  render(false);
+  window.__light = window.__light || {};
+  window.__light.blackbody = blackbody;
+})();
+
+/* ================= part 2: inverse square ================= */
+(function () {
+  const dR = $("dRange"), dN = $("dNum"), cd = $("cdNum"), sun = $("sunToggle"), svg = $("isq");
+  let D = store.get("d", 2), I = store.get("cd", 64), SUN = store.get("sun", false);
+  const PRE = [
+    { t: "Candle 1 cd", v: 1 },
+    { t: "New Unreal point light 8 cd", v: 8 },
+    { t: "800 lm bulb 64 cd", v: 64 },
+    { t: "Bright lamp 200 cd", v: 200 }
+  ];
+  const X0 = 70, X1 = 610, DMAX = 8;
+  const xd = (d) => X0 + d / DMAX * (X1 - X0);
+  function lux(I, d, sun) { return sun ? I : I / (d * d); }
+  function fracText(f) {
+    const map = [[1, "1"], [0.25, "¼"], [1 / 16, "1⁄16"], [4, "4×"], [16, "16×"]];
+    for (const [v, t] of map) if (Math.abs(f - v) < 1e-6) return t;
+    return f >= 1 ? fmt(f, f < 10 ? 2 : 0) + "×" : fmt(f * 100, f < 0.1 ? 1 : 0) + "%";
+  }
+  function draw(E) {
+    svg.textContent = "";
+    // axis
+    svg.appendChild(el("line", { class: "axis", x1: X0, x2: X1, y1: 186, y2: 186 }));
+    for (let m = 0; m <= DMAX; m++) {
+      const x = xd(m);
+      svg.appendChild(el("line", { class: "tick", x1: x, x2: x, y1: 186, y2: 191 }));
+      svg.appendChild(el("text", { x, y: 205, "text-anchor": "middle" }, m + (m === DMAX ? " m" : "")));
+    }
+    const wx = xd(D), cy = 96;
+    // light patch brightness on the wall: exposure fixed so 1 m of the current lamp = 0.8
+    const E1 = lux(I, 1, SUN);
+    const lin = Math.min(1, 0.8 * E / E1);
+    const warm = blackbody(3000);
+    const patch = warm.map((c) => c * lin);
+    // rays
+    if (SUN) {
+      for (let i = -2; i <= 2; i++) svg.appendChild(el("line", { class: "ray", x1: X0 - 40, x2: wx, y1: cy + i * 22, y2: cy + i * 22 }));
+    } else {
+      const half = 22 * D; // the cone keeps its angle, so it covers more wall with distance
+      svg.appendChild(el("line", { class: "ray", x1: X0, y1: cy, x2: wx, y2: cy - Math.min(half, 90) }));
+      svg.appendChild(el("line", { class: "ray", x1: X0, y1: cy, x2: wx, y2: cy + Math.min(half, 90) }));
+    }
+    const ph = SUN ? 88 : Math.min(180, 44 * D);
+    svg.appendChild(el("rect", { x: wx, y: cy - ph / 2, width: 14, height: ph, fill: rgbCss(patch), stroke: "var(--ink-2)", "stroke-width": 1 }));
+    svg.appendChild(el("line", { class: "wall", x1: wx + 14, x2: wx + 14, y1: 6, y2: 186 }));
+    // lamp
+    if (!SUN) {
+      svg.appendChild(el("circle", { cx: X0, cy, r: 9, fill: rgbCss(warm), stroke: "var(--ink)", "stroke-width": 1.5 }));
+      svg.appendChild(el("text", { x: X0, y: cy - 16, "text-anchor": "middle", class: "strong" }, fmt(I, I < 10 ? 1 : 0) + " cd"));
+    } else {
+      svg.appendChild(el("text", { x: X0 - 36, y: 18, class: "strong" }, "sun: parallel rays"));
+    }
+    const lx = wx > 470 ? wx - 8 : wx + 22;
+    svg.appendChild(el("text", { x: lx, y: 22, "text-anchor": wx > 470 ? "end" : "start", class: "strong" }, fmtLux(E)));
+  }
+  function fmtLux(E) { return (E >= 100 ? fmt(E) : E >= 10 ? fmt(E, 1) : fmt(E, 2)) + " lx"; }
+  function render(save) {
+    dR.value = D; dN.value = D; cd.value = I; sun.checked = SUN;
+    const E = lux(I, D, SUN), E1 = lux(I, 1, SUN), f = E / E1;
+    $("luxBig").textContent = fmtLux(E);
+    $("ratioBig").textContent = fracText(f);
+    const st = Math.log2(f);
+    $("stopBig").textContent = (Math.abs(st) < 0.005 ? "0" : (st > 0 ? "+" : "−") + fmt(Math.abs(st), Math.abs(st - Math.round(st)) < 0.005 ? 0 : 1));
+    const d2 = D * 2;
+    $("isqText").textContent = SUN
+      ? "A directional light has no falloff: " + fmtLux(E) + " at any distance."
+      : fmt(I, I < 10 ? 1 : 0) + " cd at " + fmt(D, 2) + " m gives " + fmtLux(E) + ". At " + fmt(d2, 2) + " m it would be " + fmtLux(lux(I, d2, false)) + ": a quarter, two stops darker.";
+    dR.setAttribute("aria-valuetext", fmt(D, 2) + " metres, " + fmtLux(E));
+    draw(E);
+    if (save) { store.set("d", D); store.set("cd", I); store.set("sun", SUN); }
+  }
+  dR.addEventListener("input", () => { D = +dR.value; render(true); });
+  dN.addEventListener("change", () => { const v = parseFloat(dN.value); if (!isNaN(v)) D = Math.min(8, Math.max(0.25, v)); render(true); });
+  cd.addEventListener("change", () => { const v = parseFloat(cd.value); if (!isNaN(v) && v > 0) I = Math.min(100000, v); render(true); });
+  sun.addEventListener("change", () => { SUN = sun.checked; render(true); });
+  const pre = $("cdPresets");
+  PRE.forEach((p) => { const b = document.createElement("button"); b.type = "button"; b.textContent = p.t; b.addEventListener("click", () => { I = p.v; render(true); }); pre.appendChild(b); });
+  [1, 2, 4].forEach((d) => { const b = document.createElement("button"); b.type = "button"; b.textContent = d + " m"; b.addEventListener("click", () => { D = d; render(true); }); pre.appendChild(b); });
+  render(false);
+  window.__light.lux = lux;
+
+  // static figure: 1, 2, 4 m
+  const t = $("tiles");
+  const warm = blackbody(3000);
+  t.appendChild(el("circle", { cx: 24, cy: 100, r: 8, fill: rgbCss(warm), stroke: "var(--ink)", "stroke-width": 1.5 }));
+  const K0 = 24, KX = 115, SZ = 36;
+  [1, 2, 4].forEach((d) => {
+    const x = K0 + d * KX, size = SZ * d, y0 = 100 - size / 2, cell = SZ;
+    const n = d, lin = 0.85 / (n * n);
+    const fill = rgbCss(warm.map((c) => c * lin));
+    for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+      t.appendChild(el("rect", { x: x + a * cell, y: y0 + b * cell, width: cell, height: cell, style: "fill:" + fill, class: "grid" }));
+    }
+  });
+  // rays from the lamp through the corners of every panel
+  const xe = K0 + 4 * KX;
+  t.insertBefore(el("line", { class: "ray", x1: K0, y1: 100, x2: xe, y2: 100 - SZ * 2 }), t.firstChild);
+  t.insertBefore(el("line", { class: "ray", x1: K0, y1: 100, x2: xe, y2: 100 + SZ * 2 }), t.firstChild);
+})();
+
+/* ================= part 3: EV ================= */
+(function () {
+  const NS_ = [1, 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
+  const TS = [[1 / 8000, "1/8000 s"], [1 / 4000, "1/4000 s"], [1 / 2000, "1/2000 s"], [1 / 1000, "1/1000 s"], [1 / 500, "1/500 s"], [1 / 250, "1/250 s"], [1 / 125, "1/125 s"], [1 / 60, "1/60 s"], [1 / 30, "1/30 s"], [1 / 15, "1/15 s"], [1 / 8, "1/8 s"], [1 / 4, "1/4 s"], [1 / 2, "1/2 s"], [1, "1 s"], [2, "2 s"], [4, "4 s"], [8, "8 s"], [15, "15 s"], [30, "30 s"]];
+  const ISOS = [100, 200, 400, 800, 1600, 3200, 6400];
+  const sN = $("evN"), sT = $("evT"), sI = $("evIso");
+  NS_.forEach((n) => sN.add(new Option("f/" + n, n)));
+  TS.forEach(([v, t]) => sT.add(new Option(t, v)));
+  ISOS.forEach((i) => sI.add(new Option("ISO " + i, i)));
+  function ev100(N, t, iso) { return Math.log2(N * N / t) - Math.log2(iso / 100); }
+  const SCENES = [[-4, "moonlight"], [0.4, "deep twilight"], [5, "a lamp-lit home"], [7.3, "an office"], [8.6, "an overcast day"], [12.5, "daylight in the shade"], [15, "direct sun, sunny 16"], [16, "sun on snow or sand"]];
+  let st = store.get("ev", { n: 16, t: 1 / 125, iso: 100 });
+  function render(save) {
+    sN.value = st.n; sT.value = String(TS.find(([v]) => Math.abs(v - st.t) < 1e-9)?.[0] ?? 1 / 125); sI.value = st.iso;
+    const e = ev100(+sN.value, +sT.value, +sI.value);
+    $("evBig").textContent = (e < 0 ? "−" : "") + fmt(Math.abs(e), 1);
+    $("evBig").dataset.ev = e.toFixed(4);
+    const luxv = 2.5 * Math.pow(2, e);
+    let best = SCENES[0]; SCENES.forEach((s) => { if (Math.abs(s[0] - e) < Math.abs(best[0] - e)) best = s; });
+    $("evText").textContent = "Right for about " + (luxv >= 100 ? fmt(Math.round(luxv / 10) * 10) : fmt(luxv, luxv < 1 ? 2 : 1)) + " lux on the subject: closest to " + best[1] + ". Unreal: Min EV100 = Max EV100 = " + fmt(e, 1) + ".";
+    if (save) store.set("ev", st);
+  }
+  [sN, sT, sI].forEach((s) => s.addEventListener("change", () => { st = { n: +sN.value, t: +sT.value, iso: +sI.value }; render(true); }));
+  const P = [["Sunny 16: f/16 1/125 s", 16, 1 / 125, 100], ["Office: f/2.8 1/15 s", 2.8, 1 / 15, 100], ["Living room: f/2 1/30 s ISO 400", 2, 1 / 30, 400]];
+  const pre = $("evPresets");
+  P.forEach(([t, n, s, i]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.addEventListener("click", () => { st = { n, t: s, iso: i }; render(true); }); pre.appendChild(b); });
+  render(false);
+  window.__light.ev100 = ev100;
+})();
+
+/* ================= part 4: three-point ================= */
+(function () {
+  const RATIOS = [1, 2, 4, 8];
+  const DEF = {
+    key: { on: true, az: 40, el: 30, col: "#ffffff" },
+    fill: { on: true, az: -45, el: 10, col: "#ffffff" },
+    rim: { on: true, az: 150, el: 25, col: "#ffffff" },
+    r: 1, bg: 20, ex: 0, rgb: false
+  };
+  const PRESETS = {
+    "Three-point": { key: { on: true, az: 40 }, fill: { on: true, az: -45 }, rim: { on: true, az: 150 }, r: 1, bg: 20, ex: 0 },
+    "High key": { key: { on: true, az: 25 }, fill: { on: true, az: -35 }, rim: { on: false, az: 150 }, r: 0, bg: 95, ex: 0.5 },
+    "Low key": { key: { on: true, az: 70 }, fill: { on: true, az: -45 }, rim: { on: true, az: 145 }, r: 3, bg: 0, ex: -0.5 },
+    "Key only": { key: { on: true, az: 40 }, fill: { on: false, az: -45 }, rim: { on: false, az: 150 }, r: 1, bg: 20, ex: 0 }
+  };
+  let S = JSON.parse(JSON.stringify(DEF));
+  const saved = store.get("tp", null);
+  if (saved && saved.key) { try { S = Object.assign(S, saved); } catch (e) {} }
+  const NAMES = { key: "Key", fill: "Fill", rim: "Rim" };
+  const DEBUG = { key: "#ff2a2a", fill: "#2aff2a", rim: "#2a5cff" };
+  const canvas = $("bust"), ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const img = ctx.createImageData(W, H);
+
+  // geometry, camera looks down -z, y up; frame spans x -0.9..0.9, y -1.0..1.0
+  const PR = [
+    { c: [0, 0.28, 0], r: [0.34, 0.44, 0.38] },      // head
+    { c: [0, 0.22, 0.33], r: [0.07, 0.1, 0.09] },     // nose
+    { c: [0, -0.32, -0.02], r: [0.16, 0.26, 0.16] },  // neck
+    { c: [0, -0.92, -0.05], r: [0.86, 0.42, 0.34] }   // shoulders
+  ];
+  // precompute normals per pixel
+  const N = new Float32Array(W * H * 3), MASK = new Uint8Array(W * H);
+  for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+    const x = (px + 0.5) / W * 1.8 - 0.9, y = 1.0 - (py + 0.5) / H * 2.0;
+    let bz = -1e9, bn = null;
+    for (const p of PR) {
+      const dx = (x - p.c[0]) / p.r[0], dy = (y - p.c[1]) / p.r[1];
+      const q = 1 - dx * dx - dy * dy;
+      if (q <= 0) continue;
+      const dz = Math.sqrt(q), z = p.c[2] + dz * p.r[2];
+      if (z > bz) {
+        bz = z;
+        let nx = dx / p.r[0], ny = dy / p.r[1], nz = dz / p.r[2];
+        const l = Math.hypot(nx, ny, nz); bn = [nx / l, ny / l, nz / l];
+      }
+    }
+    const i = py * W + px;
+    if (bn) { MASK[i] = 1; N[i * 3] = bn[0]; N[i * 3 + 1] = bn[1]; N[i * 3 + 2] = bn[2]; }
+  }
+  const hexLin = (h) => [1, 3, 5].map((o) => toLinear(parseInt(h.substr(o, 2), 16) / 255));
+  function dir(az, el) { const a = az * Math.PI / 180, e = el * Math.PI / 180; return [Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)]; }
+  function colOf(k) { return S.rgb ? DEBUG[k] : S[k].col; }
+
+  function renderBust() {
+    const ratio = RATIOS[S.r];
+    const exp = Math.pow(2, S.ex);
+    const Ls = [];
+    const strength = { key: 1, fill: 1 / ratio, rim: 0.8 };
+    ["key", "fill", "rim"].forEach((k) => { if (S[k].on) { const c = hexLin(colOf(k)); Ls.push({ d: dir(S[k].az, S[k].el), c: c.map((v) => v * strength[k]) }); } });
+    const albedo = 0.42;
+    const bgl = Math.pow(S.bg / 100, 2.2) * 0.9;
+    const d = img.data;
+    for (let i = 0; i < W * H; i++) {
+      let r, gg, b;
+      if (MASK[i]) {
+        r = 0; gg = 0; b = 0;
+        const nx = N[i * 3], ny = N[i * 3 + 1], nz = N[i * 3 + 2];
+        for (const L of Ls) {
+          const nd = nx * L.d[0] + ny * L.d[1] + nz * L.d[2];
+          if (nd > 0) { r += L.c[0] * nd; gg += L.c[1] * nd; b += L.c[2] * nd; }
+        }
+        r *= albedo * exp; gg *= albedo * exp; b *= albedo * exp;
+      } else { r = gg = b = bgl * exp; }
+      d[i * 4] = Math.round(toSRGB(r) * 255);
+      d[i * 4 + 1] = Math.round(toSRGB(gg) * 255);
+      d[i * 4 + 2] = Math.round(toSRGB(b) * 255);
+      d[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  const top = $("top");
+  function renderTop() {
+    top.textContent = "";
+    const cx = 180, cy = 175, R = 135;
+    top.appendChild(el("circle", { class: "ring", cx, cy, r: R }));
+    // camera at the bottom, looking up
+    top.appendChild(el("rect", { class: "cam", x: cx - 16, y: 352, width: 32, height: 22, rx: 2 }));
+    top.appendChild(el("path", { class: "cam", d: `M${cx - 9} 352 L${cx - 14} 340 L${cx + 14} 340 L${cx + 9} 352 Z` }));
+    top.appendChild(el("text", { x: cx + 24, y: 368 }, "camera"));
+    ["key", "fill", "rim"].forEach((k) => {
+      const L = S[k], a = L.az * Math.PI / 180;
+      const x = cx + R * Math.sin(a), y = cy + R * Math.cos(a);
+      const col = colOf(k);
+      if (L.on) top.appendChild(el("line", { class: "beam", x1: x, y1: y, x2: cx, y2: cy, stroke: col === "#ffffff" ? "var(--ink-3)" : col }));
+      top.appendChild(el("circle", { cx: x, cy: y, r: 11, fill: L.on ? col : "none", stroke: "var(--ink)", "stroke-width": 1.5, "stroke-dasharray": L.on ? "" : "3 3" }));
+      const right = x > cx + 4;
+      top.appendChild(el("text", { x: x + (right ? -17 : 17), y: y + (y < 60 ? 26 : -14), "text-anchor": right ? "end" : "start" }, NAMES[k] + (L.on ? "" : " off")));
+    });
+    // head (top view), nose points to camera
+    top.appendChild(el("path", { class: "head", d: `M${cx - 9} ${cy + 46} L${cx} ${cy + 60} L${cx + 9} ${cy + 46} Z` }));
+    top.appendChild(el("ellipse", { class: "head", cx, cy, rx: 42, ry: 50 }));
+    top.appendChild(el("ellipse", { class: "head", cx: cx - 42, cy, rx: 5, ry: 10 }));
+    top.appendChild(el("ellipse", { class: "head", cx: cx + 42, cy, rx: 5, ry: 10 }));
+  }
+
+  function status() {
+    const ratio = RATIOS[S.r];
+    const stops = Math.log2(ratio);
+    let mood;
+    const fillOn = S.fill.on && S.key.on;
+    const effRatio = fillOn ? ratio : Infinity;
+    if (!S.key.on) mood = "No key: the head has no main direction.";
+    else if (effRatio <= 2 && S.bg >= 70) mood = "High key: bright, soft, low contrast, no black shadows.";
+    else if (effRatio >= 4 && S.bg <= 10) mood = "Low key: dark, contrasty; the eye goes to what is lit.";
+    else if (effRatio <= 1) mood = "Soft and even, but the background keeps it from reading as high key.";
+    else if (effRatio >= 4) mood = "Contrasty, but the background is too bright to read as low key.";
+    else mood = "In between: a classic three-point look.";
+    const fillTxt = fillOn ? "Key : fill " + ratio + " : 1, " + (stops === 0 ? "the same strength" : stops + (stops === 1 ? " stop" : " stops") + " apart") : "No fill: the shadow side gets no light at all";
+    $("tpStatus").innerHTML = "<b>" + fillTxt + "</b>. " + mood;
+  }
+
+  // controls
+  const box = $("lights");
+  const rows = {};
+  ["key", "fill", "rim"].forEach((k) => {
+    const row = document.createElement("div");
+    row.className = "light-row";
+    row.innerHTML =
+      `<label class="check"><input type="checkbox" id="on-${k}"> ${NAMES[k]}</label>` +
+      `<input type="color" id="col-${k}" aria-label="${NAMES[k]} light colour">` +
+      `<input type="range" id="az-${k}" min="-180" max="180" step="5" aria-label="${NAMES[k]} light direction in degrees from the camera">` +
+      `<span class="ang" id="azo-${k}"></span>`;
+    box.appendChild(row);
+    rows[k] = row;
+    $("on-" + k).addEventListener("change", (e) => { S[k].on = e.target.checked; update(true); });
+    $("col-" + k).addEventListener("input", (e) => { S[k].col = e.target.value; S.rgb = false; update(true); });
+    $("az-" + k).addEventListener("input", (e) => { S[k].az = +e.target.value; update(true); });
+  });
+  function azText(a) { return a === 0 ? "at camera" : Math.abs(a) >= 180 ? "behind" : Math.abs(a) + "° " + (a > 0 ? "right" : "left"); }
+  $("ratio").addEventListener("input", (e) => { S.r = +e.target.value; update(true); });
+  $("bg").addEventListener("input", (e) => { S.bg = +e.target.value; update(true); });
+  $("expo").addEventListener("input", (e) => { S.ex = +e.target.value; update(true); });
+  $("rgbBtn").addEventListener("click", () => { S.rgb = !S.rgb; update(true); });
+  $("whiteBtn").addEventListener("click", () => { S.rgb = false; ["key", "fill", "rim"].forEach((k) => S[k].col = "#ffffff"); update(true); });
+  const pre = $("tpPresets");
+  Object.keys(PRESETS).forEach((name) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = name;
+    b.addEventListener("click", () => {
+      const p = PRESETS[name];
+      ["key", "fill", "rim"].forEach((k) => { S[k].on = p[k].on; S[k].az = p[k].az; });
+      S.r = p.r; S.bg = p.bg; S.ex = p.ex;
+      update(true);
+    });
+    pre.appendChild(b);
+  });
+
+  function update(save) {
+    ["key", "fill", "rim"].forEach((k) => {
+      $("on-" + k).checked = S[k].on;
+      $("col-" + k).value = colOf(k);
+      $("az-" + k).value = S[k].az;
+      $("az-" + k).setAttribute("aria-valuetext", azText(S[k].az));
+      $("azo-" + k).textContent = azText(S[k].az);
+    });
+    const ratio = RATIOS[S.r];
+    $("ratio").value = S.r; $("ratioOut").textContent = ratio + " : 1"; $("ratio").setAttribute("aria-valuetext", ratio + " to 1");
+    $("bg").value = S.bg; $("bgOut").textContent = S.bg + "%";
+    $("expo").value = S.ex; $("expoOut").textContent = (S.ex > 0 ? "+" : S.ex < 0 ? "−" : "") + Math.abs(S.ex) + (Math.abs(S.ex) === 1 ? " stop" : " stops");
+    $("rgbBtn").setAttribute("aria-pressed", S.rgb ? "true" : "false");
+    renderBust(); renderTop(); status();
+    if (save) store.set("tp", S);
+  }
+  update(false);
+  window.__light.tp = { state: () => S, ratios: RATIOS };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Colour · 3D Design Foundations</title>
+<meta name="description" content="One number, two readings: sRGB and linear side by side, a colour-or-data sorter for texture maps, and where to set it in Blender 5.2, Substance 3D Painter and Unreal Engine 5.8 — 3D Design Foundations, Week 5.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #EDEEF1;
+    --surface: #FFFFFF;
+    --ink: #14161B;
+    --ink-2: #565D6C;
+    --ink-3: #878E9E;
+    --rule: #D3D7E0;
+    --accent: #2439D4;
+    --accent-ink: #FFFFFF;
+    --shadow: rgba(20, 22, 27, 0.18);
+    --pass: #1B7A4B;
+    --fail: #B3261E;
+
+    --display: "Syne", "Archivo", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D0F14;
+      --surface: #161A23;
+      --ink: #EDEFF4;
+      --ink-2: #A4ACBB;
+      --ink-3: #6C7488;
+      --rule: #2A303C;
+      --accent: #6B7FFF;
+      --accent-ink: #0D0F14;
+      --shadow: rgba(0, 0, 0, 0.55);
+      --pass: #4ECB8A;
+      --fail: #FF6B6B;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0D0F14;
+    --surface: #161A23;
+    --ink: #EDEFF4;
+    --ink-2: #A4ACBB;
+    --ink-3: #6C7488;
+    --rule: #2A303C;
+    --accent: #6B7FFF;
+    --accent-ink: #0D0F14;
+    --shadow: rgba(0, 0, 0, 0.55);
+    --pass: #4ECB8A;
+    --fail: #FF6B6B;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 90px; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 52px 0 26px; }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .back:hover { color: var(--accent); }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 6vw, 56px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+
+  .standfirst {
+    font-size: 16px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px; }
+  .jump a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 5px 9px;
+  }
+  .jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 40px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin: 26px 0 10px;
+  }
+
+  p.lede { font-size: 15.5px; max-width: 64ch; margin: 14px 0; text-wrap: pretty; }
+  p.note { font-size: 14.5px; color: var(--ink-2); max-width: 66ch; margin: 14px 0; text-wrap: pretty; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 18px;
+  }
+
+  .label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 10px;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 5px;
+    white-space: nowrap;
+  }
+
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ---------- part 1: the slider ---------- */
+  .control { margin-top: 18px; }
+  .control-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  input[type="range"] { flex: 1 1 260px; min-width: 0; accent-color: var(--accent); height: 28px; margin: 0; }
+  input#valNum {
+    width: 104px;
+    font-family: var(--mono);
+    font-size: 16px;
+    padding: 8px 10px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+  .byte { font-family: var(--mono); font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+  .presets .label { margin: 0 6px 0 0; }
+  .presets button { font-family: var(--mono); font-size: 12px; padding: 6px 10px; }
+
+  .readings { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .reading { background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  /* the swatch shows real light; its colour is set inline and never themed */
+  .swatch { height: 120px; border-bottom: 1px solid var(--rule); }
+  .reading-body { padding: 14px 16px 16px; }
+  .reading h3 { margin: 0 0 2px; font-size: 19px; }
+  .reading .where { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 0 0 14px; }
+  .big {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(36px, 7vw, 54px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .big-label { font-size: 13px; color: var(--ink-2); margin: 4px 0 14px; }
+  .meter { height: 10px; background: var(--ground); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  .meter span { display: block; height: 100%; background: var(--ink); }
+  .meter-label { font-size: 13px; margin: 6px 0 12px; }
+  .meter-label b { font-family: var(--mono); font-weight: 500; }
+  .other { font-size: 13px; color: var(--ink-2); margin: 0; border-top: 1px solid var(--rule); padding-top: 10px; }
+  .other b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+
+  .verdict { font-size: 15px; margin: 14px 0 0; max-width: 70ch; text-wrap: pretty; }
+
+  .curve-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 14px; align-items: stretch; }
+  .curve-wrap .panel p { font-size: 14.5px; color: var(--ink-2); margin: 0 0 10px; text-wrap: pretty; }
+  .curve-wrap .panel p:last-child { margin-bottom: 0; }
+  svg.curve { display: block; width: 100%; height: auto; }
+  svg.curve .axis { stroke: var(--rule); stroke-width: 1; fill: none; }
+  svg.curve .grid { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 2 4; }
+  svg.curve .data { stroke: var(--ink-3); stroke-width: 2.2; fill: none; }
+  svg.curve .srgb { stroke: var(--accent); stroke-width: 2.8; fill: none; }
+  svg.curve .guide { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+  svg.curve .dot-data { fill: var(--surface); stroke: var(--ink-3); stroke-width: 2.2; }
+  svg.curve .dot-srgb { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+  svg.curve text { font-family: var(--mono); font-size: 11px; fill: var(--ink-3); }
+  svg.curve text.t-srgb { fill: var(--accent); }
+  svg.curve text.t-data { fill: var(--ink-2); }
+  .formula { font-family: var(--mono); font-size: 12px; color: var(--ink-2); line-height: 1.7; overflow-wrap: anywhere; }
+
+  .ramps { margin-top: 14px; }
+  .ramp-title { font-size: 14px; font-weight: 500; margin: 0 0 6px; }
+  .ramp-title span { color: var(--ink-3); font-weight: 400; }
+  .ramp { display: grid; grid-template-columns: repeat(11, 1fr); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  .ramp div { height: 46px; }
+  .ramp-nums { display: grid; grid-template-columns: repeat(11, 1fr); margin: 4px 0 16px; }
+  .ramp-nums span { font-family: var(--mono); font-size: 10px; color: var(--ink-3); text-align: center; font-variant-numeric: tabular-nums; }
+  .ramp-nums span.mid { color: var(--ink); font-weight: 500; }
+
+  .mid-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .mid-grid figure { margin: 0; }
+  .mid-box { height: 110px; border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+  .mid-box { position: relative; }
+  .mid-box canvas { display: block; position: absolute; left: 0; top: 0; }
+  .mid-grid figcaption { font-size: 13px; color: var(--ink-2); margin-top: 6px; text-wrap: pretty; }
+  .mid-grid figcaption b { color: var(--ink); font-weight: 600; }
+
+  .statement {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(22px, 4vw, 30px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 26px 0 0;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+    max-width: 30ch;
+  }
+
+  /* ---------- part 2: the sorter ---------- */
+  .sorter { margin-top: 14px; }
+  .sort-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
+  .sort-head b { color: var(--ink); font-weight: 500; }
+  .progress { height: 4px; background: var(--rule); border-radius: 2px; overflow: hidden; margin-bottom: 14px; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+
+  .map-card { display: grid; grid-template-columns: 160px 1fr; gap: 20px; align-items: start; }
+  .thumb { width: 160px; height: 160px; display: block; border: 1px solid var(--rule); border-radius: 2px; background: #000; }
+  .map-name { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 6px; }
+  .map-file { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 10px; overflow-wrap: anywhere; }
+  .map-desc { font-size: 15px; margin: 0 0 16px; max-width: 52ch; text-wrap: pretty; }
+
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice {
+    text-align: left;
+    padding: 12px 14px;
+    background: var(--ground);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .choice small { display: block; font-weight: 400; font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+  .choice kbd { float: right; margin-left: 8px; }
+  .choice[disabled] { cursor: default; opacity: 0.55; }
+  .choice[disabled]:hover { border-color: var(--rule); color: var(--ink); }
+  .choice.picked { opacity: 1; border-width: 2px; padding: 11px 13px; }
+  .choice.picked.right { border-color: var(--pass); }
+  .choice.picked.wrong { border-color: var(--fail); }
+
+  .feedback { margin-top: 14px; border-left: 3px solid var(--rule); padding: 4px 0 4px 14px; }
+  .feedback[hidden] { display: none; }
+  .feedback.right { border-left-color: var(--pass); }
+  .feedback.wrong { border-left-color: var(--fail); }
+  .fb-verdict { font-weight: 600; margin: 0 0 4px; font-size: 15px; }
+  .feedback.right .fb-verdict { color: var(--pass); }
+  .feedback.wrong .fb-verdict { color: var(--fail); }
+  .fb-why { font-size: 14.5px; color: var(--ink-2); margin: 0 0 8px; max-width: 66ch; text-wrap: pretty; }
+  .fb-set { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 12px; }
+  .next { border-color: var(--accent); color: var(--accent); }
+
+  .result[hidden], .play[hidden] { display: none; }
+  .result .score-big {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(46px, 10vw, 72px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 6px;
+  }
+  .result p:not(.score-big) { margin: 0 0 10px; font-size: 15px; }
+  .misses { margin: 12px 0 16px; padding-left: 1.2em; }
+  .misses li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 6px; text-wrap: pretty; }
+  .misses li b { color: var(--ink); }
+
+  /* ---------- part 3: tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 9px 14px;
+  }
+  td {
+    border-top: 1px solid var(--rule);
+    padding: 8px 14px;
+    font-size: 14.5px;
+    vertical-align: top;
+    text-wrap: pretty;
+  }
+  td:first-child { font-weight: 500; width: 30%; }
+  td.set { font-family: var(--mono); font-size: 12.5px; }
+  td.n { color: var(--ink-2); }
+  table.fail td:first-child { width: 24%; }
+  table.fail td { color: var(--ink-2); }
+  table.fail td:first-child { color: var(--ink); }
+  table.ue td:nth-child(2) { width: 12%; }
+  .where-line { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 4px; overflow-wrap: anywhere; }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0 5px;
+    margin-right: 4px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .tag.c { border-color: var(--accent); color: var(--accent); }
+  ul.tips { margin: 12px 0 0; padding-left: 1.2em; max-width: 68ch; }
+  ul.tips li { font-size: 14.5px; color: var(--ink-2); margin-bottom: 6px; text-wrap: pretty; }
+  ul.tips li b { color: var(--ink); font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0 0 6px; text-wrap: pretty; }
+
+  a { color: var(--accent); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .readings, .curve-wrap { grid-template-columns: 1fr; }
+    .swatch { height: 90px; }
+    .map-card { grid-template-columns: 1fr; gap: 14px; }
+    .choices { grid-template-columns: 1fr; }
+    .mid-grid { gap: 8px; }
+    .mid-box { height: 84px; }
+    .mid-grid figcaption { font-size: 12px; }
+    .ramp div { height: 36px; }
+    .ramp-nums span { font-size: 8.5px; }
+    /* tables become small stacks */
+    thead { display: none; }
+    table, tbody, tr, td { display: block; }
+    tr { border-top: 1px solid var(--rule); padding: 9px 12px; }
+    tbody tr:first-child { border-top: 0; }
+    td, td:first-child, table.fail td:first-child, table.ue td:nth-child(2) { width: auto; border: 0; padding: 2px 0; }
+    td[data-h]::before {
+      content: attr(data-h) " ";
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .jump, .back, #sorter { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="back" href="index.html">&larr; 3D Design Foundations</a>
+    <h1>Linear colour</h1>
+    <p class="standfirst">
+      A number in a texture means nothing until you say how to read it. Drag a value and see both
+      readings side by side, sort the maps of a material into colour and data, then look up where
+      Blender, Substance 3D Painter and Unreal keep the setting.
+    </p>
+    <nav class="jump" aria-label="On this page">
+      <a href="#readings">One number, two readings</a>
+      <a href="#sorter">Colour or data?</a>
+      <a href="#tools">Where to set it</a>
+      <a href="#failures">Gamma failures</a>
+    </nav>
+  </header>
+
+  <!-- ================= part 1 ================= -->
+  <section id="readings">
+    <h2>One number, two readings &middot; Week 5</h2>
+    <p class="lede">
+      Linear means proportional: twice the light, twice the number, and 0.5 is half the light.
+      sRGB stores the same light along a curve, with extra precision in the darks, the way our eyes
+      see. So one number in a file can mean two very different amounts of light.
+    </p>
+
+    <div class="panel control">
+      <label class="label" for="val">The number in the file</label>
+      <div class="control-row">
+        <input type="range" id="val" min="0" max="1" step="0.001" value="0.5" aria-describedby="byte">
+        <input type="text" id="valNum" inputmode="decimal" autocomplete="off" spellcheck="false" value="0.500" aria-label="The number in the file, from 0 to 1">
+        <span class="byte" id="byte">128 of 255</span>
+      </div>
+      <div class="presets">
+        <span class="label">Try</span>
+        <button type="button" data-v="0.5">0.5</button>
+        <button type="button" data-v="0.214">0.214</button>
+        <button type="button" data-v="0.735">0.735</button>
+        <button type="button" data-v="0.373" title="95 of 255: a roughness value">95 of 255</button>
+        <button type="button" data-v="0.04">0.04</button>
+      </div>
+    </div>
+
+    <div class="readings">
+      <div class="reading">
+        <div class="swatch" id="swA" role="img" aria-label=""></div>
+        <div class="reading-body">
+          <h3>Read as sRGB</h3>
+          <p class="where">colour &middot; Blender: sRGB &middot; Unreal: sRGB on</p>
+          <p class="big" id="bigA">0.214</p>
+          <p class="big-label">is what the renderer shades with</p>
+          <div class="meter" aria-hidden="true"><span id="barA"></span></div>
+          <p class="meter-label"><b id="pctA">21.4%</b> of white&rsquo;s light</p>
+          <p class="other">The same light, stored as Non-Color: <b id="otherA">0.214</b></p>
+        </div>
+      </div>
+      <div class="reading">
+        <div class="swatch" id="swB" role="img" aria-label=""></div>
+        <div class="reading-body">
+          <h3>Read as Non-Color</h3>
+          <p class="where">data &middot; Blender: Non-Color &middot; Unreal: sRGB off</p>
+          <p class="big" id="bigB">0.500</p>
+          <p class="big-label">is what the renderer shades with</p>
+          <div class="meter" aria-hidden="true"><span id="barB"></span></div>
+          <p class="meter-label"><b id="pctB">50.0%</b> of white&rsquo;s light</p>
+          <p class="other">The same light, stored as sRGB: <b id="otherB">0.735</b></p>
+        </div>
+      </div>
+    </div>
+    <p class="verdict" id="verdict" aria-live="polite"></p>
+
+    <div class="curve-wrap">
+      <div class="panel">
+        <svg class="curve" id="curve" viewBox="0 0 300 260" role="img" aria-labelledby="curveTitle">
+          <title id="curveTitle">The number in the file, read as Non-Color and as sRGB</title>
+        </svg>
+      </div>
+      <div class="panel">
+        <span class="label">The midpoint surprise</span>
+        <p>sRGB <b class="num">0.5</b> decodes to about <b class="num">0.214</b> linear: barely a fifth of the light.
+          Linear <b class="num">0.5</b>, half the light, is stored as about <b class="num">0.735</b> in sRGB.</p>
+        <p>For a photo that&rsquo;s right. For a roughness map it&rsquo;s wrong: every value shrinks, and
+          the surface turns glossy.</p>
+        <span class="label" style="margin-top:14px">The exact sRGB curve (IEC 61966-2-1)</span>
+        <p class="formula">
+          sRGB &rarr; linear:<br>c &le; 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)<sup>2.4</sup><br>
+          linear &rarr; sRGB:<br>l &le; 0.0031308 ? 12.92 l : 1.055 l<sup>1/2.4</sup> &minus; 0.055
+        </p>
+        <p>Not just &ldquo;gamma 2.2&rdquo;: near black the curve is a straight line.</p>
+      </div>
+    </div>
+
+    <h3>Even steps are not even light</h3>
+    <div class="ramps">
+      <p class="ramp-title">Even in the file, read as sRGB <span>&middot; looks even</span></p>
+      <div class="ramp" id="rampP" role="img" aria-label="Eleven greys, evenly spaced sRGB numbers from 0 to 1. They look evenly spaced."></div>
+      <div class="ramp-nums" id="rampPn" aria-hidden="true"></div>
+      <p class="ramp-title">Even in light, linear <span>&middot; looks bunched up at the bright end</span></p>
+      <div class="ramp" id="rampL" role="img" aria-label="Eleven greys, evenly spaced amounts of light from 0 to 1. Most of them look bright; the dark end jumps."></div>
+      <div class="ramp-nums" id="rampLn" aria-hidden="true"></div>
+    </div>
+    <p class="note">
+      The top row&rsquo;s middle step is 0.5 in the file but only 21% of the light. The bottom row&rsquo;s
+      middle step is really half the light, and it looks much brighter. That is why images are stored
+      in sRGB, and why light is calculated in linear.
+    </p>
+
+    <h3>Averaging black and white</h3>
+    <div class="mid-grid">
+      <figure>
+        <div class="mid-box" id="lines"><canvas aria-hidden="true"></canvas></div>
+        <figcaption><b>Black and white lines</b>, half and half: exactly 50% of the light</figcaption>
+      </figure>
+      <figure>
+        <div class="mid-box" style="background: rgb(187.5 187.5 187.5)" role="img" aria-label="A grey of sRGB 0.735"></div>
+        <figcaption><b>sRGB 0.735</b> = 50% of the light</figcaption>
+      </figure>
+      <figure>
+        <div class="mid-box" style="background: rgb(127.5 127.5 127.5)" role="img" aria-label="A grey of sRGB 0.5"></div>
+        <figcaption><b>sRGB 0.5</b> = 21% of the light</figcaption>
+      </figure>
+    </div>
+    <p class="note">
+      Step back or squint: the lines blend into the middle grey, not the right one. Averaging the sRGB
+      numbers of black and white gives 0.5, the wrong midpoint. (Set your browser zoom to 100% for this one.)
+    </p>
+    <p class="statement">Decode once. Calculate linearly. Transform once for display.</p>
+  </section>
+
+  <!-- ================= part 2 ================= -->
+  <section id="sorter">
+    <h2>Colour or data? &middot; sorter</h2>
+    <p class="lede">
+      Ask what the numbers mean. Colour is meant to be seen, so it is decoded into the working space.
+      Data is a direction, a weight, a distance or a label, so it is read as it is. Sort each map.
+    </p>
+
+    <div class="panel sorter">
+      <div class="play" id="play">
+        <div class="sort-head">
+          <span>Map <b id="pos">1</b> of <b id="total">14</b></span>
+          <span>Score <b id="score">0</b> &middot; Best <b id="best">&ndash;</b></span>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+
+        <div class="map-card">
+          <canvas class="thumb" id="thumb" width="128" height="128" role="img" aria-label=""></canvas>
+          <div>
+            <p class="map-name" id="mapName"></p>
+            <p class="map-file" id="mapFile"></p>
+            <p class="map-desc" id="mapDesc"></p>
+            <div class="choices" role="group" aria-label="Sort this map">
+              <button type="button" class="choice" id="pickC" data-a="c"><kbd aria-hidden="true">C</kbd>Colour<small>decoded from its colour space, mostly sRGB</small></button>
+              <button type="button" class="choice" id="pickD" data-a="d"><kbd aria-hidden="true">D</kbd>Data<small>Non-Color: the numbers pass straight through</small></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback" id="feedback" hidden>
+          <p class="fb-verdict" id="fbVerdict"></p>
+          <p class="fb-why" id="fbWhy"></p>
+          <p class="fb-set" id="fbSet"></p>
+          <button type="button" class="next" id="next">Next map &rarr;</button>
+        </div>
+        <p class="sr-only" id="live" aria-live="polite"></p>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <span class="label">Your result</span>
+        <p class="score-big" id="finalScore"></p>
+        <p id="finalNote"></p>
+        <ul class="misses" id="misses"></ul>
+        <button type="button" class="next" id="again">Play again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= part 3 ================= -->
+  <section id="tools">
+    <h2>Where to set it</h2>
+    <p class="lede">
+      Same rule everywhere: colour maps are decoded, data maps are not. Only the name of the switch changes.
+    </p>
+
+    <h3 id="blender">Blender 5.2</h3>
+    <p class="where-line">Shader Editor &rarr; Image Texture node &rarr; Color Space (under the image name)</p>
+    <table>
+      <thead><tr><th>Map</th><th>Color Space</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Base colour, emissive colour</td><td class="set" data-h="Color Space">sRGB</td><td class="n" data-h="Notes">The default for 8-bit images</td></tr>
+        <tr><td>Roughness, metallic, AO, height, opacity, packed ORM</td><td class="set" data-h="Color Space">Non-Color</td><td class="n" data-h="Notes">Set it on every data map, by hand</td></tr>
+        <tr><td>Normal map</td><td class="set" data-h="Color Space">Non-Color</td><td class="n" data-h="Notes">Then through a Normal Map node into Normal</td></tr>
+        <tr><td>HDR sky, EXR</td><td class="set" data-h="Color Space">Linear Rec.709</td><td class="n" data-h="Notes">Blender picks it for float images: leave it</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li>The setting is called <b>Non-Color</b>. Blender calculates in Linear Rec.709: sRGB&rsquo;s primaries and white, without the curve.</li>
+      <li>The <b>view transform</b> (Render Properties &rarr; Color Management &rarr; View Transform, AgX by default) is for looking at the render. It changes nothing in your maps; never bake it into them.</li>
+      <li>Blender 5.0 rewrote colour management: tutorials from before 5.0 show a different panel.</li>
+    </ul>
+
+    <h3 id="painter">Substance 3D Painter</h3>
+    <p class="where-line">Fixed per channel &middot; user channels: Texture Set Settings &rarr; Color channel &middot; export: File &rarr; Export Textures &rarr; Output Templates</p>
+    <table>
+      <thead><tr><th>Channel</th><th>Handling</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Base color, specular, coat, sheen, scattering colour</td><td class="set" data-h="Handling">colour managed</td><td class="n" data-h="Notes">Painter decides; you can&rsquo;t switch it</td></tr>
+        <tr><td>Roughness, metallic, normal, height, AO, opacity</td><td class="set" data-h="Handling">data</td><td class="n" data-h="Notes">Never colour managed</td></tr>
+        <tr><td>User channels</td><td class="set" data-h="Handling">your choice</td><td class="n" data-h="Notes">Color channel on for colour, off for data</td></tr>
+        <tr><td>Export: Unreal Engine (Packed)</td><td class="set" data-h="Handling">ORM in R, G, B</td><td class="n" data-h="Notes">AO, roughness, metallic in one file; normals in DirectX. The template for Week 10</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li>The project&rsquo;s colour management (Legacy, OpenColorIO or Adobe ACE) is chosen in the project settings; the export follows it.</li>
+      <li>The storage format (sRGB8, L8, RGB16F &hellip;) is not a colour space setting: roughness stays data in any format.</li>
+      <li>Colour maps sRGB, data maps linear. Open the export in a second program before you trust it.</li>
+    </ul>
+
+    <h3 id="unreal">Unreal Engine 5.8</h3>
+    <p class="where-line">Double-click the texture &rarr; Details &rarr; Texture &rarr; sRGB &middot; Compression &rarr; Compression Settings</p>
+    <table class="ue">
+      <thead><tr><th>Texture</th><th>sRGB</th><th>Compression Settings</th><th>Sampler type</th></tr></thead>
+      <tbody>
+        <tr><td>Base colour, emissive colour</td><td class="set" data-h="sRGB">On</td><td class="set" data-h="Compression">Default (BC1 or BC3 with A)</td><td class="set" data-h="Sampler">Color</td></tr>
+        <tr><td>Normal map</td><td class="set" data-h="sRGB">Off</td><td class="set" data-h="Compression">Normalmap (BC5)</td><td class="set" data-h="Sampler">Normal</td></tr>
+        <tr><td>Packed ORM, any mask</td><td class="set" data-h="sRGB">Off</td><td class="set" data-h="Compression">Masks (no sRGB)</td><td class="set" data-h="Sampler">Masks</td></tr>
+        <tr><td>HDR sky, EXR</td><td class="set" data-h="sRGB">Off</td><td class="set" data-h="Compression">HDR (RGBA16F, no sRGB)</td><td class="set" data-h="Sampler">Linear Color</td></tr>
+      </tbody>
+    </table>
+    <ul class="tips">
+      <li>The sRGB box is an <b>input</b> decision: how the file was stored. The project&rsquo;s Working Color Space solves a different problem.</li>
+      <li>Unreal often guesses normal maps right on import, and guessed wrong on our ORM: check every texture after import.</li>
+      <li>Change the sRGB box and the Texture Sample node in the material needs a matching <b>Sampler Type</b>, or the material won&rsquo;t compile. Unreal sets the sRGB box and compression for .exr and .hdr files on import.</li>
+      <li>A normal map made for Blender is OpenGL; Painter&rsquo;s Unreal export is DirectX. Mixed up, bumps turn into dents: the texture&rsquo;s Flip Green Channel fixes it.</li>
+    </ul>
+  </section>
+
+  <section id="failures">
+    <h2>Common gamma failures</h2>
+    <p class="lede">Four failures, one cause: the wrong transform. Fix the setting at its source; never repair it with a colour grade.</p>
+    <table class="fail">
+      <thead><tr><th>Failure</th><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Data decoded as colour</td><td data-h="Symptom">Roughness, AO or masks shift: 0.5 becomes 0.21, the surface turns glossy, AO too dark</td><td data-h="Cause">A data map read as sRGB</td><td data-h="Fix">Non-Color in Blender; sRGB off for packed masks in Unreal</td></tr>
+        <tr><td>Colour decoded twice</td><td data-h="Symptom">Too dark, too saturated</td><td data-h="Cause">An already-linear image treated as sRGB</td><td data-h="Fix">Assign the true source space; don&rsquo;t compensate by eye</td></tr>
+        <tr><td>Colour not decoded</td><td data-h="Symptom">Pale and washed out, low contrast</td><td data-h="Cause">A base colour set to Non-Color, or sRGB off</td><td data-h="Fix">Back to sRGB</td></tr>
+        <tr><td>View baked into texture</td><td data-h="Symptom">A double look: contrast and tone mapping applied twice</td><td data-h="Cause">A tone-mapped render reused as if it were scene-linear data</td><td data-h="Fix">Keep scene data and display output as separate deliverables</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      The five-minute check: import one base colour and one roughness map, duplicate each and flip its
+      setting, compare the renders and the numbers, then set them right without adding adjustment nodes.
+    </p>
+  </section>
+
+  <footer>
+    <p>3D Design Foundations &middot; Smart Interactive Media, TH Rosenheim &middot; Prof. Seb Hirsch</p>
+    <p>The numbers use the exact sRGB transfer functions of IEC 61966-2-1. The swatches show the light through a plain sRGB display, without Blender&rsquo;s AgX view. Map pictures are drawn by this page. Settings checked against the Blender 5.2 manual and Blender 5.2 itself, Adobe&rsquo;s Substance 3D Painter documentation and the Unreal Engine 5.8 editor, October 2026.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ================= the sRGB transfer functions (IEC 61966-2-1) ================= */
+function toLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function toSRGB(l) { return l <= 0.0031308 ? 12.92 * l : 1.055 * Math.pow(l, 1 / 2.4) - 0.055; }
+function grey(code) { const v = Math.round(Math.min(1, Math.max(0, code)) * 2550) / 10; return "rgb(" + v + " " + v + " " + v + ")"; }
+const f3 = (x) => x.toFixed(3);
+const pct = (x) => (x * 100).toFixed(1) + "%";
+
+/* ================= part 1 ================= */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const range = $("val"), num = $("valNum");
+  const svg = $("curve");
+  const NS = "http://www.w3.org/2000/svg";
+
+  // curve chart: x = number in the file, y = what the renderer shades with
+  const X0 = 44, X1 = 286, Y0 = 222, Y1 = 14;
+  const sx = (v) => X0 + v * (X1 - X0), sy = (v) => Y0 - v * (Y0 - Y1);
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  }
+  [0.25, 0.5, 0.75].forEach((g) => {
+    el("line", { class: "grid", x1: sx(g), y1: sy(0), x2: sx(g), y2: sy(1) });
+    el("line", { class: "grid", x1: sx(0), y1: sy(g), x2: sx(1), y2: sy(g) });
+  });
+  el("path", { class: "axis", d: `M${X0} ${Y1}V${Y0}H${X1}` });
+  [0, 0.5, 1].forEach((g) => {
+    el("text", { x: sx(g), y: Y0 + 15, "text-anchor": "middle" }, g);
+    el("text", { x: X0 - 6, y: sy(g) + 4, "text-anchor": "end" }, g);
+  });
+  el("text", { x: (X0 + X1) / 2, y: 256, "text-anchor": "middle" }, "number in the file");
+  el("text", { x: 12, y: (Y0 + Y1) / 2, "text-anchor": "middle", transform: `rotate(-90 12 ${(Y0 + Y1) / 2})` }, "renderer uses");
+  el("path", { class: "data", d: `M${sx(0)} ${sy(0)}L${sx(1)} ${sy(1)}` });
+  let d = "";
+  for (let i = 0; i <= 200; i++) { const x = i / 200; d += (i ? "L" : "M") + sx(x).toFixed(2) + " " + sy(toLinear(x)).toFixed(2); }
+  el("path", { class: "srgb", d });
+  el("text", { class: "t-data", x: sx(0.04), y: sy(0.64) }, "Non-Color");
+  el("text", { class: "t-srgb", x: sx(0.62), y: sy(0.20) }, "sRGB");
+  const gV = el("line", { class: "guide" });
+  const gA = el("line", { class: "guide" });
+  const gB = el("line", { class: "guide" });
+  const dotB = el("circle", { class: "dot-data", r: 5 });
+  const dotA = el("circle", { class: "dot-srgb", r: 5.5 });
+
+  function update(v, from) {
+    v = Math.min(1, Math.max(0, v));
+    if (from !== "range") range.value = v;
+    if (from !== "num") num.value = f3(v);
+    const a = toLinear(v), b = v;
+    $("byte").textContent = Math.round(v * 255) + " of 255";
+    $("swA").style.background = grey(v);              // sRGB: the number goes to the display as it is
+    $("swB").style.background = grey(toSRGB(v));      // linear: encoded for the display first
+    $("swA").setAttribute("aria-label", "Swatch: " + pct(a) + " of white's light");
+    $("swB").setAttribute("aria-label", "Swatch: " + pct(b) + " of white's light");
+    $("bigA").textContent = f3(a);
+    $("bigB").textContent = f3(b);
+    $("barA").style.width = (a * 100) + "%";
+    $("barB").style.width = (b * 100) + "%";
+    $("pctA").textContent = pct(a);
+    $("pctB").textContent = pct(b);
+    $("otherA").textContent = f3(a);
+    $("otherB").textContent = f3(toSRGB(b));
+    let msg;
+    if (v === 0 || v === 1) msg = `${f3(v)} means the same in both readings: ${v ? "full light" : "no light"}. Only the values in between differ.`;
+    else {
+      const k = b / a;
+      msg = `${f3(v)} in the file: ${pct(a)} of the light read as sRGB, ${pct(b)} read as Non-Color. `
+        + (k >= 1.05 ? `The Non-Color reading is ${k.toFixed(1)}× brighter.` : `Near black the curve is almost straight, so both readings agree.`);
+    }
+    $("verdict").textContent = msg;
+    gV.setAttribute("x1", sx(v)); gV.setAttribute("x2", sx(v)); gV.setAttribute("y1", sy(0)); gV.setAttribute("y2", sy(b));
+    gA.setAttribute("x1", sx(0)); gA.setAttribute("x2", sx(v)); gA.setAttribute("y1", sy(a)); gA.setAttribute("y2", sy(a));
+    gB.setAttribute("x1", sx(0)); gB.setAttribute("x2", sx(v)); gB.setAttribute("y1", sy(b)); gB.setAttribute("y2", sy(b));
+    dotA.setAttribute("cx", sx(v)); dotA.setAttribute("cy", sy(a));
+    dotB.setAttribute("cx", sx(v)); dotB.setAttribute("cy", sy(b));
+  }
+  range.addEventListener("input", () => update(parseFloat(range.value), "range"));
+  const parse = (t) => parseFloat(String(t).replace(",", "."));
+  num.addEventListener("input", () => { const v = parse(num.value); if (!isNaN(v)) update(v, "num"); });
+  num.addEventListener("change", () => { const v = parse(num.value); update(isNaN(v) ? 0.5 : v); });
+  num.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    const v = parse(num.value) || 0, step = e.shiftKey ? 0.1 : 0.01;
+    update(Math.round((v + (e.key === "ArrowUp" ? step : -step)) * 1000) / 1000);
+  });
+  document.querySelectorAll(".presets button").forEach((b) => b.addEventListener("click", () => update(parseFloat(b.dataset.v))));
+  update(0.5);
+
+  // ramps
+  const rp = $("rampP"), rpn = $("rampPn"), rl = $("rampL"), rln = $("rampLn");
+  for (let i = 0; i <= 10; i++) {
+    const s = i / 10;
+    const c1 = document.createElement("div"); c1.style.background = grey(s); rp.appendChild(c1);
+    const c2 = document.createElement("div"); c2.style.background = grey(toSRGB(s)); rl.appendChild(c2);
+    const n1 = document.createElement("span"); n1.textContent = s.toFixed(1); if (i === 5) n1.className = "mid"; rpn.appendChild(n1);
+    const n2 = document.createElement("span"); n2.textContent = s.toFixed(1); if (i === 5) n2.className = "mid"; rln.appendChild(n2);
+  }
+
+  // black and white lines, one device pixel each
+  const box = $("lines"), cv = box.querySelector("canvas");
+  function drawLines() {
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.round(box.clientWidth * dpr), h = Math.round(box.clientHeight * dpr);
+    cv.width = w; cv.height = h;
+    cv.style.width = (w / dpr) + "px"; cv.style.height = (h / dpr) + "px";
+    const ctx = cv.getContext("2d");
+    const img = ctx.createImageData(w, h);
+    for (let y = 0; y < h; y++) {
+      const c = (y & 1) ? 255 : 0;
+      for (let x = 0; x < w; x++) { const o = (y * w + x) * 4; img.data[o] = img.data[o + 1] = img.data[o + 2] = c; img.data[o + 3] = 255; }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+  drawLines();
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawLines, 120); });
+})();
+
+/* ================= map pictures, drawn here ================= */
+const MAPS = (function () {
+  const N = 128;
+  function hash(x, y) {
+    let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263)) | 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  }
+  function noise(x, y) {
+    const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+    const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    const a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  }
+  const smooth = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  const clamp = (x) => Math.min(1, Math.max(0, x));
+
+  // one material: three wooden planks held by six steel bolts
+  const P = N / 3, R = 7;
+  const H = new Float32Array(N * N), G = new Float32Array(N * N), M = new Uint8Array(N * N), PL = new Uint8Array(N * N);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const p = Math.min(2, Math.floor(y / P)), yy = y - p * P, edge = Math.min(yy, P - 1 - yy);
+    const bevel = smooth(0.6, 4.5, edge);
+    const g = 0.5 + 0.5 * Math.sin(yy * 0.85 + noise(x / 22 + p * 9, yy / 5) * 7 + p * 2);
+    let h = 0.5 * bevel + 0.04 * g * bevel, metal = 0;
+    for (const bx of [20, N - 20]) {
+      const r = Math.hypot(x - bx, yy - P / 2);
+      if (r < R) { h = 0.5 + 0.28 * Math.sqrt(1 - (r / R) * (r / R)); metal = 1; }
+    }
+    const i = y * N + x; H[i] = h; G[i] = g; M[i] = metal; PL[i] = p;
+  }
+  // blurred height, for occlusion and curvature
+  function blur(src, rad) {
+    const tmp = new Float32Array(N * N), out = new Float32Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      let s = 0, n = 0; for (let k = -rad; k <= rad; k++) { const xx = x + k; if (xx >= 0 && xx < N) { s += src[y * N + xx]; n++; } } tmp[y * N + x] = s / n;
+    }
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      let s = 0, n = 0; for (let k = -rad; k <= rad; k++) { const yy = y + k; if (yy >= 0 && yy < N) { s += tmp[yy * N + x]; n++; } } out[y * N + x] = s / n;
+    }
+    return out;
+  }
+  const HB = blur(H, 6), HS = blur(H, 2);
+  const at = (A, x, y) => A[Math.min(N - 1, Math.max(0, y)) * N + Math.min(N - 1, Math.max(0, x))];
+
+  function paint(cv, fn) {
+    const ctx = cv.getContext("2d");
+    const img = ctx.createImageData(N, N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const c = fn(x, y, y * N + x), o = (y * N + x) * 4;
+      img.data[o] = Math.round(clamp(c[0]) * 255); img.data[o + 1] = Math.round(clamp(c[1]) * 255);
+      img.data[o + 2] = Math.round(clamp(c[2]) * 255); img.data[o + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+  const ao = (i) => clamp(1 - 4.5 * Math.max(0, HB[i] - H[i]));
+  const rough = (i) => M[i] ? 0.28 : clamp(0.62 + 0.18 * (G[i] - 0.5) + (H[i] < 0.2 ? 0.2 : 0));
+  const wood = [[0.50, 0.31, 0.16], [0.66, 0.45, 0.26]];
+
+  const draw = {
+    basecolor(cv) {
+      paint(cv, (x, y, i) => {
+        if (M[i]) { const s = 0.55 + 0.25 * (H[i] - 0.5) * 3; return [s, s, s * 1.04]; }
+        const g = G[i], t = 0.85 + 0.1 * PL[i] / 2, k = H[i] < 0.2 ? 0.5 : 1;
+        return [0, 1, 2].map((c) => (wood[0][c] + (wood[1][c] - wood[0][c]) * g) * t * k);
+      });
+    },
+    normal(cv) {
+      paint(cv, (x, y) => {
+        const s = 9, dx = (at(HS, x + 1, y) - at(HS, x - 1, y)) * s, dy = (at(HS, x, y + 1) - at(HS, x, y - 1)) * s;
+        let nx = -dx, ny = dy, nz = 1; const l = Math.hypot(nx, ny, nz); nx /= l; ny /= l; nz /= l;   // OpenGL: green is up
+        return [nx * 0.5 + 0.5, ny * 0.5 + 0.5, nz * 0.5 + 0.5];
+      });
+    },
+    roughness(cv) { paint(cv, (x, y, i) => { const r = rough(i); return [r, r, r]; }); },
+    metallic(cv) { paint(cv, (x, y, i) => M[i] ? [1, 1, 1] : [0, 0, 0]); },
+    ao(cv) { paint(cv, (x, y, i) => { const a = ao(i); return [a, a, a]; }); },
+    height(cv) { paint(cv, (x, y, i) => { const h = HS[i] / 0.78; return [h, h, h]; }); },
+    curvature(cv) { paint(cv, (x, y, i) => { const c = clamp(0.5 + 5 * (HS[i] - HB[i])); return [c, c, c]; }); },
+    orm(cv) { paint(cv, (x, y, i) => [ao(i), rough(i), M[i]]); },
+    id(cv) {
+      const cols = [[0.86, 0.2, 0.42], [0.96, 0.62, 0.0], [0.11, 0.49, 0.84]];
+      paint(cv, (x, y, i) => M[i] ? [0.22, 0.7, 0.3] : cols[PL[i]]);
+    },
+    specular(cv) {
+      paint(cv, (x, y) => {
+        const n = noise(x / 9, y / 9) * 0.6 + noise(x / 3, y / 3) * 0.4;
+        const s = 0.82 + 0.18 * n + (Math.abs((x - y * 0.35) % 37 - 18) < 0.6 ? 0.12 : 0);
+        return [1.0 * s, 0.78 * s, 0.36 * s];
+      });
+    },
+    emissive(cv) {
+      const c = cv.getContext("2d");
+      c.fillStyle = "#08090b"; c.fillRect(0, 0, N, N);
+      c.lineCap = "round"; c.lineJoin = "round";
+      c.shadowColor = "rgb(255, 120, 30)"; c.shadowBlur = 14;
+      c.strokeStyle = "rgb(255, 176, 80)"; c.lineWidth = 5;
+      c.beginPath(); c.arc(64, 54, 26, 0, Math.PI * 2); c.stroke();
+      c.lineWidth = 4;
+      c.beginPath(); c.moveTo(30, 104); c.lineTo(98, 104); c.stroke();
+      c.strokeStyle = "rgb(120, 220, 255)"; c.shadowColor = "rgb(40, 160, 255)";
+      c.beginPath(); c.moveTo(54, 54); c.lineTo(74, 54); c.stroke();
+    },
+    opacity(cv) {
+      const c = cv.getContext("2d");
+      c.fillStyle = "#000"; c.fillRect(0, 0, N, N);
+      c.fillStyle = "#fff";
+      c.beginPath(); c.moveTo(64, 12);
+      c.bezierCurveTo(104, 34, 108, 78, 64, 108);
+      c.bezierCurveTo(20, 78, 24, 34, 64, 12); c.fill();
+      c.strokeStyle = "#fff"; c.lineWidth = 4; c.beginPath(); c.moveTo(64, 104); c.lineTo(64, 122); c.stroke();
+      c.strokeStyle = "#000"; c.lineWidth = 2.2; c.beginPath(); c.moveTo(64, 24); c.lineTo(64, 104); c.stroke();
+    },
+    sky(cv) {
+      const c = cv.getContext("2d");
+      const g = c.createLinearGradient(0, 0, 0, 92);
+      g.addColorStop(0, "#2a5ea8"); g.addColorStop(0.6, "#8db5de"); g.addColorStop(1, "#f4c88c");
+      c.fillStyle = g; c.fillRect(0, 0, N, 92);
+      const gr = c.createLinearGradient(0, 92, 0, N);
+      gr.addColorStop(0, "#5a5446"); gr.addColorStop(1, "#2f2c25");
+      c.fillStyle = gr; c.fillRect(0, 92, N, N - 92);
+      const s = c.createRadialGradient(88, 76, 1, 88, 76, 34);
+      s.addColorStop(0, "rgba(255,255,255,1)"); s.addColorStop(0.15, "rgba(255,247,220,0.95)"); s.addColorStop(1, "rgba(255,220,150,0)");
+      c.fillStyle = s; c.fillRect(0, 0, N, N);
+    },
+    icon(cv) {
+      const c = cv.getContext("2d");
+      for (let y = 0; y < N; y += 16) for (let x = 0; x < N; x += 16) { c.fillStyle = ((x + y) / 16) % 2 ? "#c9ccd2" : "#f2f3f5"; c.fillRect(x, y, 16, 16); }
+      c.fillStyle = "#2439D4";
+      c.beginPath(); c.roundRect ? c.roundRect(22, 22, 84, 84, 18) : c.rect(22, 22, 84, 84); c.fill();
+      c.fillStyle = "#ffffff";
+      c.beginPath(); c.moveTo(54, 44); c.lineTo(86, 64); c.lineTo(54, 84); c.closePath(); c.fill();
+    }
+  };
+  return draw;
+})();
+
+/* ================= part 2: the sorter ================= */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const CARDS = [
+    { k: "basecolor", name: "Base colour (albedo)", file: "doe_chair_basecolor_v001.png", a: "c",
+      desc: "The surface’s own colour, without light or shadow.",
+      why: "It describes colour you see, painted or photographed, and it is stored in sRGB. Decode it into the working space.",
+      set: "Blender: sRGB · Unreal: sRGB on" },
+    { k: "normal", name: "Normal map", file: "doe_chair_normal_v001.png", a: "d",
+      desc: "Which way each point of the surface faces.",
+      why: "Red, green and blue store a direction, X, Y and Z, not a colour. The purple is just what directions look like. An sRGB decode bends every vector.",
+      set: "Blender: Non-Color + Normal Map node · Unreal: sRGB off, Normalmap (BC5)" },
+    { k: "roughness", name: "Roughness", file: "doe_chair_roughness_v001.png", a: "d",
+      desc: "How blurry the reflections are: 0 is a mirror, 1 is matt.",
+      why: "One number per pixel. Read as sRGB, 0.5 becomes 0.21 and the surface turns glossy.",
+      set: "Blender: Non-Color · Unreal: sRGB off" },
+    { k: "metallic", name: "Metallic", file: "doe_chair_metallic_v001.png", a: "d",
+      desc: "Metal or not metal, for every point.",
+      why: "A mask of 0s and 1s: a weight, not a colour. Masks are read as they are.",
+      set: "Blender: Non-Color · Unreal: sRGB off" },
+    { k: "ao", name: "Ambient occlusion", file: "doe_chair_ao_v001.png", a: "d",
+      desc: "How much ambient light reaches each point. Baked from the high-poly.",
+      why: "A measured proportion, not a colour. Decoded as sRGB, its greys drop and the crevices get far too dark.",
+      set: "Blender: Non-Color · Unreal: sRGB off" },
+    { k: "height", name: "Height / displacement", file: "doe_chair_height_v001.png", a: "d",
+      desc: "How far each point sits above or below the surface.",
+      why: "A distance. Mid-grey must stay the authored midpoint, or the whole surface moves.",
+      set: "Blender: Non-Color · Unreal: sRGB off" },
+    { k: "emissive", name: "Emissive colour", file: "doe_lamp_emissive_v001.png", a: "c",
+      desc: "The colour of the light a surface gives off: a screen, a lamp, a sign.",
+      why: "A colour you chose to see, so it is colour managed, like base colour. How strongly it glows is a separate number.",
+      set: "Blender: sRGB · Unreal: sRGB on" },
+    { k: "opacity", name: "Opacity (alpha)", file: "doe_plant_opacity_v001.png", a: "d",
+      desc: "Where the surface is solid and where it is see-through: a cut-out leaf.",
+      why: "A weight from 0 to 1. Half see-through has to stay 0.5, so no decoding.",
+      set: "Blender: Non-Color · Unreal: sRGB off" },
+    { k: "orm", name: "Packed ORM", file: "doe_chair_OcclusionRoughnessMetallic.png", a: "d",
+      desc: "Three grey maps in one file: AO in red, roughness in green, metallic in blue.",
+      why: "It looks like a strange colour picture, but every channel is data, so the whole file is. This is the Unreal Engine (Packed) export from Painter.",
+      set: "Blender: Non-Color · Unreal: sRGB off, Masks (no sRGB)" },
+    { k: "specular", name: "Specular colour", file: "doe_brass_speccolor_v001.png", a: "c",
+      desc: "The tint of the reflection, for the few materials that colour it.",
+      why: "Specular, coat, sheen and scattering colours are colours. Careful: specular level is a plain number, and that one is data.",
+      set: "Blender: sRGB · Painter: colour managed" },
+    { k: "sky", name: "Sky HDR", file: "sky_sunset_4k.exr", a: "c",
+      desc: "A 360° photo of the sky, used to light the scene.",
+      why: "It is colour, but not sRGB: an EXR stores scene-linear light, far above 1.0 at the sun. Colour managed means the source space is known, not always sRGB.",
+      set: "Blender: Linear Rec.709 (set for you) · Unreal: HDR, sRGB off (set for you)" },
+    { k: "icon", name: "UI icon", file: "icon_play.png", a: "c",
+      desc: "A play button for a game menu, made in a 2D program.",
+      why: "Made to be looked at on a screen, so it is stored in sRGB and decoded like any colour image.",
+      set: "Unreal: sRGB on" },
+    { k: "curvature", name: "Curvature", file: "doe_chair_curvature_v001.png", a: "d",
+      desc: "Where the surface bends out (light) and in (dark). Baked from the high-poly.",
+      why: "A measurement that Painter’s generators read to find edges for wear and dirt. Grey on screen, numbers inside.",
+      set: "Painter: a baked mesh map, never colour managed" },
+    { k: "id", name: "ID map", file: "doe_chair_id_v001.png", a: "d",
+      desc: "Flat colours that mark which part is which.",
+      why: "The colours are labels for picking masks, not looks. Converting them would change the labels.",
+      set: "Blender: Non-Color · Painter: a baked mesh map" }
+  ];
+  const KEY = "3ddf-colour-v1";
+  function loadBest() { try { const raw = localStorage.getItem(KEY); const o = raw ? JSON.parse(raw) : null; return o && typeof o.best === "number" ? o.best : null; } catch (e) { return null; } }
+  function saveBest(b) { try { localStorage.setItem(KEY, JSON.stringify({ best: b })); } catch (e) { /* private mode */ } }
+
+  let deck = [], idx = 0, score = 0, answered = false, misses = [];
+  const thumb = $("thumb"), pickC = $("pickC"), pickD = $("pickD"), fb = $("feedback"), next = $("next");
+
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function showBest() { const b = loadBest(); $("best").textContent = b == null ? "–" : b + "/" + CARDS.length; }
+
+  function start() {
+    deck = shuffle(CARDS.slice()); idx = 0; score = 0; misses = [];
+    $("total").textContent = deck.length;
+    $("result").hidden = true; $("play").hidden = false;
+    showBest(); show();
+  }
+  function show() {
+    const c = deck[idx];
+    answered = false;
+    $("pos").textContent = idx + 1; $("score").textContent = score;
+    $("prog").style.width = (idx / deck.length * 100) + "%";
+    const ctx = thumb.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 128, 128); ctx.shadowBlur = 0;
+    MAPS[c.k](thumb);
+    thumb.setAttribute("aria-label", "Picture of the " + c.name + " map");
+    $("mapName").textContent = c.name; $("mapFile").textContent = c.file; $("mapDesc").textContent = c.desc;
+    [pickC, pickD].forEach((b) => { b.disabled = false; b.classList.remove("picked", "right", "wrong"); b.removeAttribute("aria-pressed"); });
+    fb.hidden = true; fb.className = "feedback";
+    $("live").textContent = "Map " + (idx + 1) + " of " + deck.length + ": " + c.name + ". " + c.desc;
+  }
+  function answer(a) {
+    if (answered) return;
+    answered = true;
+    const c = deck[idx], ok = a === c.a, btn = a === "c" ? pickC : pickD;
+    if (ok) score++; else misses.push(c);
+    $("score").textContent = score;
+    [pickC, pickD].forEach((b) => (b.disabled = true));
+    btn.classList.add("picked", ok ? "right" : "wrong"); btn.setAttribute("aria-pressed", "true");
+    const kind = c.a === "c" ? "colour" : "data";
+    $("fbVerdict").textContent = ok ? "✓ Right: it’s " + kind + "." : "✗ Not quite: it’s " + kind + ".";
+    $("fbWhy").textContent = c.why; $("fbSet").textContent = c.set;
+    fb.hidden = false; fb.classList.add(ok ? "right" : "wrong");
+    next.textContent = idx + 1 < deck.length ? "Next map →" : "See your result →";
+    next.focus();
+  }
+  function advance() {
+    idx++;
+    if (idx < deck.length) { show(); pickC.focus(); return; }
+    $("prog").style.width = "100%";
+    const prev = loadBest();
+    if (prev == null || score > prev) saveBest(score);
+    $("play").hidden = true; $("result").hidden = false;
+    $("finalScore").textContent = score + " of " + deck.length;
+    $("finalNote").textContent = score === deck.length ? "All of them. You can explain the setting for every map."
+      : (prev != null && score > prev ? "A new best. " : "") + "Worth another look:";
+    const ul = $("misses"); ul.innerHTML = "";
+    misses.forEach((c) => { const li = document.createElement("li"); const b = document.createElement("b"); b.textContent = c.name + " is " + (c.a === "c" ? "colour" : "data") + ". "; li.appendChild(b); li.appendChild(document.createTextNode(c.why)); ul.appendChild(li); });
+    showBest();
+    $("again").focus();
+  }
+  pickC.addEventListener("click", () => answer("c"));
+  pickD.addEventListener("click", () => answer("d"));
+  next.addEventListener("click", advance);
+  $("again").addEventListener("click", () => { start(); pickC.focus(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if ($("play").hidden) return;
+    const r = $("sorter").getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;   // only while the sorter is on screen
+    const k = e.key.toLowerCase();
+    if (!answered && (k === "c" || k === "d")) { e.preventDefault(); answer(k); }
+  });
+  start();
+})();
+</script>
+</body>
+</html>
