@@ -32,6 +32,7 @@ Published site: https://cyberhirsch.github.io/3DDesignFoundations/
   and EV100, three-point lighting and fixes (`3ddf-light-v1`). Hand-written, one file
 - `slides/` — the slides from class, exported from Dek without speaker notes (Weeks 1 to 5 so far). Images
   licensed for teaching only are replaced with a note that they were shown in class.
+- `files/` — exercise files for class: `hirsch_teapot_materials_v001.blend` (Week 6, Blender 5.2)
 - `img/` — the screenshots, taken in Blender 5.2 with factory settings at 2× UI scale and shown at
   half size
 
