@@ -30,7 +30,7 @@ Published site: https://cyberhirsch.github.io/3DDesignFoundations/
   zoom, top view and a guess-the-lens quiz (`3ddf-lens-v1`). Hand-written, one file
 - `light.html` — Weeks 11 and 12 interactive reference: colour temperature, inverse square law, lux
   and EV100, three-point lighting and fixes (`3ddf-light-v1`). Hand-written, one file
-- `slides/` — the slides from class, exported from Dek without speaker notes (Weeks 1 to 5 so far). Images
+- `slides/` — the slides from class, exported from Dek without speaker notes (Weeks 1 to 6 so far). Images
   licensed for teaching only are replaced with a note that they were shown in class.
 - `files/` — exercise files for class: `hirsch_teapot_materials_v001.blend` (Week 6, Blender 5.2)
 - `img/` — the screenshots, taken in Blender 5.2 with factory settings at 2× UI scale and shown at
