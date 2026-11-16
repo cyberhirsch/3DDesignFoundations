@@ -434,15 +434,17 @@
     },
     {
       n: 7, topic: "AI-Driven Asset Generation (Generating PBR Models)",
-      theory: "Generate, Audit, Repair",
-      brief: "Let a machine make one prop in seconds, then find out what it takes to make it usable.",
+      theory: "Two Machines Against Your Week 2 Model",
+      brief: "Your Week 2 object again: once built, unwrapped and textured by a language model through MCP, once by a generator and cleaned up. Match your own model or beat it.",
       items: [
-        "Two generated versions of one prop for your scene, downloaded as GLB and left untouched",
-        "Wireframe and UV-layout screenshots of the better one, with its triangle count, UV islands and size on arrival",
-        "The relight test: two screenshots with the light from different directions, any painted light noted",
-        "The repair: merged, remeshed, unwrapped, colour and normal baked from the original; real size, pivot at the base, clear names",
-        "The repaired .blend with textures packed, or the project folder zipped",
-        "A before-and-after image (wireframe and render) and the audit note: tool, model version, plan, date, prompt or picture, licence and credit line, counts before and after, and what still stops professional use"
+        "One camera and one light in your Week 2 file, front and side, for every comparison",
+        "The MCP route: a language model rebuilds your object in Blender (quads only, support loops, Subdivision Surface at level 2, real size), then unwraps and textures it",
+        "The generator route: the same object from your reference pictures with TRELLIS.2 or HY 3D Global (Meshy or Tripo also count), downloaded as GLB, kept untouched, and a copy cleaned with the six repair steps",
+        "Each route iterated until you are happy with it, or another object done the same way; no hand edits on the MCP model",
+        { hand: true, text: "The MCP-built .blend, named familyname_asset_mcp_v001, unwrapped and textured, with the modifier live; the generated GLB as downloaded and your cleaned version" },
+        { hand: true, text: "The prompt log: the prompts and pictures that were necessary, in order (for the generator: tool, model version, seed), and how many tries it took" },
+        { hand: true, text: "The comparison board: Week 2, MCP and generator from the same camera, rendered and in wireframe, with face counts, prompts or generations, and time" },
+        { hand: true, text: "The note: tools, versions, plans, dates, the generated model's licence and credit line, time spent, any hand edit to the MCP model, and your verdict" }
       ]
     },
     {
@@ -476,7 +478,7 @@
       items: [
         "A new Unreal Engine 5 project: Blank template, no starter content, ray tracing enabled",
         "The USD Importer plugin enabled",
-        "Imported: the objects of your scene — modelled, sculpted, scanned and textured (Weeks 2–6), your repaired generated prop if you keep it (Week 7) — and your Gaussian splat background (Week 8)",
+        "Imported: the objects of your scene — modelled, sculpted, scanned and textured (Weeks 2–6), a machine-built model from Week 7 if you keep one — and your Gaussian splat background (Week 8)",
         "Assembled into one cohesive scene, at matching, correct scales",
         "A screenshot of the Outliner showing the file structure",
         "A viewport capture of the assembled scene"
